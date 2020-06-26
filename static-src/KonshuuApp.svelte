@@ -2,12 +2,9 @@
     .week {
         display: flex;
         flex-direction: row;
-        height: 100%;
+        flex: 1;
         overflow: auto;
     }
-    .day {
-		margin: 0.2rem;
-	}
 
     @media (max-width: 1000px) {
         .week {
@@ -44,9 +41,7 @@
 </div>
 <div class="week">
     {#each $week as day, index}
-        <div class="day">
-			<Day day={day} dayNumber={index} />
-		</div>
+        <Day day={day} dayNumber={index} />
     {/each}
 </div>
 

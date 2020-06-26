@@ -2,9 +2,10 @@
     div {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        flex: 1;
         padding: 0.3rem;
-    }
+		margin: 0.2rem;
+	}
     .today {
         background: var(--accent-gradient);
         border-radius: 0.2rem;
