@@ -8,4 +8,4 @@ CMD ["npx", "nodemon", "konshuu-server.js"]
 FROM dev AS prod
 COPY . .
 RUN npm run build
-CMD ["node", "app"]
+CMD ["node", "konshuu-server.js"]
