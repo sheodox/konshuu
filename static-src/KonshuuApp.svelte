@@ -9,7 +9,8 @@
     @media (max-width: 1000px) {
         .week {
             flex-direction: column;
-        }
+			overflow: unset;
+		}
     }
     .controls {
         display: flex;
