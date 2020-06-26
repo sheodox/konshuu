@@ -1,2 +1,6 @@
 #!/usr/bin/env bash
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+if [ -f ".env" ]; then
+  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+else
+  echo "You need to create a .env file!"
+fi
