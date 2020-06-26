@@ -3,9 +3,14 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        padding: 0.3rem;
     }
-    .today h2{
-        color: #00ffac;
+    .today {
+        background: var(--accent-gradient);
+        border-radius: 0.2rem;
+    }
+    .today h2 {
+        color: black;
     }
 </style>
 

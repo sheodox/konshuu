@@ -5,7 +5,7 @@
         height: 100%;
     }
     .day {
-		margin: 0.5rem;
+		margin: 0.2rem;
 	}
 
     @media (max-width: 1000px) {
