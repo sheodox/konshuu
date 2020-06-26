@@ -5,7 +5,7 @@ RUN npm install
 
 CMD ["npx", "nodemon", "konshuu-server.js"]
 
-FROM setup AS prod
+FROM dev AS prod
 COPY . .
 RUN npm run build
 CMD ["node", "app"]
