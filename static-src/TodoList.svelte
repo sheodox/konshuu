@@ -88,21 +88,18 @@
         	return;
         }
     	const enc = str => encodeURIComponent(str);
-        await updateWeek(
-        	await fetch(`/list/add/${enc(date.getTime())}/${enc(listName)}/${enc(text)}`).then(res => res.json())
-        );
+		await fetch(`/list/add/${enc(date.getTime())}/${enc(listName)}/${enc(text)}`)
+		await updateWeek();
         newTodoText = '';
     }
 
     async function toggleTodo(id) {
-		await updateWeek(
-			await fetch(`/list/toggle/${encodeURIComponent(id)}`).then(res => res.json())
-		);
+		await fetch(`/list/toggle/${encodeURIComponent(id)}`);
+		await updateWeek();
 	}
 
 	async function removeTodo(id) {
-		await updateWeek(
-			await fetch(`/list/remove/${encodeURIComponent(id)}`).then(res => res.json())
-		);
+		await fetch(`/list/remove/${encodeURIComponent(id)}`);
+		await updateWeek();
     }
 </script>
