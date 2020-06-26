@@ -3,6 +3,7 @@
         display: flex;
         flex-direction: row;
         height: 100%;
+        overflow: auto;
     }
     .day {
 		margin: 0.2rem;
