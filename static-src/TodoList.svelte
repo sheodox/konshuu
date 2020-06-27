@@ -57,7 +57,7 @@
 					</label>
                     <button
                         on:click={() => removeTodo(todo.todo_id)}>
-                        <Icon icon="clear" />
+                        <Icon icon="clear" noPadding={true} />
                         <span class="sr-only">
                             Remove todo: {todo.text}
                         </span>
