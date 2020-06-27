@@ -9,7 +9,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.get('/', (req, res) => {
-	res.render('index', {title: '今週'});
+	res.render('index', {title: 'Konshuu'});
 })
 app.use('/list', require('./routes/list'));
 
