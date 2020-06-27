@@ -13,6 +13,9 @@
     .today h2 {
         color: black;
     }
+    h2 {
+        white-space: nowrap;
+    }
 </style>
 
 <div class:today={isToday} use:scrollToView={isToday}>

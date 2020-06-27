@@ -39,6 +39,10 @@
     button {
         padding: 0.3rem;
     }
+	input[type="text"], input:not([type]) {
+        font-size: 0.8rem;
+        width: 100%;
+    }
 </style>
 
 <div class="panel">
