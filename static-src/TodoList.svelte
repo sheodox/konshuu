@@ -34,6 +34,7 @@
     }
     label {
         flex: 1;
+        font-size: 0.8rem;
     }
     button {
         padding: 0.3rem;
