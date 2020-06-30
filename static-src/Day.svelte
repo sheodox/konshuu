@@ -4,7 +4,8 @@
         flex-direction: column;
         flex-grow: 1;
         flex-shrink: 0;
-        padding: 0.3rem;
+		flex-basis: 15rem;
+		padding: 0.3rem;
 		margin: 0.2rem;
 	}
     .today {

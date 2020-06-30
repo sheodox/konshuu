@@ -49,6 +49,10 @@
     .new-todo input {
         flex: 1;
     }
+    form, form label {
+        display: flex;
+        flex-shrink: 0;
+    }
 </style>
 
 <div class="panel">
