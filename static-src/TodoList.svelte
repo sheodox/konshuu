@@ -112,7 +112,7 @@
 			<label class="new-todo input-group">
                 <span class="sr-only">New todo</span>
 				<input bind:value={newTodoText} type="text" placeholder="new todo" />
-                <button>
+                <button disabled={!newTodoText}>
                     <Icon icon="add" noPadding={true} />
                     <span class="sr-only">Add Todo</span>
                 </button>
