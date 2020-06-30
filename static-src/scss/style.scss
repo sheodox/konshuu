@@ -40,6 +40,15 @@ input[type=text], input:not([type]), textarea, select {
     font-size: 1.1rem;
 }
 
+.input-group {
+    border-radius: 0.2rem;
+    background: var(--input-bg);
+    border: 1px solid var(--input-bg);
+    input {
+        border: none;
+    }
+}
+
 .panel {
     background: var(--panel-bg);
     padding: 0;

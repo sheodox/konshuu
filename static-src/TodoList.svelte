@@ -81,7 +81,7 @@
             {/each}
 		</ul>
 		<form on:submit|preventDefault={addTodo}>
-			<label class="new-todo">
+			<label class="new-todo input-group">
                 <span class="sr-only">New todo</span>
 				<input bind:value={newTodoText} type="text" placeholder="new todo" />
                 <button>
