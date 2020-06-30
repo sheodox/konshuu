@@ -141,7 +141,7 @@
 			<form on:submit|preventDefault={() => reschedule(customReschedule)}>
 				<label class="input-group">
 					<input type="date" bind:value={customReschedule} required>
-					<button>
+					<button disabled={!customReschedule}>
 						Reschedule
 					</button>
 				</label>
