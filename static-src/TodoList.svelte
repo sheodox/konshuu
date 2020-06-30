@@ -39,9 +39,15 @@
     button {
         padding: 0.3rem;
     }
-	input[type="text"], input:not([type]) {
+	input[type="text"] {
         font-size: 0.8rem;
         width: 100%;
+    }
+    .new-todo {
+        display: flex;
+    }
+    .new-todo input {
+        flex: 1;
     }
 </style>
 
@@ -71,9 +77,13 @@
             {/each}
 		</ul>
 		<form on:submit|preventDefault={addTodo}>
-			<label>
-				New Todo
-				<input bind:value={newTodoText} />
+			<label class="new-todo">
+                <span class="sr-only">New todo</span>
+				<input bind:value={newTodoText} type="text" placeholder="new todo" />
+                <button>
+                    <Icon icon="add" noPadding={true} />
+                    <span class="sr-only">Add Todo</span>
+                </button>
 			</label>
 		</form>
     </div>

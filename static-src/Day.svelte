@@ -2,7 +2,8 @@
     div {
         display: flex;
         flex-direction: column;
-        flex: 1;
+        flex-grow: 1;
+        flex-shrink: 0;
         padding: 0.3rem;
 		margin: 0.2rem;
 	}
