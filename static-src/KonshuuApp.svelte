@@ -17,8 +17,17 @@
         flex-direction: row;
         justify-content: center;
     }
+    .error-banner {
+        text-align: center;
+        color: black;
+        background: var(--accent-red);
+    }
 </style>
-
+{#if $updateError}
+    <div class="error-banner">
+        <p>{$updateError}</p>
+    </div>
+{/if}
 <div class="controls panel">
     <button
         on:click={prevWeek}
@@ -47,7 +56,7 @@
 </div>
 
 <script>
-    import {week, prevWeek, nextWeek, resetWeek, weekOffset} from './todosStore';
+    import {week, prevWeek, nextWeek, resetWeek, weekOffset, updateError} from './todosStore';
     import Icon from './Icon.svelte';
     import Day from './Day.svelte';
 </script>

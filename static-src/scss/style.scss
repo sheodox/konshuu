@@ -5,6 +5,14 @@
     --bg: #0b0f15;
     --input-bg: rgba(53, 54, 64, 0.8);
     --accent-gradient: linear-gradient(to right, #08ffff, #e55eff);
+    --accent-blue: #06acfd;
+    --accent-red: #e83450;
+    --accent-red-bright: #ff0e32;
+    --accent-purple: #9400ff;
+    --accent-purple-bright: #b300ff;
+    --accent-primary: var(--accent-blue);
+    --accent-secondary: var(--accent-red);
+    --accent-pink: #df61ff;
 }
 * {
     box-sizing: border-box;
