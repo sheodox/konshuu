@@ -67,6 +67,12 @@ class List {
 			`DELETE FROM todo_lists WHERE todo_id in (SELECT todo_id FROM todo_lists WHERE todo_id=$1 LIMIT 1)`, [id]
 		)
 	}
+	static async reschedule(list, fromDate, toDate) {
+		await query(
+			`UPDATE todo_lists SET date=$1 WHERE completed=false AND list=$2 AND date=$3`,
+			[toDate, list, fromDate]
+		);
+	}
 }
 
 router.get('/week/:timeStamp', async (req, res) => {
@@ -93,5 +99,16 @@ router.get('/remove/:todoId', async (req, res) => {
 	await List.removeTodo(req.params.todoId);
 	await res.send();
 })
+
+//from/to are unix timestamps
+router.get('/reschedule/:listType/:from/:to', async (req, res) => {
+	//a date string is like 1922-01-26 for January 26th, 1922. this is the same format a date field will give
+	const toDate = str => {
+		const [year, month, day] = str.split('-');
+		return new Date(+year, +month - 1, +day);
+	}
+	await List.reschedule(req.params.listType, toDate(req.params.from), toDate(req.params.to))
+	await res.send();
+});
 
 module.exports = router;

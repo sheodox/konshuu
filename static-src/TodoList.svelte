@@ -32,11 +32,11 @@
         background: var(--panel-header-bg);
         border-radius: 0.2rem;
     }
-    label {
+    .todo-list label {
         flex: 1;
         font-size: 0.8rem;
     }
-    button {
+    .todo-list button {
         padding: 0.3rem;
     }
 	input[type="text"] {
@@ -53,10 +53,38 @@
         display: flex;
         flex-shrink: 0;
     }
+    .header {
+        display: flex;
+        flex-direction: row;
+        flex: 0;
+    }
+    .header h3 {
+        flex: 1;
+    }
+    .header button {
+        padding: 0 0.5rem;
+    }
+    .reschedule-modal {
+        text-align: center;
+    }
+    .reschedule-modal form {
+        justify-content: center;
+    }
 </style>
 
-<div class="panel">
-    <h3 class="header">{listName}</h3>
+<div class="panel todo-list">
+    <div class="header">
+		<h3>{listName}</h3>
+        {#if list.some(t => !t.completed)}
+            <button
+                on:click={() => showRescheduleModal = true}
+                title="Reschedule unfinished todos"
+            >
+                <Icon icon="schedule" noPadding={true}/>
+                <span class="sr-only">Reschedule undone todos</span>
+            </button>
+        {/if}
+	</div>
     <div class="panel-body">
 		<ul>
             {#each list as todo}
@@ -92,14 +120,51 @@
 		</form>
     </div>
 </div>
+{#if showRescheduleModal}
+	<Modal title="Reschedule" bind:visible={showRescheduleModal}>
+        <div class="reschedule-modal">
+			<p>
+				When should these todos be rescheduled to?
+			</p>
+            {#if !isToday}
+				<button on:click={() => reschedule('today')}>
+					Today
+				</button>
+            {/if}
+            {#if !isTomorrow}
+				<button on:click={() => reschedule('tomorrow')}>
+					Tomorrow
+				</button>
+            {/if}
+			<br>
+			<p>Or a custom date...</p>
+			<form on:submit|preventDefault={() => reschedule(customReschedule)}>
+				<label class="input-group">
+					<input type="date" bind:value={customReschedule} required>
+					<button>
+						Reschedule
+					</button>
+				</label>
+			</form>
+		</div>
+	</Modal>
+{/if}
 
 <script>
-    import {updateWeek} from './todosStore';
-    import Icon from './Icon.svelte';
-    export let listName = '';
-    export let list = [];
+	import {updateWeek} from './todosStore';
+	import Modal from './Modal.svelte';
+	import Icon from './Icon.svelte';
+    export let listName = ''; //list display name
+	export let listType = ''; //list type
+	export let list = [];
     export let date = new Date();
-    let newTodoText = '';
+    let newTodoText = '',
+        customReschedule,
+        showRescheduleModal = false;
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+    $: isToday = date.toLocaleDateString() === new Date().toLocaleDateString()
+    $: isTomorrow = date.toLocaleDateString() === new Date(Date.now() + DAY_MS).toLocaleDateString()
 
     async function addTodo() {
         const text = newTodoText.trim();
@@ -121,4 +186,22 @@
 		await fetch(`/list/remove/${encodeURIComponent(id)}`);
 		await updateWeek();
     }
+    async function reschedule(target) {
+        let newDate;
+        if (target === 'today') {
+        	newDate = new Date();
+		}
+        else if (target === 'tomorrow') {
+        	newDate = new Date(Date.now() + DAY_MS);
+        }
+        else { // the date input gives a date like 'YYYY-MM-DD'
+            const [year, month, day] = target.split('-');
+            newDate = new Date(+year, +month - 1, +day);
+        }
+        //serialize the date the same way the date input would use for the value
+        const serializeDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+        await fetch(`/list/reschedule/${listType}/${serializeDate(date)}/${serializeDate(newDate)}`);
+        await updateWeek();
+        showRescheduleModal = false;
+	}
 </script>

@@ -24,9 +24,9 @@
     <h2>{day.dayName} {day.date.toLocaleDateString()}</h2>
 	<!-- don't show the work list on the weekend -->
     {#if dayNumber !== 0 && dayNumber !== 6}
-		<TodoList date={day.date} listName="Work" list={day.work} />
+		<TodoList date={day.date} listName="Work" list={day.work} listType="work" />
     {/if}
-	<TodoList date={day.date} listName="Home" list={day.home} />
+	<TodoList date={day.date} listName="Home" list={day.home} listType="home" />
 </div>
 
 <script>
