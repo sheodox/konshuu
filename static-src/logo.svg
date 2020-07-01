@@ -16,7 +16,10 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)"
-   sodipodi:docname="logo.svg">
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="/home/sheodox/code/js/konshuu/static-src/logo.png"
+   inkscape:export-xdpi="480"
+   inkscape:export-ydpi="480">
   <defs
      id="defs2">
     <linearGradient
@@ -111,7 +114,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -128,7 +131,7 @@
        sodipodi:nodetypes="cccccc" />
     <path
        style="opacity:1;fill:url(#linearGradient887);fill-opacity:1;stroke:none;stroke-width:0.99373704;stroke-linecap:round;stroke-miterlimit:9.10000038;stroke-dasharray:none;stroke-opacity:1"
-       d="M 5.2916667,281.12498 23,273.99998 15.875,291.70832 H 5.2916667 Z"
+       d="M 7.14375,281.12498 23,273.99998 15.875,289.85623 5.2916667,291.70832 Z"
        id="rect825"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
