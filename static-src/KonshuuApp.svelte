@@ -12,6 +12,11 @@
 			overflow: unset;
 		}
     }
+    @media (max-width: 700px) {
+        header.controls {
+            flex-direction: column;
+        }
+    }
     .controls {
         display: flex;
         flex-direction: row;
@@ -30,6 +35,7 @@
     header > div {
         display: flex;
         flex-direction: row;
+        align-self: center;
     }
 </style>
 {#if $updateError}
