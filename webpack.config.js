@@ -1,4 +1,5 @@
 const path = require('path'),
+	CopyPlugin = require('copy-webpack-plugin'),
 	isProd = process.argv.includes('production');
 
 module.exports = {
@@ -30,5 +31,16 @@ module.exports = {
 				use: ['style-loader', 'css-loader', 'sass-loader']
 			}
 		]
-	}
+	},
+	plugins: [
+		new CopyPlugin({
+			patterns:[{
+				from: '**/*.svg',
+				context: './static-src',
+			}, {
+				from: '**/*.png',
+				context: './static-src',
+			}]
+		})
+	]
 };

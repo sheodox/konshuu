@@ -11,6 +11,7 @@
   "author": "sheodox",
   "license": "ISC",
   "dependencies": {
+    "copy-webpack-plugin": "^6.0.3",
     "css-loader": "^3.6.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
