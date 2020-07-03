@@ -28,15 +28,17 @@
         display: flex;
         align-items: center;
     }
-    li:hover {
+    li.todo-item:hover {
         background: var(--panel-header-bg);
         border-radius: 0.2rem;
     }
     .todo-list label {
         flex: 1;
-        font-size: 0.8rem;
     }
-    .todo-list button {
+    .todo-item {
+		font-size: 0.8rem;
+	}
+	.todo-list button {
         padding: 0.3rem;
     }
 	input[type="text"] {
@@ -70,6 +72,10 @@
     .reschedule-modal form {
         justify-content: center;
     }
+    small {
+        color: gray;
+        text-align: center;
+    }
 </style>
 
 <div class="panel todo-list">
@@ -88,26 +94,33 @@
     <div class="panel-body">
 		<ul>
             {#each list as todo}
-				<li>
-					<input
-                        type="checkbox"
-                        bind:checked={todo.completed}
-                        on:change={() => toggleTodo(todo.todo_id)}
-                        id={todo.todo_id}
-                    />
-					<label class:completed={todo.completed} for={todo.todo_id}>
-                        {todo.text}
-					</label>
-                    <button
-                        on:click={() => removeTodo(todo.todo_id)}>
-                        <Icon icon="clear" noPadding={true} />
-                        <span class="sr-only">
-                            Remove todo: {todo.text}
-                        </span>
-                    </button>
-				</li>
+                {#if !todo.completed || !$hideCompleted}
+                    <li class="todo-item">
+                        <input
+                            type="checkbox"
+                            bind:checked={todo.completed}
+                            on:change={() => toggleTodo(todo.todo_id)}
+                            id={todo.todo_id}
+                        />
+                        <label class:completed={todo.completed} for={todo.todo_id}>
+                            {todo.text}
+                        </label>
+                        <button
+                            on:click={() => removeTodo(todo.todo_id)}>
+                            <Icon icon="clear" noPadding={true} />
+                            <span class="sr-only">
+                                Remove todo: {todo.text}
+                            </span>
+                        </button>
+                    </li>
+                {/if}
             {/each}
 		</ul>
+        {#if $hideCompleted && completedCount > 0}
+			<small>
+                {completedCount} completed todos hidden
+			</small>
+        {/if}
 		<form on:submit|preventDefault={addTodo}>
 			<label class="new-todo input-group">
                 <span class="sr-only">New todo</span>
@@ -151,7 +164,7 @@
 {/if}
 
 <script>
-	import {updateWeek} from './todosStore';
+	import {updateWeek, hideCompleted} from './todosStore';
 	import Modal from './Modal.svelte';
 	import Icon from './Icon.svelte';
     export let listName = ''; //list display name
@@ -161,6 +174,8 @@
     let newTodoText = '',
         customReschedule,
         showRescheduleModal = false;
+
+    $: completedCount = list.filter(todo => todo.completed).length;
 
     const DAY_MS = 24 * 60 * 60 * 1000;
     $: isToday = date.toLocaleDateString() === new Date().toLocaleDateString()

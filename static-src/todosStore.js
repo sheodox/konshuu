@@ -5,6 +5,7 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 export const week = writable([]);
 export const updateError = writable(null);
 export const weekOffset = writable(0);
+export const hideCompleted = writable(false);
 let offset;
 
 export const nextWeek = () => {

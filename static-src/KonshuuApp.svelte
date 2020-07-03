@@ -74,6 +74,17 @@
 			<Icon icon="arrow_forward_ios"></Icon>
 		</button>
 	</div>
+    <div>
+		<button on:click={() => hideCompleted.set(!$hideCompleted)}>
+            {#if $hideCompleted}
+                <Icon icon="visibility" />
+                Show Completed
+            {:else}
+				<Icon icon="visibility_off" />
+				Hide Completed
+            {/if}
+		</button>
+	</div>
 </header>
 <div class="week">
     {#each $week as day, index}
@@ -82,7 +93,7 @@
 </div>
 
 <script>
-    import {week, prevWeek, nextWeek, resetWeek, weekOffset, updateError} from './todosStore';
+    import {week, prevWeek, nextWeek, resetWeek, weekOffset, updateError, hideCompleted} from './todosStore';
     import Icon from './Icon.svelte';
     import Day from './Day.svelte';
 </script>
