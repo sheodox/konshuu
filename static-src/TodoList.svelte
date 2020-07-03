@@ -76,6 +76,9 @@
         color: gray;
         text-align: center;
     }
+    progress {
+        height: 2px;
+    }
 </style>
 
 <div class="panel todo-list">
@@ -91,7 +94,8 @@
             </button>
         {/if}
 	</div>
-    <div class="panel-body">
+    <progress value={completedCount} max={list.length} aria-label="todo completion for this list"></progress>
+	<div class="panel-body">
 		<ul>
             {#each list as todo}
                 {#if !todo.completed || !$hideCompleted}
