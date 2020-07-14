@@ -34,16 +34,17 @@ body {
     flex-direction: column;
 }
 
+$focusOutlineColor: #3584e4;
 input[type=text], input:not([type]), textarea, select {
     color: white;
     border: 1px solid var(--input-bg);
-    transition: border 0.2s;
     border-radius: 0.2rem;
     background: var(--input-bg);
     padding: 0.2rem;
 
     &:focus {
         background: rgba(11,15,21,0.8);
+        border-color: $focusOutlineColor;
     }
 }
 input[type=text], input:not([type]), textarea, select {
@@ -54,9 +55,6 @@ input[type=text], input:not([type]), textarea, select {
     border-radius: 0.2rem;
     background: var(--input-bg);
     border: 1px solid var(--input-bg);
-    input {
-        border: none;
-    }
 }
 
 .panel {
@@ -102,7 +100,7 @@ button, input[type=submit], .button {
     display: inline-block;
     border-radius: 0.2rem;
     background: none;
-    border: none;
+    border: 1px solid transparent;
     color: #3db4f2;
     cursor: pointer;
     padding: 0.7rem;
@@ -112,6 +110,9 @@ button, input[type=submit], .button {
     font-size: 0.9rem;
     &:hover:enabled {
         background: rgba(96,111,125,0.329412);
+    }
+    &:focus {
+        border-color: $focusOutlineColor;
     }
 }
 
