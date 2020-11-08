@@ -57,7 +57,7 @@
 	import {createEventDispatcher} from 'svelte';
 
 	export let visible;
-	export let todoDate = new Date();
+	export let todoDate;
 	export let listType;
 
 	const DAY_MS = 24 * 60 * 60 * 1000;

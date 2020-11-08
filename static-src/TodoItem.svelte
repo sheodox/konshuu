@@ -58,7 +58,7 @@
 {/if}
 
 {#if showReschedule}
-	<Reschedule bind:visible={showReschedule} {listType} todoDate={new Date(todo.date)} on:reschedule={rescheduleTodo} />
+	<Reschedule bind:visible={showReschedule} {listType} todoDate={date} on:reschedule={rescheduleTodo} />
 {/if}
 
 <script>
@@ -68,6 +68,7 @@
 	import {getRescheduleDestination, serializeDate} from "./reschedule-utils";
 
 	export let todo;
+	export let date;
 	export let listType;
 
 	const encodedId = encodeURIComponent(todo.todo_id);

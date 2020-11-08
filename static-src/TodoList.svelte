@@ -73,7 +73,7 @@
 	<div class="panel-body f-column">
 		<ul>
             {#each list as todo (todo.todo_id)}
-				<TodoItem {todo} {listType} />
+				<TodoItem {todo} {listType} {date} />
             {/each}
 		</ul>
         {#if $hideCompleted && completedCount > 0}
@@ -106,7 +106,7 @@
     export let listName = ''; //list display name
 	export let listType = ''; //list type
 	export let list = [];
-    export let date = new Date();
+    export let date;
     let newTodoText = '',
         showRescheduleModal = false;
 
