@@ -72,7 +72,7 @@
     <progress value={completedCount} max={list.length} aria-label="todo completion for this list"></progress>
 	<div class="panel-body f-column">
 		<ul>
-            {#each list as todo}
+            {#each list as todo (todo.todo_id)}
 				<TodoItem {todo} {listType} />
             {/each}
 		</ul>
