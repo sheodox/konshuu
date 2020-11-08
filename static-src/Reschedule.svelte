@@ -6,10 +6,6 @@
     .reschedule-modal form {
         justify-content: center;
     }
-    input[type="text"] {
-        font-size: 0.8rem;
-        width: 100%;
-    }
     form, form label {
         display: flex;
         flex-shrink: 0;

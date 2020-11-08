@@ -21,7 +21,7 @@
     "pg": "^8.2.1",
     "pug": "^3.0.0",
     "sass-loader": "^8.0.2",
-    "sheodox-ui": "0.0.10",
+    "sheodox-ui": "0.0.11",
     "style-loader": "^1.2.1",
     "svelte": "^3.29.4",
     "svelte-loader": "^2.13.6",
