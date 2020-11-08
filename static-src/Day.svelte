@@ -12,11 +12,9 @@
         background: var(--accent-gradient);
         border-radius: 0.2rem;
     }
-    .today h2 {
-        color: black;
-    }
     h2 {
         white-space: nowrap;
+        text-align: center;
     }
 </style>
 

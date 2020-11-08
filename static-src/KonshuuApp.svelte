@@ -12,80 +12,56 @@
 			overflow: unset;
 		}
     }
-    @media (max-width: 700px) {
-        header.controls {
-            flex-direction: column;
-        }
-    }
-    .controls {
-        display: flex;
-        flex-direction: row;
-		justify-content: space-evenly;
-	}
 	.error-banner {
         text-align: center;
         color: black;
         background: var(--accent-red);
     }
-    svg.logo {
-        --svg-size: 3rem;
-        width: var(--svg-size);
-		height: var(--svg-size);
-    }
-    header > div {
-        display: flex;
-        flex-direction: row;
-        align-self: center;
-    }
 </style>
+
 {#if $updateError}
     <div class="error-banner">
         <p>{$updateError}</p>
     </div>
 {/if}
-<header class="controls panel">
-    <div>
-		<svg viewbox="0 0 100 100" class="logo">
-			<image xlink:href="/logo.svg"></image>
-		</svg>
-		<h1>
-			Konshuu
-		</h1>
-    </div>
 
-    <div>
+<Header slim={true} appName="Konshuu">
+	<svg viewbox="0 0 100 100" slot="logo">
+		<image xlink:href="/logo.svg"></image>
+	</svg>
+
+    <div slot="nav">
 		<button
 			on:click={prevWeek}
 		>
-			<Icon icon="arrow_back_ios"></Icon>
+			<Icon icon="angle-left" />
 			Previous Week
 		</button>
 		<button
 			on:click={resetWeek}
 			disabled={$weekOffset === 0}
 		>
-			<Icon icon="vertical_align_center" />
+			<Icon icon="align-center" />
 			This Week
 		</button>
 		<button
 			on:click={nextWeek}
 		>
 			Next Week
-			<Icon icon="arrow_forward_ios"></Icon>
+			<Icon icon="angle-right" />
 		</button>
-	</div>
-    <div>
 		<button on:click={() => hideCompleted.set(!$hideCompleted)}>
             {#if $hideCompleted}
-                <Icon icon="visibility" />
+                <Icon icon="eye" />
                 Show Completed
             {:else}
-				<Icon icon="visibility_off" />
+				<Icon icon="eye-slash" />
 				Hide Completed
             {/if}
 		</button>
 	</div>
-</header>
+</Header>
+
 <div class="week">
     {#each $week as day, index}
         <Day day={day} dayNumber={index} />
@@ -94,6 +70,6 @@
 
 <script>
     import {week, prevWeek, nextWeek, resetWeek, weekOffset, updateError, hideCompleted} from './todosStore';
-    import Icon from './Icon.svelte';
+    import {Icon, Header} from 'sheodox-ui';
     import Day from './Day.svelte';
 </script>

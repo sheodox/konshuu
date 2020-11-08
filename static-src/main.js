@@ -1,4 +1,5 @@
-import style from './scss/style.scss';
+import 'sheodox-ui/style.scss';
+import './scss/style.scss';
 import KonshuuApp from './KonshuuApp.svelte';
 
 new KonshuuApp({
