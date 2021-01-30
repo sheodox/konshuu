@@ -16,6 +16,12 @@
         white-space: nowrap;
         text-align: center;
     }
+    @media (max-width: 600px) {
+        div {
+            scroll-snap-align: start;
+            flex-basis: 100%;
+        }
+    }
 </style>
 
 <div class:today={isToday} use:scrollToView={isToday}>

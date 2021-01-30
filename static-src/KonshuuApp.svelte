@@ -6,10 +6,9 @@
         overflow: auto;
     }
 
-    @media (max-width: 1000px) {
-        .week {
-            flex-direction: column;
-			overflow: unset;
+    @media (max-width: 600px) {
+		.week {
+			scroll-snap-type: y mandatory;
 		}
     }
 	.error-banner {
