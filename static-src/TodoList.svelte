@@ -12,7 +12,7 @@
         flex: 1;
     }
     .panel {
-        margin: 0.5rem 0;
+        margin-top: 0.3rem;
     }
     .panel-body {
         flex: 1;
