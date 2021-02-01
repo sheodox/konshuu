@@ -11,6 +11,17 @@
 			scroll-snap-type: y mandatory;
 		}
     }
+    @media (max-width: 700px) {
+        /* hide the button text with .sr-only styles when the screen is small or it'll wrap */
+		.button-text {
+			position: absolute;
+			left: -10000px;
+			top: auto;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+		}
+	}
 	.error-banner {
         text-align: center;
         color: black;
@@ -34,28 +45,38 @@
 			on:click={prevWeek}
 		>
 			<Icon icon="angle-left" />
-			Previous Week
+			<span class="button-text">
+				Previous Week
+			</span>
 		</button>
 		<button
 			on:click={resetWeek}
 			disabled={$weekOffset === 0}
 		>
 			<Icon icon="align-center" />
-			This Week
+			<span class="button-text">
+				This Week
+			</span>
 		</button>
 		<button
 			on:click={nextWeek}
 		>
-			Next Week
+            <span class="button-text">
+				Next Week
+			</span>
 			<Icon icon="angle-right" />
 		</button>
 		<button on:click={() => hideCompleted.set(!$hideCompleted)}>
             {#if $hideCompleted}
                 <Icon icon="eye" />
-                Show Completed
+                <span class="button-text">
+					Show Completed
+				</span>
             {:else}
 				<Icon icon="eye-slash" />
-				Hide Completed
+                <span class="button-text">
+					Hide Completed
+				</span>
             {/if}
 		</button>
 	</div>
