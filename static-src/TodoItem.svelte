@@ -21,7 +21,7 @@
 </style>
 
 {#if !todo.completed || !$hideCompleted}
-	<li class="todo-item f-row align-items-start">
+	<li class="todo-item f-row align-items-start" draggable="true" on:dragstart={dragStart}>
 		<input
 			type="checkbox"
 			bind:checked={todo.completed}
@@ -96,5 +96,9 @@
 		//serialize the date the same way the date input would use for the value
 		await fetch(`/list/reschedule-one/${encodedId}/${serializeDate(getRescheduleDestination(e.detail))}`);
 		await updateWeek();
+	}
+
+	function dragStart(event) {
+		event.dataTransfer.setData('todoId', todo.todo_id);
 	}
 </script>

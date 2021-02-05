@@ -1,3 +1,7 @@
+import {writable} from "svelte/store";
+
+export const draggingOverList = writable(null);
+
 export const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const serializeDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;

@@ -54,9 +54,17 @@
     progress {
         height: 2px;
     }
+    .draggingOver {
+        background: var(--panel-header-bg);
+    }
 </style>
 
-<div class="panel todo-list f-column">
+<div
+    class="panel todo-list f-column"
+    class:draggingOver={$draggingOverList === listId}
+    on:drop|preventDefault={drop}
+    on:dragover|preventDefault={dragOver}
+>
     <div class="header">
 		<h3>{listName}</h3>
         {#if list.some(t => !t.completed)}
@@ -102,11 +110,12 @@
 	import Reschedule from './Reschedule.svelte';
 	import {Icon} from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
-	import {getRescheduleDestination, serializeDate} from "./reschedule-utils";
+    import {draggingOverList, getRescheduleDestination, serializeDate} from "./reschedule-utils";
     export let listName = ''; //list display name
 	export let listType = ''; //list type
 	export let list = [];
     export let date;
+    const listId = `${listName}-${date.getDay()}`
     let newTodoText = '',
         showRescheduleModal = false;
 
@@ -128,4 +137,15 @@
         await fetch(`/list/reschedule/${listType}/${serializeDate(date)}/${serializeDate(getRescheduleDestination(e.detail))}`);
         await updateWeek();
 	}
+
+	async function drop(event) {
+        const todoId = event.dataTransfer.getData('todoId');
+        $draggingOverList = null;
+        await fetch(`/list/reschedule-one/${encodeURIComponent(todoId)}/${serializeDate(date)}/`)
+        await updateWeek();
+    }
+    function dragOver(event) {
+        $draggingOverList = listId;
+        event.dataTransfer.dropEffect = "move"
+    }
 </script>

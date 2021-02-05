@@ -23,6 +23,11 @@ function weekSkeleton(weekStart) {
 	})
 }
 
+function isWeekend(date) {
+	const day = date.getDay();
+	return day === 0 || day === 6;
+}
+
 class List {
 	static async getWeek(dayInTheWeek = new Date()) {
 		dayInTheWeek.setHours(12);
@@ -77,12 +82,22 @@ class List {
 		}
 	}
 	static async reschedule(list, fromDate, toDate) {
+	    //don't let work items reschedule for the weekend, they'll disappear forever!
+	    if (list === 'work' && isWeekend(toDate)) {
+	    	return;
+		}
 		await query(
 			`UPDATE todo_lists SET date=$1 WHERE completed=false AND list=$2 AND date=$3`,
 			[toDate, list, fromDate]
 		);
 	}
 	static async rescheduleOne(id, toDate) {
+		const {rows} = await query(`SELECT list FROM todo_lists WHERE todo_id=$1`, [id]);
+
+		//don't allow scheduling work items for the weekend, they'll disappear forever!
+		if (!rows.length || (rows[0].list === 'work' && isWeekend(toDate))) {
+			return;
+		}
 		await query(
 			`UPDATE todo_lists SET date=$1 WHERE todo_id=$2`, [toDate, id]
 		);
