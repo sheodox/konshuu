@@ -4,6 +4,10 @@ services:
     build:
       target: prod
     restart: always
+    volumes:
+      - type: bind
+        source: ./static
+        target: /usr/src/app/static
   postgres:
     restart: always
   redis:
