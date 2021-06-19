@@ -55,6 +55,7 @@
     "@types/passport-local": "^1.0.33",
     "@types/redis": "^2.8.29",
     "nodemon": "^2.0.4",
-    "prisma": "^2.25.0"
+    "prisma": "^2.25.0",
+    "webpack-manifest-plugin": "^3.1.1"
   }
 }

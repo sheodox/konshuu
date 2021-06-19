@@ -1,5 +1,6 @@
 const path = require('path'),
 	CopyPlugin = require('copy-webpack-plugin'),
+	{WebpackManifestPlugin} = require('webpack-manifest-plugin'),
 	isProd = process.argv.includes('production');
 
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
 		landing: './src/static/landing/landing.js'
 	},
 	output: {
-		filename: '[name].js',
+		filename: '[name].[contenthash].js',
 		path: path.resolve(__dirname, './static')
 	},
 	resolve: {
@@ -44,6 +45,7 @@ module.exports = {
 				//move fontawesome assets to where they can be served
 				{from: 'fontawesome-free/**/*.{woff,ttf,css,txt,woff2}', context: './node_modules/@fortawesome/'}
 			]
-		})
+		}),
+		new WebpackManifestPlugin(),
 	]
 };

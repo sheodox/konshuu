@@ -1,6 +1,6 @@
 require('dotenv').config();
 import {appLogger} from "./logger";
-import {errorHandler} from "./middleware/error-handler";
+import {errorHandler, safeAsyncRoute} from "./middleware/error-handler";
 import {requestId} from "./middleware/request-id";
 import {app} from "./server";
 import {AppRequest} from "./routes/auth";
@@ -10,6 +10,7 @@ import connectRedis from 'connect-redis';
 import {createClient as createRedisClient} from 'redis';
 import express from 'express';
 import './internal-server';
+const fs = require('fs').promises;
 const path = require('path'),
 	redisClient = createRedisClient({
 		host: 'redis'
@@ -43,14 +44,31 @@ app.use(authRouter);
 
 app.use('/todo', require('./routes/list'));
 
-app.get('/', (req: AppRequest, res) => {
+export async function getManifest() {
+	const manifestPath = path.join(process.cwd(), 'static/manifest.json');
+
+	if (process.env.NODE_ENV === 'production') {
+		return require(manifestPath);
+	}
+	//reload every time for development
+	return JSON.parse((await fs.readFile(manifestPath)).toString());
+}
+
+app.get('/', safeAsyncRoute(async (req, res) => {
+	const manifest = await getManifest();
 	if (req.user) {
-		res.render('index', {title: 'Konshuu'});
+		res.render('index', {
+			title: 'Konshuu',
+			manifest
+		});
 	}
 	else {
-		res.render('landing', {title: 'Konshuu'})
+		res.render('landing', {
+			title: 'Konshuu',
+			manifest
+		})
 	}
-})
+}));
 
 app.use(errorHandler(false));
 app.listen(4000, () => {
