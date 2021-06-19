@@ -19,9 +19,6 @@ services:
         target: /var/lib/postgresql/data
         volume:
           nocopy: true
-      - type: bind
-        source: ./config/postgres
-        target: /docker-entrypoint-initdb.d/
     restart: unless-stopped
   nginx:
     image: nginx:1.18
