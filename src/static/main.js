@@ -1,4 +1,4 @@
-import {styles} from "sheodox-ui";
+import '../../node_modules/sheodox-ui/style.scss';
 import './scss/style.scss';
 import KonshuuApp from './KonshuuApp.svelte';
 
