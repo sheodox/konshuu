@@ -5,9 +5,9 @@ ENV NODE_ENV=development
 CMD npx nodemon src/server/konshuu-server.ts
 
 FROM dev AS prod
-ENV NODE_ENV=production
 COPY package*.json ./
 RUN npm install
+ENV NODE_ENV=production
 COPY . .
 RUN npx prisma generate
 
