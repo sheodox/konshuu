@@ -27,7 +27,8 @@ async function findUserNoSensitiveData(where: Prisma.UserWhereUniqueInput) {
         select: {
             id: true,
             firstName: true,
-            lastName: true
+            lastName: true,
+            email: true
         }
     });
 }
@@ -109,7 +110,7 @@ router.post('/signup', validateBodySchema(signupSchema), safeAsyncRoute(async (r
     });
     authLogger.info(`New user signed up ${user.id}`);
 
-    const safeUser = findUserNoSensitiveData({id: user.id})
+    const safeUser = await findUserNoSensitiveData({id: user.id})
 
     req.login(safeUser, error => {
         if (error) {
