@@ -7,8 +7,6 @@ services:
     depends_on:
       - postgres
     restart: unless-stopped
-    ports:
-      - 4042:3000
   postgres:
     image: postgres:13-alpine
     environment:
@@ -25,5 +23,27 @@ services:
         source: ./config/postgres
         target: /docker-entrypoint-initdb.d/
     restart: unless-stopped
+  nginx:
+    image: nginx:1.18
+    ports:
+      - 80:80
+      - 443:443
+      - 4001:4001
+    depends_on:
+      - app
+    restart: unless-stopped
+    volumes:
+      - ./static:/var/www/static
+  redis:
+    image: redis:6-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - type: volume
+        source: redis
+        target: /data
+        volume:
+          nocopy: true
+    restart: unless-stopped
 volumes:
   postgres:
+  redis:

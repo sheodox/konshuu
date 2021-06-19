@@ -55,7 +55,7 @@
         height: 2px;
     }
     .draggingOver {
-        background: var(--panel-header-bg);
+        background: var(--shdx-gray-500);
     }
 </style>
 
@@ -80,8 +80,8 @@
     <progress value={completedCount} max={list.length} aria-label="todo completion for this list"></progress>
 	<div class="panel-body f-column">
 		<ul>
-            {#each list as todo (todo.todo_id)}
-				<TodoItem {todo} {listType} {date} />
+            {#each list as todo (todo.id)}
+				<TodoItem {todo} {listType} {calendarDate} />
             {/each}
 		</ul>
         {#if $hideCompleted && completedCount > 0}
@@ -102,7 +102,7 @@
     </div>
 </div>
 {#if showRescheduleModal}
-	<Reschedule bind:visible={showRescheduleModal} on:reschedule={reschedule} todoDate={date} {listType}/>
+	<Reschedule bind:visible={showRescheduleModal} on:reschedule={reschedule} {calendarDate} {listType}/>
 {/if}
 
 <script>
@@ -110,12 +110,12 @@
 	import Reschedule from './Reschedule.svelte';
 	import {Icon} from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
-    import {draggingOverList, getRescheduleDestination, serializeDate} from "./reschedule-utils";
+    import {draggingOverList, getRescheduleDestination} from "./reschedule-utils";
     export let listName = ''; //list display name
 	export let listType = ''; //list type
 	export let list = [];
-    export let date;
-    const listId = `${listName}-${date.getDay()}`
+    export let calendarDate;
+    const listId = `${listName}-${calendarDate.serialize()}`
     let newTodoText = '',
         showRescheduleModal = false;
 
@@ -126,22 +126,36 @@
         if (!text) {
         	return;
         }
-    	const enc = str => encodeURIComponent(str);
-		await fetch(`/list/add/${enc(date.getTime())}/${enc(listName)}/${enc(text)}`)
+		await fetch(`/todo`, {
+		    method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                list: listType,
+                text,
+                date: calendarDate.serialize()
+            })
+        })
 		await updateWeek();
         newTodoText = '';
     }
 
     async function reschedule(e) {
-        //serialize the date the same way the date input would use for the value
-        await fetch(`/list/reschedule/${listType}/${serializeDate(date)}/${serializeDate(getRescheduleDestination(e.detail))}`);
+        await fetch(`/todo/reschedule`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                list: listType,
+                from: calendarDate.serialize(),
+                to: getRescheduleDestination(e.detail).serialize()
+            })
+        });
         await updateWeek();
 	}
 
 	async function drop(event) {
         const todoId = event.dataTransfer.getData('todoId');
         $draggingOverList = null;
-        await fetch(`/list/reschedule-one/${encodeURIComponent(todoId)}/${serializeDate(date)}/`)
+        await fetch(`/todo/${todoId}/reschedule/${calendarDate.serialize()}/`)
         await updateWeek();
     }
     function dragOver(event) {

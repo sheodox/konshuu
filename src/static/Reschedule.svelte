@@ -27,7 +27,7 @@
 				Tomorrow
 			</button>
 		{/if}
-		{#if todoDate.getDay() !== 6 && listType !== 'work'}
+		{#if calendarDate.getDay() !== 6 && listType !== 'work'}
 			<button on:click={() => reschedule('saturday')}>
 				Saturday
 			</button>
@@ -51,14 +51,15 @@
 <script>
 	import {Modal} from 'sheodox-ui';
 	import {createEventDispatcher} from 'svelte';
+	import {CalendarDate} from "../server/shared/dates";
 
 	export let visible;
-	export let todoDate;
+	export let calendarDate;
 	export let listType;
 
 	const DAY_MS = 24 * 60 * 60 * 1000;
-	$: isToday = todoDate.toLocaleDateString() === new Date().toLocaleDateString()
-	$: isTomorrow = todoDate.toLocaleDateString() === new Date(Date.now() + DAY_MS).toLocaleDateString()
+	$: isToday = calendarDate.isToday();
+	$: isTomorrow = CalendarDate.fromDate(new Date(Date.now() + DAY_MS)).isTomorrow();
 
 	const dispatch = createEventDispatcher();
 	let customReschedule;

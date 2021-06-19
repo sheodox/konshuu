@@ -1,4 +1,5 @@
 import {writable} from 'svelte/store';
+import {CalendarDate} from "../server/shared/dates";
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -25,9 +26,11 @@ export const updateWeek = async () => {
 	const timestampInWeek = today.getTime() + offset * WEEK_MS;
 
 	try {
-		const newWeek = (await fetch(`/list/week/${encodeURIComponent(timestampInWeek)}`).then(res => res.json()))
+		const today = CalendarDate.fromDate(new Date(timestampInWeek)),
+			newWeek = await fetch(`/todo/week/${today.serialize()}`).then(res => res.json())
+
 		newWeek.days.forEach(day => {
-			day.date = new Date(day.date);
+			day.date = CalendarDate.deserialize(day.date);
 		})
 		updateError.set(null);
 		week.set(newWeek.days);
@@ -42,3 +45,11 @@ weekOffset.subscribe(o => {
 });
 setInterval(updateWeek, 10000);
 
+export function copyToClipboard(text) {
+	const el = document.createElement('textarea');
+	document.body.appendChild(el);
+	el.textContent = text;
+	el.select();
+	document.execCommand('copy');
+	el.remove();
+}

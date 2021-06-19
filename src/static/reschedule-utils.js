@@ -1,10 +1,9 @@
 import {writable} from "svelte/store";
+import {CalendarDate} from "../server/shared/dates";
 
 export const draggingOverList = writable(null);
 
 export const DAY_MS = 24 * 60 * 60 * 1000;
-
-export const serializeDate = date => `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 
 function getDateForDayIndexPastSunday(dayIndex) {
 	// example: find the date of the next monday
@@ -15,20 +14,23 @@ function getDateForDayIndexPastSunday(dayIndex) {
 }
 
 export function getRescheduleDestination(target) {
+	let date;
 	if (target === 'today') {
-		return new Date();
+		date = new Date();
 	}
 	else if (target === 'tomorrow') {
-		return new Date(Date.now() + DAY_MS);
+		date = new Date(Date.now() + DAY_MS);
 	}
 	else if (target === 'next-monday') {
-		return getDateForDayIndexPastSunday(8);
+		date = getDateForDayIndexPastSunday(8);
 	}
 	else if (target === 'saturday') {
-		return getDateForDayIndexPastSunday(6);
+		date = getDateForDayIndexPastSunday(6);
 	}
 	else { // the date input gives a date like 'YYYY-MM-DD'
 		const [year, month, day] = target.split('-');
-		return new Date(+year, +month - 1, +day);
+		date = new Date(+year, +month - 1, +day);
 	}
+
+	return CalendarDate.fromDate(date);
 }

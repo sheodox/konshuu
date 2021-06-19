@@ -6,7 +6,8 @@ module.exports = {
 	watch: !isProd,
 	mode: isProd ? 'production' : 'development',
 	entry: {
-		main: './static-src/main.js'
+		main: './src/static/main.js',
+		landing: './src/static/landing/landing.js'
 	},
 	output: {
 		filename: '[name].js',
@@ -35,11 +36,14 @@ module.exports = {
 		new CopyPlugin({
 			patterns:[{
 				from: '**/*.svg',
-				context: './static-src',
+				context: './src/static',
 			}, {
 				from: '**/*.png',
-				context: './static-src',
-			}]
+				context: './src/static',
+			},
+				//move fontawesome assets to where they can be served
+				{from: 'fontawesome-free/**/*.{woff,ttf,css,txt,woff2}', context: './node_modules/@fortawesome/'}
+			]
 		})
 	]
 };
