@@ -37,14 +37,8 @@ passport.use(new LocalStrategy(
     {usernameField: 'email', passwordField: 'password'},
     async (email, password, done) => {
         try {
-            const user = await prisma.user.findUnique({where: {email}});
-
-            if (!user) {
-                done(null, false, {message: 'Incorrect email or password.'});
-                return;
-            }
-
-            const passwordCorrect = await bcrypt.compare(password, user.passwordHash);
+            const user = await prisma.user.findUnique({where: {email}}),
+                passwordCorrect = user && await bcrypt.compare(password, user.passwordHash);
 
             if (passwordCorrect) {
                 authLogger.info(`User logged in ${user.id}`);
