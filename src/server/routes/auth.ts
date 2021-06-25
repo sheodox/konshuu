@@ -1,36 +1,17 @@
-import {User, Prisma} from '@prisma/client';
+import {User} from '@prisma/client';
 import bcrypt from 'bcrypt';
 import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
-import {Router, Response, NextFunction, Request} from "express";
+import {Request, Router} from "express";
 import {prisma} from "../prisma";
-import {validateBodySchema} from "../middleware/validate-body-schema";
-import Joi from "joi";
-import {safeAsyncRoute} from "../middleware/error-handler";
 import {authLogger} from "../logger";
+import {findUserNoSensitiveData} from "./user";
 
 export const router = Router();
 
 export interface AppRequest extends Request {
     user: User;
     requestId: string;
-}
-
-export const requireAuth = (req: AppRequest, res: Response, next: NextFunction) => {
-    !req.user ? next({status: 401}) : next();
-}
-
-async function findUserNoSensitiveData(where: Prisma.UserWhereUniqueInput) {
-    return await prisma.user.findUnique({
-        where,
-        // only select fields that isn't going to leak a password
-        select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true
-        }
-    });
 }
 
 passport.use(new LocalStrategy(
@@ -80,45 +61,3 @@ router.get('/logout', (req, res) => {
     res.redirect('/');
 });
 
-
-const signupSchema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().min(8).max(100).required(),
-    firstName: Joi.string().max(100).required(),
-    lastName: Joi.string().max(100).required()
-}).unknown(false)
-
-router.post('/signup', validateBodySchema(signupSchema), safeAsyncRoute(async (req, res, next) => {
-    const userWithSameEmail = await prisma.user.findUnique({
-        where: {
-            email: req.body.email
-        }
-    });
-
-    if (userWithSameEmail) {
-        return next({status: 400});
-    }
-
-    const passwordHash = await bcrypt.hash(req.body.password, 12);
-    const user = await prisma.user.create({
-        data: {
-            email: req.body.email,
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            passwordHash
-        }
-    });
-    authLogger.info(`New user signed up ${user.id}`);
-
-    const safeUser = await findUserNoSensitiveData({id: user.id})
-
-    req.login(safeUser, error => {
-        if (error) {
-            authLogger.error(`Error logging user in ${user.id}`, {error});
-            next({status: 500})
-        }
-        else {
-            res.send();
-        }
-    })
-}));

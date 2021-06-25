@@ -7,6 +7,10 @@ export function validateBodySchema(schema: Joi.Schema) {
         const {value, error} = schema.validate(req.body)
         if (error) {
             next({status: 400, error});
+
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Validation error', error);
+            }
         }
         else {
             req.body = value;

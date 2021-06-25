@@ -2,4 +2,6 @@ extends layout
 
 block content
     #app-root(class="f-column")
+    script.
+        window.user = !{user};
     script(src=manifest['main.js'])

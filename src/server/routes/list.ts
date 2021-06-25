@@ -1,10 +1,10 @@
 import {Router} from "express";
 import {CalendarDate, serializedCalendarDateSchema} from "../shared/dates";
-import {AppRequest, requireAuth} from "./auth";
 import {TodoListType, todoListTypes, TodoTracker} from "../controllers/todo";
 import Joi from "joi";
 import {validateBodySchema} from "../middleware/validate-body-schema";
 import {safeAsyncRoute} from "../middleware/error-handler";
+import {requireAuth} from "../middleware/require-auth";
 
 const router = Router();
 router.use(requireAuth);

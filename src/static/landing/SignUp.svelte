@@ -38,7 +38,7 @@
     async function signUp() {
         registering = true;
         try {
-            const res = await fetch('/signup', {
+            const res = await fetch('/user/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

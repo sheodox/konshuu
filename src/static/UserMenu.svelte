@@ -1,16 +1,16 @@
 <NavDropdown showOpenIcon={false}>
     <span slot="button">
-        <Icon icon="user-circle" />
+        <Icon icon="user-circle" noPadding={true} />
         <span class="sr-only">User Options</span>
     </span>
     <div slot="menu">
         <ul>
-<!--            <li>-->
-<!--                <button>-->
-<!--                    <Icon icon="cog" />-->
-<!--                    Settings-->
-<!--                </button>-->
-<!--            </li>-->
+            <li>
+                <Link href="/settings" classes="button">
+                    <Icon icon="cog" />
+                    Settings
+                </Link>
+            </li>
             <li>
                 <a href="/logout" class="button">
                     <Icon icon="sign-out-alt"/>
@@ -23,4 +23,5 @@
 
 <script>
     import {NavDropdown, Icon} from 'sheodox-ui';
+    import Link from "./Link.svelte";
 </script>
