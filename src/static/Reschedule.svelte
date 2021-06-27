@@ -51,15 +51,13 @@
 <script>
 	import {Modal} from 'sheodox-ui';
 	import {createEventDispatcher} from 'svelte';
-	import {CalendarDate} from "../server/shared/dates";
 
 	export let visible;
 	export let calendarDate;
 	export let listType;
 
-	const DAY_MS = 24 * 60 * 60 * 1000;
 	$: isToday = calendarDate.isToday();
-	$: isTomorrow = CalendarDate.fromDate(new Date(Date.now() + DAY_MS)).isTomorrow();
+	$: isTomorrow = calendarDate.isTomorrow();
 
 	const dispatch = createEventDispatcher();
 	let customReschedule;
