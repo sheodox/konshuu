@@ -92,7 +92,11 @@ export class TodoTracker {
         }
 
         await prisma.todo.updateMany({
-            where: {userId, list, date: fromDate.asDate()},
+            where: {
+                userId, list, date: fromDate.asDate(),
+                // if they've already been completed, there is no point in moving them
+                completed: false
+            },
             data: {
                 date: toDate.asDate()
             }
