@@ -108,7 +108,7 @@
 <script>
 	import {updateWeek, hideCompleted} from './todosStore';
 	import Reschedule from './Reschedule.svelte';
-	import {Icon} from 'sheodox-ui';
+	import {Icon, createAutoExpireToast} from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
     import {draggingOverList, getRescheduleDestination} from "./reschedule-utils";
     export let listName = ''; //list display name
@@ -126,7 +126,7 @@
         if (!text) {
         	return;
         }
-		await fetch(`/todo`, {
+		const res = await fetch(`/todo`, {
 		    method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
@@ -134,9 +134,19 @@
                 text,
                 date: calendarDate.serialize()
             })
-        })
-		await updateWeek();
-        newTodoText = '';
+        });
+
+		if (res.status === 200) {
+			await updateWeek();
+			newTodoText = '';
+		}
+		else {
+			createAutoExpireToast({
+				variant: 'error',
+				title: 'Error',
+				message: 'That todo is too long!'
+			});
+		}
     }
 
     async function reschedule(e) {
