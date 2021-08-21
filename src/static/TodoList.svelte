@@ -16,6 +16,7 @@
 	}
 	.panel-body {
 		flex: 1;
+		padding: 0 0.5rem 0.5rem 0.5rem;
 	}
 	input[type="text"] {
 		font-size: 0.8rem;
@@ -57,6 +58,8 @@
 	}
 	progress {
 		height: 2px;
+		margin-top: var(--shdx-spacing-2);
+		margin-bottom: var(--shdx-spacing-2);
 	}
 	.draggingOver {
 		background: var(--shdx-gray-500);
@@ -78,7 +81,6 @@
 			</button>
 		{/if}
 	</div>
-	<progress value={completedCount} max={list.length} aria-label="todo completion for this list" />
 	<div class="panel-body f-column">
 		<form on:submit|preventDefault={addTodo}>
 			<label class="new-todo input-group">
@@ -90,6 +92,7 @@
 				</button>
 			</label>
 		</form>
+		<progress value={completedCount} max={list.length} aria-label="todo completion for this list" />
 		<ul>
 			{#each list as todo (todo.id)}
 				<TodoItem {todo} {listType} {calendarDate} />
