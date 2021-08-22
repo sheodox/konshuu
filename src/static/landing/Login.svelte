@@ -6,7 +6,7 @@
 </style>
 
 <form class="f-column gap-3 m-3" on:submit|preventDefault={submit}>
-    <TextInput bind:value={email} id="login-email">Email</TextInput>
+    <TextInput bind:value={email} id="login-email" type="email">Email</TextInput>
     <TextInput bind:value={password} id="login-password" type="password">Password</TextInput>
     <button class="primary">Login</button>
 </form>

@@ -36,7 +36,7 @@
     "sass": "^1.32.5",
     "sass-loader": "^8.0.2",
     "serialize-javascript": "^5.0.1",
-    "sheodox-ui": "^0.14.0",
+    "sheodox-ui": "^0.14.1",
     "style-loader": "^1.2.1",
     "svelte": "^3.29.4",
     "svelte-loader": "^2.13.6",
