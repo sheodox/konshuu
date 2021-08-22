@@ -24,3 +24,7 @@ body, #app-root {
     overflow: auto;
 	max-height: 100vh;
 }
+:root {
+	// todo: use a scss preprocessor on svelte templates and make this a variable that's used in the media queries
+	--mobile-collapse: 600px;
+}

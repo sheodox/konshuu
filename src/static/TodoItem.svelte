@@ -22,6 +22,11 @@
 	ul {
 		list-style: none;
 	}
+	@media (max-width: 600px) {
+		li :global(label) {
+			font-size: var(--shdx-font-size-5);
+		}
+	}
 </style>
 
 {#if !todo.completed || !$hideCompleted}

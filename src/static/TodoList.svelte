@@ -20,7 +20,6 @@
 	}
 	input[type="text"] {
 		font-size: 0.8rem;
-		width: 100%;
 	}
 	.new-todo {
 		display: flex;
@@ -39,7 +38,8 @@
 		flex-shrink: 0;
 	}
 	form {
-		margin-bottom: 0.3rem;
+		margin: 0 auto var(--shdx-spacing-1) auto;
+		width: 100%;
 	}
 	.header {
 		display: flex;
@@ -63,6 +63,20 @@
 	}
 	.draggingOver {
 		background: var(--shdx-gray-500);
+	}
+	@media (max-width: 600px) {
+		form {
+			margin: 0 auto var(--shdx-spacing-1) auto;
+			width: 90%;
+		}
+		input[type="text"] {
+			font-size: var(--shdx-font-size-6);
+			margin: 0 auto;
+		}
+		.new-todo button {
+			font-size: var(--shdx-font-size-6);
+			padding: 0.5rem 1rem;
+		}
 	}
 </style>
 
