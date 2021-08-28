@@ -88,6 +88,7 @@
 		{listType}
 		{calendarDate}
 		on:reschedule={rescheduleTodo}
+		todoCount={1}
 	/>
 {/if}
 

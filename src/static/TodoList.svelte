@@ -120,7 +120,7 @@
 	</div>
 </div>
 {#if showRescheduleModal}
-	<Reschedule bind:visible={showRescheduleModal} on:reschedule={reschedule} {calendarDate} {listType} />
+	<Reschedule bind:visible={showRescheduleModal} on:reschedule={reschedule} {calendarDate} {listType} todoCount={list.length} />
 {/if}
 
 <script>
