@@ -64,18 +64,15 @@
 	.draggingOver {
 		background: var(--shdx-gray-500);
 	}
+	.mobile-add-todo-button {
+		display: none;
+	}
 	@media (max-width: 600px) {
 		form {
-			margin: 0 auto var(--shdx-spacing-1) auto;
-			width: 90%;
+			display: none;
 		}
-		input[type="text"] {
-			font-size: var(--shdx-font-size-6);
-			margin: 0 auto;
-		}
-		.new-todo button {
-			font-size: var(--shdx-font-size-6);
-			padding: 0.5rem 1rem;
+		.mobile-add-todo-button {
+			display: block;
 		}
 	}
 </style>
@@ -88,6 +85,10 @@
 >
 	<div class="header">
 		<h3>{listName}</h3>
+		<button class="mobile-add-todo-button" on:click={promptNewTodo}>
+			<Icon icon="plus" />
+			<span class="sr-only">Add todo</span>
+		</button>
 		{#if list.some((t) => !t.completed)}
 			<button on:click={() => (showRescheduleModal = true)} title="Reschedule unfinished todos">
 				<Icon icon="calendar-day" noPadding={true} />
@@ -96,7 +97,7 @@
 		{/if}
 	</div>
 	<div class="panel-body f-column">
-		<form on:submit|preventDefault={addTodo}>
+		<form on:submit|preventDefault={() => addTodo()}>
 			<label class="new-todo input-group">
 				<span class="sr-only">New todo</span>
 				<input bind:value={newTodoText} type="text" placeholder="new todo" class="new-todo-input" />
@@ -120,7 +121,13 @@
 	</div>
 </div>
 {#if showRescheduleModal}
-	<Reschedule bind:visible={showRescheduleModal} on:reschedule={reschedule} {calendarDate} {listType} todoCount={list.length} />
+	<Reschedule
+		bind:visible={showRescheduleModal}
+		on:reschedule={reschedule}
+		{calendarDate}
+		{listType}
+		todoCount={list.length}
+	/>
 {/if}
 
 <script>
@@ -141,8 +148,7 @@
 
 	$: completedCount = list.filter((todo) => todo.completed).length;
 
-	async function addTodo() {
-		const text = newTodoText.trim();
+	async function addTodo(text=newTodoText.trim()) {
 		if (!text) {
 			return;
 		}
@@ -159,13 +165,24 @@
 		if (res.status === 200) {
 			await updateWeek();
 			newTodoText = "";
-		} else {
+		} else if (res.status === 400) {
 			createAutoExpireToast({
 				variant: "error",
 				title: "Error",
 				message: "That todo is too long!",
 			});
+		} else {
+			createAutoExpireToast({
+				variant: "error",
+				title: "Error",
+				message: "Something went wrong adding that todo! Please try again.",
+			});
 		}
+	}
+
+	function promptNewTodo() {
+		const newTodo = prompt('New todo item:');
+		addTodo(newTodo);
 	}
 
 	async function reschedule(e) {
