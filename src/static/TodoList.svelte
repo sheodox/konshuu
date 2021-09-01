@@ -45,12 +45,13 @@
 		display: flex;
 		flex-direction: row;
 		flex: 0;
+		padding-bottom: 0;
 	}
 	.header h3 {
 		flex: 1;
 	}
 	.header button {
-		padding: 0 0.5rem;
+		padding: 0.25rem 0.5rem;
 	}
 	small {
 		color: gray;
@@ -86,7 +87,7 @@
 	<div class="header">
 		<h3>{listName}</h3>
 		<button class="mobile-add-todo-button" on:click={promptNewTodo}>
-			<Icon icon="plus" />
+			<Icon icon="plus" noPadding={true} />
 			<span class="sr-only">Add todo</span>
 		</button>
 		{#if list.some((t) => !t.completed)}
