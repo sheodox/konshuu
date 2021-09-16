@@ -124,7 +124,7 @@
 {#if showRescheduleModal}
 	<Reschedule
 		bind:visible={showRescheduleModal}
-		on:reschedule={reschedule}
+		on:reschedule={rescheduleAll}
 		{calendarDate}
 		{listType}
 		todoCount={list.length}
@@ -132,7 +132,7 @@
 {/if}
 
 <script>
-	import { updateWeek, hideCompleted } from "./todosStore";
+	import { hideCompleted, newTodo, rescheduleMany, reschedule } from "./todosStore";
 	import Reschedule from "./Reschedule.svelte";
 	import { Icon, createAutoExpireToast } from "sheodox-ui";
 	import TodoItem from "./TodoItem.svelte";
@@ -150,35 +150,12 @@
 	$: completedCount = list.filter((todo) => todo.completed).length;
 
 	async function addTodo(text=newTodoText.trim()) {
-		if (!text) {
-			return;
-		}
-		const res = await fetch(`/todo`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				list: listType,
-				text,
-				date: calendarDate.serialize(),
-			}),
+		newTodo({
+			list: listType,
+			text,
+			date: calendarDate.serialize(),
 		});
-
-		if (res.status === 200) {
-			await updateWeek();
-			newTodoText = "";
-		} else if (res.status === 400) {
-			createAutoExpireToast({
-				variant: "error",
-				title: "Error",
-				message: "That todo is too long!",
-			});
-		} else {
-			createAutoExpireToast({
-				variant: "error",
-				title: "Error",
-				message: "Something went wrong adding that todo! Please try again.",
-			});
-		}
+		newTodoText = '';
 	}
 
 	function promptNewTodo() {
@@ -186,24 +163,18 @@
 		addTodo(newTodo);
 	}
 
-	async function reschedule(e) {
-		await fetch(`/todo/reschedule`, {
-			method: "PATCH",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				list: listType,
-				from: calendarDate.serialize(),
-				to: getRescheduleDestination(e.detail).serialize(),
-			}),
+	function rescheduleAll(e) {
+		rescheduleMany({
+			list: listType,
+			from: calendarDate.serialize(),
+			to: getRescheduleDestination(e.detail).serialize(),
 		});
-		await updateWeek();
 	}
 
 	async function drop(event) {
 		const todoId = event.dataTransfer.getData("todoId");
 		$draggingOverList = null;
-		await fetch(`/todo/${todoId}/reschedule/${calendarDate.serialize()}/`);
-		await updateWeek();
+		reschedule(todoId, calendarDate.serialize());
 	}
 	function dragOver(event) {
 		$draggingOverList = listId;

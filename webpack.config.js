@@ -43,7 +43,8 @@ module.exports = {
 				context: './src/static',
 			},
 				//move fontawesome assets to where they can be served
-				{from: 'fontawesome-free/**/*.{woff,ttf,css,txt,woff2}', context: './node_modules/@fortawesome/'}
+				{from: 'fontawesome-free/**/*.{woff,ttf,css,txt,woff2}', context: './node_modules/@fortawesome/'},
+				{from: 'client-dist/socket.io.min.js', context: './node_modules/socket.io/'}
 			]
 		}),
 		new WebpackManifestPlugin(),

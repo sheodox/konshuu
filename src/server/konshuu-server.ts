@@ -3,13 +3,13 @@ import {appLogger} from "./logger";
 import serializeJavascript from "serialize-javascript";
 import {errorHandler, safeAsyncRoute} from "./middleware/error-handler";
 import {requestId} from "./middleware/request-id";
-import {app} from "./server";
+import {app, io, server} from "./server";
 import {AppRequest} from "./routes/auth";
 import passport from "passport";
 import expressSession from 'express-session';
 import connectRedis from 'connect-redis';
 import {createClient as createRedisClient} from 'redis';
-import express, {Response} from 'express';
+import express, {Response, Request, NextFunction} from 'express';
 import './internal-server';
 const fs = require('fs').promises;
 const path = require('path'),
@@ -27,6 +27,7 @@ const RedisStore = connectRedis(expressSession),
 	sessionStore = new RedisStore({client: redisClient}),
 	session = expressSession({
 		store: sessionStore,
+		name: 'konshuu.sid',
 		secret: process.env.SESSION_SECRET,
 		resave: false,
 		saveUninitialized: false,
@@ -36,6 +37,9 @@ const RedisStore = connectRedis(expressSession),
 		}
 	});
 app.use(session);
+io.use((socket, next) => {
+    session(socket.request as Request, {} as Response, next as NextFunction);
+})
 
 app.use(express.json());
 app.use(passport.initialize());
@@ -94,6 +98,6 @@ app.get('/', safeAsyncRoute(async (req, res) => {
 })
 
 app.use(errorHandler(false));
-app.listen(4000, () => {
+server.listen(4000, () => {
 	appLogger.info('Konshuu server started!');
 });

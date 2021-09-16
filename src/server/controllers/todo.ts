@@ -61,7 +61,7 @@ export class TodoTracker {
     }
     static async addTodo(userId: string, date: CalendarDate, list: TodoListType, text: string) {
         if (validList(list)) {
-            await prisma.todo.create({
+            return await prisma.todo.create({
                 data: {
                     userId,
                     list,
@@ -69,19 +69,28 @@ export class TodoTracker {
                     date: date.asDate()
                 }
             })
-
         }
     }
     static async updateTodo(userId: string, id: string, data: Partial<Todo>) {
-        await prisma.todo.updateMany({
-            where: {id, userId},
+		const thisTodo = await prisma.todo.findUnique({where: {id}});
+		if (thisTodo.userId !== userId) {
+			return;
+		}
+
+        return await prisma.todo.update({
+            where: {id},
             data
         })
     }
     static async removeTodo(userId: string, id: string) {
-        await prisma.todo.deleteMany({
-            where: {id, userId}
-        },)
+		const thisTodo = await prisma.todo.findUnique({where: {id}});
+		if (thisTodo && thisTodo.userId !== userId) {
+			return;
+		}
+
+        return await prisma.todo.delete({
+            where: {id}
+        })
     }
     static async reschedule(userId: string, list: TodoListType, fromDate: CalendarDate, toDate: CalendarDate) {
         if (!validList(list)) { return }
@@ -91,16 +100,31 @@ export class TodoTracker {
             return;
         }
 
+		const rescheduleFilter = {
+			userId, list, date: fromDate.asDate(),
+			// if they've already been completed, there is no point in moving them
+			completed: false
+		};
+
+		// we need to return the todos that have changed so batch deletes/adds can be
+		// emitted to the client and the UI can move the todos it needs. to do this we
+		// need to know what todos will be changed by the update (updateMany just
+		// returns a count of updated rows, not the rows themselves)
+		const updatingIds = (await prisma.todo.findMany({
+            where: rescheduleFilter,
+			select: {id: true}
+		})).map(({id}) => id);
+
         await prisma.todo.updateMany({
-            where: {
-                userId, list, date: fromDate.asDate(),
-                // if they've already been completed, there is no point in moving them
-                completed: false
-            },
+            where: rescheduleFilter,
             data: {
                 date: toDate.asDate()
             }
-        })
+        });
+
+		return await prisma.todo.findMany({
+			where: {id: {in: updatingIds}}
+		});
     }
     static async rescheduleOne(userId: string, id: string, toDate: CalendarDate) {
         const todo = await prisma.todo.findUnique({where: {id}});
@@ -109,10 +133,15 @@ export class TodoTracker {
         if (todo.userId !== userId || (todo.list === 'work' && toDate.isWeekend())) {
             return;
         }
-        await prisma.todo.update({
+        const updatedTodo = await prisma.todo.update({
             where: {id},
             data: {date: toDate.asDate()}
         })
+
+		return {
+			todo: updatedTodo,
+			fromDate: CalendarDate.fromDate(todo.date).serialize()
+		};
     }
 }
 

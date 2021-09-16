@@ -6,9 +6,9 @@
     }
 </style>
 
-{#if $updateError}
+{#if !$socketConnected}
     <div class="error-banner">
-        <p>{$updateError}</p>
+        <p>Error connecting to the Konshuu server.</p>
     </div>
 {/if}
 
@@ -38,7 +38,7 @@
 <Router />
 
 <script>
-	import {updateError} from './todosStore';
+	import {socketConnected} from './app-stores';
 	import page from 'page';
 	import {Header, Toasts} from 'sheodox-ui';
 	import UserMenu from "./UserMenu.svelte";

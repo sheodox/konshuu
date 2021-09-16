@@ -12,9 +12,12 @@ export class CalendarDate {
     private readonly date: number;
 
     constructor(year: number, month: number, day: number) {
-        this.year = year;
-        this.month = month;
-        this.date = day;
+		// throwing these into a Date object so if date math is done that crosses month/year boundaries
+		// we'll get the actual date, not something like the -2nd of September
+		const date = new Date(year, month, day);
+        this.year = date.getFullYear();
+        this.month = date.getMonth();
+        this.date = date.getDate();
     }
 
     asDate() {
@@ -36,6 +39,20 @@ export class CalendarDate {
     static fromDate(date: Date) {
         return new CalendarDate(date.getFullYear(), date.getMonth(), date.getDate());
     }
+
+	static fromDateWithWeekOffset(date: Date, weekOffset: number) {
+        return new CalendarDate(date.getFullYear(), date.getMonth(), date.getDate() + 7 * weekOffset);
+	}
+
+	static getStartOfWeekByOffset(date: Date, weekOffset: number) {
+		return CalendarDate.getStartOfWeekDate(CalendarDate.fromDateWithWeekOffset(date, weekOffset).asDate())
+	}
+
+
+	static getStartOfWeekDate(date: Date) {
+		const dayOfWeek = date.getDay();
+		return new CalendarDate(date.getFullYear(), date.getMonth(), date.getDate() - dayOfWeek);
+	}
 
     // get a CalendarDate instance from a serialized string
     static deserialize(serialized: string) {

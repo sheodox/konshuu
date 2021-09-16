@@ -51,7 +51,7 @@
 			</span>
 			<ul slot="menu">
 				<li>
-					<button class="a" on:click={removeTodo}>
+					<button class="a" on:click={() => deleteTodo(todo.id)}>
 						<Icon icon="times" />
 						Delete
 					</button>
@@ -93,7 +93,7 @@
 {/if}
 
 <script>
-	import { hideCompleted, updateWeek, copyToClipboard } from "./todosStore";
+	import { hideCompleted, copyToClipboard, updateTodo, deleteTodo, reschedule } from "./todosStore";
 	import { Icon, Checkbox, MenuButton } from "sheodox-ui";
 	import Reschedule from "./Reschedule.svelte";
 	import { getRescheduleDestination } from "./reschedule-utils";
@@ -105,46 +105,24 @@
 	let showReschedule = false,
 		li;
 
-	async function toggleTodo() {
-		await updateTodo({
+	function toggleTodo() {
+		updateTodo(todo.id, {
 			completed: todo.completed,
 		});
-		await updateWeek();
 	}
 
-	async function updateTodo(body) {
-		await fetch(`/todo/${todo.id}`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(body),
-		});
-	}
-
-	async function removeTodo() {
-		await fetch(`/todo/${todo.id}`, {
-			method: "DELETE",
-		});
-		await updateWeek();
-	}
-
-	async function editTodo() {
+	function editTodo() {
 		let newTodo = prompt("Enter a todo", todo.text);
 		if (newTodo && newTodo.trim()) {
-			await updateTodo({
+			updateTodo(todo.id, {
 				text: newTodo,
 			});
-			await updateWeek();
 		}
 	}
 
 	async function rescheduleTodo(e) {
 		//serialize the date the same way the date input would use for the value
-		await fetch(
-			`/todo/${todo.id}/reschedule/${getRescheduleDestination(
-				e.detail
-			).serialize()}`
-		);
-		await updateWeek();
+		reschedule(todo.id, getRescheduleDestination(e.detail).serialize());
 	}
 
 	function dragStart(event) {
