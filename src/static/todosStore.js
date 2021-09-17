@@ -12,6 +12,10 @@ export const week = writable([]);
 export const weekOffset = writable(0);
 export const hideCompleted = writable(false);
 export const startOfViewedWeek = writable(getStartOfWeek(0));
+export const today = writable(CalendarDate.now().serialize());
+setInterval(() => {
+	today.set(CalendarDate.now().serialize())
+}, 1000);
 
 function checkWeekStart() {
 	startOfViewedWeek.set(getStartOfWeek(get(weekOffset)));

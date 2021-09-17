@@ -27,7 +27,7 @@
 	}
 </style>
 
-<div class:today={day.date.isToday()} use:scrollToView={day.date.isToday()}>
+<div class:today={day.date.serialize() === $today} use:scrollToView={day.date.isToday()}>
 	<h2>{day.date.dayName()} {day.date.toLocaleDateString()}</h2>
 	<!-- don't show the work list on the weekend -->
 	{#if !day.date.isWeekend()}
@@ -38,6 +38,7 @@
 
 <script>
 	import { tick } from "svelte";
+	import {today} from './todosStore';
 	import TodoList from "./TodoList.svelte";
 
 	export let day;
