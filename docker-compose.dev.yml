@@ -14,10 +14,6 @@ services:
         source: ./config/nginx/nginx.conf
         target: /etc/nginx/nginx.conf
         read_only: true
-      - type: bind
-        source: ./public
-        target: /var/www/static
-        read_only: true
     logging:
       options:
         max-size: '1m'

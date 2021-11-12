@@ -32,7 +32,7 @@ services:
       - app
     restart: unless-stopped
     volumes:
-      - ./static:/var/www/static
+      - ./public:/var/www/static
   redis:
     image: redis:6-alpine
     command: redis-server --appendonly yes
