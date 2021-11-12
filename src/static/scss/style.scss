@@ -1,27 +1,30 @@
-h1, h2, h3 {
-    margin: 0;
+h1,
+h2,
+h3 {
+	margin: 0;
 }
 
 .panel {
-    border-radius: 0.2rem;
-    .header {
-        padding: 0.5rem;
-    }
-    .panel-body {
-        padding: 0.5rem;
-    }
+	border-radius: 0.2rem;
+	.header {
+		padding: 0.5rem;
+	}
+	.panel-body {
+		padding: 0.5rem;
+	}
 }
 
 label {
-    font-weight: normal;
+	font-weight: normal;
 }
 
-body, #app-root {
-    width: 100vw;
+body,
+#app-root {
+	width: 100vw;
 }
 
 #app-root {
-    overflow: auto;
+	overflow: auto;
 	max-height: 100vh;
 }
 :root {

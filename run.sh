@@ -8,6 +8,8 @@ fi
 
 deploy_target=$1
 
+./static-prebuild.sh
+
 if [[ $deploy_target == "dev" ]]; then
   docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 elif [[ $deploy_target  == "prod" ]]; then

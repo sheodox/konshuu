@@ -4,6 +4,8 @@ services:
     build:
       context: .
       target: dev
+    volumes:
+      - .env:/usr/src/app/.env
     depends_on:
       - postgres
     restart: unless-stopped

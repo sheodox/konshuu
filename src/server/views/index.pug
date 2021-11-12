@@ -1,8 +1,11 @@
 extends layout
 
 block content
-    #app-root(class="f-column")
-    script.
-        window.user = !{user};
-    script(src="/socket.io.min.js")
-    script(src=manifest['main.js'])
+	#app-root(class="f-column")
+	script.
+		window.__APP_BOOTSTRAP__ = !{appBootstrap}
+	if development
+		script(type="module", src="http://localhost:3000/@vite/client")
+		script(type="module", src="http://localhost:3000/src/static/main.ts")
+	else
+		script(src=`/${scriptEntryFile}`, type="module")

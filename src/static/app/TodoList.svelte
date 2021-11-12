@@ -18,7 +18,7 @@
 		flex: 1;
 		padding: 0 0.5rem 0.5rem 0.5rem;
 	}
-	input[type="text"] {
+	input[type='text'] {
 		font-size: 0.8rem;
 	}
 	.new-todo {
@@ -131,29 +131,32 @@
 	/>
 {/if}
 
-<script>
-	import { hideCompleted, newTodo, rescheduleMany, reschedule } from "./todosStore";
-	import Reschedule from "./Reschedule.svelte";
-	import { Icon, createAutoExpireToast } from "sheodox-ui";
-	import TodoItem from "./TodoItem.svelte";
-	import { draggingOverList, getRescheduleDestination } from "./reschedule-utils";
-	export let listName = ""; //list display name
-	export let listType = ""; //list type
-	export let list = [];
-	export let calendarDate;
+<script lang="ts">
+	import { hideCompleted, newTodo, rescheduleMany, reschedule } from './stores/todo';
+	import Reschedule from './Reschedule.svelte';
+	import { Icon } from 'sheodox-ui';
+	import TodoItem from './TodoItem.svelte';
+	import { draggingOverList, getRescheduleDestination } from './reschedule-utils';
+	import type { Todo, TodoListType } from '../../shared/types/todos';
+	import type { CalendarDate } from '../../shared/dates';
+
+	export let listName = ''; //list display name
+	export let listType: TodoListType; //list type
+	export let list: Todo[] = [];
+	export let calendarDate: CalendarDate;
 
 	const listId = `${listName}-${calendarDate.serialize()}`;
 
-	let newTodoText = "",
+	let newTodoText = '',
 		showRescheduleModal = false;
 
 	$: completedCount = list.filter((todo) => todo.completed).length;
 
-	async function addTodo(text=newTodoText.trim()) {
+	async function addTodo(text = newTodoText.trim()) {
 		newTodo({
 			list: listType,
 			text,
-			date: calendarDate.serialize(),
+			date: calendarDate,
 		});
 		newTodoText = '';
 	}
@@ -163,7 +166,7 @@
 		addTodo(newTodo);
 	}
 
-	function rescheduleAll(e) {
+	function rescheduleAll(e: CustomEvent<string>) {
 		rescheduleMany({
 			list: listType,
 			from: calendarDate.serialize(),
@@ -171,13 +174,14 @@
 		});
 	}
 
-	async function drop(event) {
-		const todoId = event.dataTransfer.getData("todoId");
+	async function drop(event: DragEvent) {
+		const todoId = event.dataTransfer.getData('todoId');
 		$draggingOverList = null;
 		reschedule(todoId, calendarDate.serialize());
 	}
-	function dragOver(event) {
+
+	function dragOver(event: DragEvent) {
 		$draggingOverList = listId;
-		event.dataTransfer.dropEffect = "move";
+		event.dataTransfer.dropEffect = 'move';
 	}
 </script>

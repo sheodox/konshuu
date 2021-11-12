@@ -1,7 +1,7 @@
 data
-
 .idea
 npm-debug.log
+node_modules
 Dockerfile*
 docker-compose*
 .dockerignore
@@ -9,4 +9,7 @@ docker-compose*
 .gitignore
 README.md
 LICENSE
-.vscode
+.env
+public
+public-dist
+dist

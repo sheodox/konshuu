@@ -36,26 +36,28 @@
 	<TodoList calendarDate={day.date} listName="Home" list={day.home} listType="home" />
 </div>
 
-<script>
-	import { tick } from "svelte";
-	import {today} from './todosStore';
-	import TodoList from "./TodoList.svelte";
+<script lang="ts">
+	import { tick } from 'svelte';
+	import { today } from './stores/todo';
+	import TodoList from './TodoList.svelte';
+	import type { DayTodos } from '../../shared/types/todos';
 
-	export let day;
+	export let day: DayTodos;
 
-	async function scrollToView(el) {
+	function scrollToView(el: HTMLElement, isToday: boolean) {
 		//if this Day is today, scroll it into view
-		if (day.date.isToday()) {
+		if (isToday) {
 			//the first time this component is rendered we won't be able to scroll any further to the right.
 			//e.x. if today is friday, the first time this function runs the Saturday element won't exist yet,
 			//so scrolling into view now wouldn't center correctly. as it's probably useful to be able to see
 			//the following days we want to wait for a tick to ensure all the days exist and horizontally scrolling
 			//can center this day element
-			await tick();
-			el.scrollIntoView({
-				behavior: "smooth",
-				block: "start",
-				inline: "center",
+			tick().then(() => {
+				el.scrollIntoView({
+					behavior: 'smooth',
+					block: 'start',
+					inline: 'center',
+				});
 			});
 		}
 	}

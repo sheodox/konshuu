@@ -2,7 +2,9 @@ version: '3.7'
 services:
   app:
     volumes:
-      - .:/usr/src/app
+      - ./public:/usr/src/app/public
+      - ./dist:/usr/src/app/dist
+      - ./src:/usr/src/app/src
   postgres:
     ports:
       - 51432:5432
@@ -13,10 +15,10 @@ services:
         target: /etc/nginx/nginx.conf
         read_only: true
       - type: bind
-        source: ./static
+        source: ./public
         target: /var/www/static
         read_only: true
     logging:
       options:
-        max-size: "1m"
-        max-file: "1"
+        max-size: '1m'
+        max-file: '1'

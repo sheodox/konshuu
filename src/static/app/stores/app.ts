@@ -1,6 +1,19 @@
 import { writable } from 'svelte/store';
+import { io } from 'socket.io-client';
+import { User } from '../../../shared/types/app';
 
-const breakpoint = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--mobile-collapse').replace('px', ''), 10);
+interface AppBootstrap {
+	__APP_BOOTSTRAP__: {
+		user: User;
+	};
+}
+
+export const appBootstrap = (window as unknown as AppBootstrap).__APP_BOOTSTRAP__;
+
+const breakpoint = parseInt(
+	getComputedStyle(document.documentElement).getPropertyValue('--mobile-collapse').replace('px', ''),
+	10
+);
 
 export const socket = io();
 export const isBelowMobileBreakpoint = writable(checkIfBelowBreakpoint());
@@ -15,5 +28,5 @@ function checkIfBelowBreakpoint() {
 }
 
 window.addEventListener('resize', () => {
-	isBelowMobileBreakpoint.set(checkIfBelowBreakpoint);
+	isBelowMobileBreakpoint.set(checkIfBelowBreakpoint());
 });

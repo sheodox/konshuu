@@ -76,13 +76,13 @@
 		<div>
 			<p>With Konshuu you can see all of your week's tasks at once for your work and personal life.</p>
 		</div>
-		<img src="/landing/example-list.png" alt="example screenshot" />
+		<img src="/example-list.png" alt="example screenshot" />
 	</section>
 </div>
 
-<script>
-	import Login from "./Login.svelte";
-	import SignUp from "./SignUp.svelte";
+<script lang="ts">
+	import Login from './Login.svelte';
+	import SignUp from './SignUp.svelte';
 
 	let showLogin = true;
 </script>

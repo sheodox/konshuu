@@ -1,5 +1,9 @@
 extends layout
 
 block content
-    #app-root
-    script(src=manifest["landing.js"])
+	#app-root
+	if development
+		script(type="module", src="http://localhost:3000/@vite/client")
+		script(type="module", src="http://localhost:3000/src/static/landing.ts")
+	else
+		script(src=`/${scriptEntryFile}`, type="module")

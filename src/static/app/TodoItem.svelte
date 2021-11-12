@@ -37,11 +37,7 @@
 		class:muted={todo.completed}
 		bind:this={li}
 	>
-		<Checkbox
-			bind:checked={todo.completed}
-			on:change={() => toggleTodo(todo.id)}
-			id={todo.id}
-		>
+		<Checkbox bind:checked={todo.completed} on:change={() => toggleTodo()} id={todo.id}>
 			{todo.text}
 		</Checkbox>
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
@@ -69,10 +65,7 @@
 					</button>
 				</li>
 				<li>
-					<button
-						class="a"
-						on:click={() => copyToClipboard(todo.text)}
-					>
+					<button class="a" on:click={() => copyToClipboard(todo.text)}>
 						<Icon icon="copy" />
 						Copy
 					</button>
@@ -83,27 +76,23 @@
 {/if}
 
 {#if showReschedule}
-	<Reschedule
-		bind:visible={showReschedule}
-		{listType}
-		{calendarDate}
-		on:reschedule={rescheduleTodo}
-		todoCount={1}
-	/>
+	<Reschedule bind:visible={showReschedule} {listType} {calendarDate} on:reschedule={rescheduleTodo} todoCount={1} />
 {/if}
 
-<script>
-	import { hideCompleted, copyToClipboard, updateTodo, deleteTodo, reschedule } from "./todosStore";
-	import { Icon, Checkbox, MenuButton } from "sheodox-ui";
-	import Reschedule from "./Reschedule.svelte";
-	import { getRescheduleDestination } from "./reschedule-utils";
+<script lang="ts">
+	import { hideCompleted, copyToClipboard, updateTodo, deleteTodo, reschedule } from './stores/todo';
+	import { Icon, Checkbox, MenuButton } from 'sheodox-ui';
+	import Reschedule from './Reschedule.svelte';
+	import { getRescheduleDestination } from './reschedule-utils';
+	import type { Todo, TodoListType } from '../../shared/types/todos';
+	import type { CalendarDate } from '../../shared/dates';
 
-	export let todo;
-	export let calendarDate;
-	export let listType;
+	export let todo: Todo;
+	export let calendarDate: CalendarDate;
+	export let listType: TodoListType;
 
 	let showReschedule = false,
-		li;
+		li: HTMLLIElement;
 
 	function toggleTodo() {
 		updateTodo(todo.id, {
@@ -112,7 +101,7 @@
 	}
 
 	function editTodo() {
-		let newTodo = prompt("Enter a todo", todo.text);
+		let newTodo = prompt('Enter a todo', todo.text);
 		if (newTodo && newTodo.trim()) {
 			updateTodo(todo.id, {
 				text: newTodo,
@@ -120,13 +109,12 @@
 		}
 	}
 
-	async function rescheduleTodo(e) {
+	async function rescheduleTodo(e: CustomEvent<string>) {
 		//serialize the date the same way the date input would use for the value
 		reschedule(todo.id, getRescheduleDestination(e.detail).serialize());
 	}
 
-	function dragStart(event) {
-		event.dataTransfer.setData("todoId", todo.id);
+	function dragStart(event: DragEvent) {
+		event.dataTransfer.setData('todoId', todo.id);
 	}
 </script>
-
