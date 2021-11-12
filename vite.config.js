@@ -13,10 +13,8 @@ export default defineConfig({
 	},
 	build: {
 		manifest: true,
+		outDir: './public-dist',
 		rollupOptions: {
-			output: {
-				dir: './public-dist',
-			},
 			input: {
 				main: '/src/static/main.ts',
 				landing: '/src/static/landing.ts',
