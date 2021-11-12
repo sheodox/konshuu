@@ -13,7 +13,6 @@ CMD npx nodemon dist/server/konshuu-server.js
 FROM dev AS prod
 ENV NODE_ENV=production
 COPY . .
-RUN npx prisma generate
 RUN npm run build:prod
 
 # before starting, copy all of the newly built frontend assets to the folder nginx serves
