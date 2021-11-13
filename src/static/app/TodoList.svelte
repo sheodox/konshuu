@@ -101,7 +101,14 @@
 		<form on:submit|preventDefault={() => addTodo()}>
 			<label class="new-todo input-group">
 				<span class="sr-only">New todo</span>
-				<input bind:value={newTodoText} type="text" placeholder="new todo" class="new-todo-input" />
+				<input
+					id={`new-todo-input-${calendarDate.getDay()}-${listType}`}
+					bind:value={newTodoText}
+					type="text"
+					placeholder="new todo"
+					class="new-todo-input"
+					on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
+				/>
 				<button disabled={!newTodoText}>
 					<Icon icon="plus" noPadding={true} />
 					<span class="sr-only">Add Todo</span>
@@ -132,7 +139,7 @@
 {/if}
 
 <script lang="ts">
-	import { hideCompleted, newTodo, rescheduleMany, reschedule } from './stores/todo';
+	import { hideCompleted, newTodo, rescheduleMany, reschedule, todoKeydown } from './stores/todo';
 	import Reschedule from './Reschedule.svelte';
 	import { Icon } from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';

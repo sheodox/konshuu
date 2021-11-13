@@ -161,3 +161,58 @@ export function copyToClipboard(text: string) {
 	document.execCommand('copy');
 	el.remove();
 }
+
+export function focusNewTodoInput(day: number, list: TodoListType = 'home') {
+	// mobile doesn't show the new todo input (it's just a "+" button that opens
+	// a prompt dialog), but this function is still used to at least scroll to the day
+	const dayElement = document.querySelector(`#todo-day-${day}`);
+	if (dayElement) {
+		dayElement.scrollIntoView({
+			behavior: 'smooth',
+			block: 'start',
+			inline: 'center',
+		});
+	}
+	const input = document.querySelector(`#new-todo-input-${day}-${list}`) as HTMLInputElement;
+	if (input) {
+		input.focus();
+	}
+}
+
+export function todoKeydown(e: KeyboardEvent, listName: TodoListType, date: CalendarDate) {
+	if (e.altKey && e.ctrlKey) {
+		const dayOfWeek = date.getDay(),
+			nextDay = dayOfWeek + 1,
+			prevDay = dayOfWeek - 1;
+
+		if (e.key === 'ArrowRight') {
+			if (nextDay === 7) {
+				nextWeek();
+				focusNewTodoInput(0, 'home');
+			} else if (nextDay === 1) {
+				// if you're coming from Sunday, the first list on Monday is 'work'
+				// keeping you focused on the second list suddenly when the first
+				// list was focused before feels really weird, send them to work
+				focusNewTodoInput(nextDay, 'work');
+			} else {
+				// for left/right we need to be able to skip to the home list if work is focused,
+				// as there's no home list for weekends
+				focusNewTodoInput(nextDay, nextDay === 6 ? 'home' : listName);
+			}
+		} else if (e.key === 'ArrowLeft') {
+			if (prevDay === -1) {
+				prevWeek();
+				focusNewTodoInput(6, 'home');
+			} else if (prevDay === 5) {
+				focusNewTodoInput(prevDay, 'work');
+			} else {
+				focusNewTodoInput(prevDay, prevDay === 0 ? 'home' : listName);
+			}
+		} else if (e.key === 'ArrowUp') {
+			// for up and down, there is only one list it can be no matter where you start
+			focusNewTodoInput(dayOfWeek, 'work');
+		} else if (e.key === 'ArrowDown') {
+			focusNewTodoInput(dayOfWeek, 'home');
+		}
+	}
+}
