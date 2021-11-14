@@ -1,36 +1,15 @@
 <style>
+	.todo-list {
+		margin-top: 2px;
+	}
 	h3 {
 		text-transform: capitalize;
 	}
-	div {
-		flex: 1;
-	}
 	ul {
-		padding: 0;
-		margin: 0;
 		list-style: none;
-		flex: 1;
-	}
-	.panel {
-		margin-top: 0.3rem;
 	}
 	.panel-body {
-		flex: 1;
 		padding: 0 0.5rem 0.5rem 0.5rem;
-	}
-	input[type='text'] {
-		font-size: 0.8rem;
-	}
-	.new-todo {
-		display: flex;
-		flex: 1;
-	}
-	.new-todo button {
-		font-size: 0.8rem;
-		padding: 0.4rem;
-	}
-	.new-todo input {
-		flex: 1;
 	}
 	form,
 	form label {
@@ -41,15 +20,6 @@
 		margin: 0 auto var(--shdx-spacing-1) auto;
 		width: 100%;
 	}
-	.header {
-		display: flex;
-		flex-direction: row;
-		flex: 0;
-		padding-bottom: 0;
-	}
-	.header h3 {
-		flex: 1;
-	}
 	.header button {
 		padding: 0.25rem 0.5rem;
 	}
@@ -59,10 +29,8 @@
 	}
 	progress {
 		height: 2px;
-		margin-top: var(--shdx-spacing-2);
-		margin-bottom: var(--shdx-spacing-2);
 	}
-	.draggingOver {
+	.dragging-over {
 		background: var(--shdx-gray-500);
 	}
 	.mobile-add-todo-button {
@@ -84,13 +52,13 @@
 </style>
 
 <div
-	class="panel todo-list f-column"
-	class:draggingOver={$draggingOverList === listId}
+	class="panel todo-list f-column f-1 mt-2"
+	class:dragging-over={$draggingOverList === listId}
 	on:drop|preventDefault={drop}
 	on:dragover|preventDefault={dragOver}
 >
-	<div class="header">
-		<h3>{listName}</h3>
+	<div class="header f-row f-0">
+		<h3 class="f-1">{listName}</h3>
 		<button class="mobile-add-todo-button" on:click={promptNewTodo}>
 			<Icon icon="plus" variant="icon-only" />
 			<span class="sr-only">Add todo</span>
@@ -102,26 +70,26 @@
 			</button>
 		{/if}
 	</div>
-	<div class="panel-body f-column">
+	<div class="panel-body f-column f-1">
 		<form on:submit|preventDefault={() => addTodo()}>
-			<label class="new-todo input-group">
+			<label class="f-row f-1 input-group">
 				<span class="sr-only">New todo</span>
 				<input
 					id={`new-todo-input-${calendarDate.getDay()}-${listType}`}
 					bind:value={newTodoText}
 					type="text"
 					placeholder="new todo"
-					class="new-todo-input"
+					class="shdx-font-size-2 f-1"
 					on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
 				/>
-				<button disabled={!newTodoText}>
+				<button disabled={!newTodoText} class="p-1 shdx-font-size-2">
 					<Icon icon="plus" variant="icon-only" />
 					<span class="sr-only">Add Todo</span>
 				</button>
 			</label>
 		</form>
-		<progress value={completedCount} max={list.length} aria-label="todo completion for this list" />
-		<ul>
+		<progress value={completedCount} max={list.length} aria-label="todo completion for this list" class="my-2" />
+		<ul class="m-0 p-0 f-1">
 			{#each list as todo (todo.id)}
 				<TodoItem {todo} {listType} {calendarDate} />
 			{/each}

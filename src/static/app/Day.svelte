@@ -1,11 +1,11 @@
 <style>
 	div {
-		display: flex;
-		flex-direction: column;
 		flex-grow: 1;
 		flex-shrink: 0;
 		flex-basis: 15rem;
 		overflow: auto;
+		/* allow the .today background to stick out as a 1px border */
+		padding: 1px;
 	}
 	.today {
 		background: var(--shdx-accent-gradient);
@@ -37,7 +37,7 @@
 
 <div
 	id="todo-day-{day.date.getDay()}"
-	class="m-1 p-1"
+	class="f-column"
 	class:today={day.date.serialize() === $today}
 	use:scrollToView={day.date.isToday()}
 >

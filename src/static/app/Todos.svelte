@@ -12,7 +12,7 @@
 	}
 </style>
 
-<div class="week">
+<div class="week gap-2 p-1">
 	{#each $week as day}
 		<Day {day} />
 	{/each}
