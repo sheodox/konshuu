@@ -68,6 +68,11 @@
 	.mobile-add-todo-button {
 		display: none;
 	}
+	.header button {
+		/* negative --shdx-spacing-1, used to prevent the header height 
+		jumping when the reschedule button show up */
+		margin-top: -4px;
+	}
 	@media (max-width: 600px) {
 		form {
 			display: none;
