@@ -87,12 +87,12 @@
 	<div class="header">
 		<h3>{listName}</h3>
 		<button class="mobile-add-todo-button" on:click={promptNewTodo}>
-			<Icon icon="plus" noPadding={true} />
+			<Icon icon="plus" variant="icon-only" />
 			<span class="sr-only">Add todo</span>
 		</button>
 		{#if list.some((t) => !t.completed)}
 			<button on:click={() => (showRescheduleModal = true)} title="Reschedule unfinished todos">
-				<Icon icon="calendar-day" noPadding={true} />
+				<Icon icon="calendar-day" variant="icon-only" />
 				<span class="sr-only">Reschedule undone todos</span>
 			</button>
 		{/if}
@@ -110,7 +110,7 @@
 					on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
 				/>
 				<button disabled={!newTodoText}>
-					<Icon icon="plus" noPadding={true} />
+					<Icon icon="plus" variant="icon-only" />
 					<span class="sr-only">Add Todo</span>
 				</button>
 			</label>

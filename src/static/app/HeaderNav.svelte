@@ -29,7 +29,7 @@
 	<li>
 		<button class="a" on:click={nextWeek}>
 			<span class="button-text"> Next Week </span>
-			<Icon icon="angle-right" />
+			<Icon icon="angle-right" variant="append" />
 		</button>
 	</li>
 {:else if $activeRoute === 'settings'}

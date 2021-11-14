@@ -43,7 +43,7 @@
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
 			<span slot="trigger">
 				<span class="sr-only">Menu</span>
-				<Icon icon="chevron-down" noPadding={true} />
+				<Icon icon="chevron-down" variant="icon-only" />
 			</span>
 			<ul slot="menu">
 				<li>

@@ -51,7 +51,7 @@
 		<button class="quick-week-switch m-0 mt-1" on:click={quickWeekSwitch}>
 			{#if day.date.getDay() === 6}
 				<span class="mr-1">Next Week</span>
-				<Icon icon="chevron-right" noPadding={true} />
+				<Icon icon="chevron-right" variant="icon-only" />
 			{:else}
 				<Icon icon="chevron-left" />
 				Last Week
