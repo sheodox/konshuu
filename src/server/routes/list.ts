@@ -2,14 +2,16 @@ import { CalendarDate } from '../../shared/dates.js';
 import { todoListTypes, TodoTracker } from '../controllers/todo.js';
 import Joi from 'joi';
 import { getUserIdFromSocket, io } from '../server.js';
-import { TodoListType } from '../../shared/types/todos.js';
+import { RescheduleManyOptions, TodoCreatable, TodoListType } from '../../shared/types/todos.js';
+import { deserialize, serialize } from '../../shared/serialization.js';
+import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
 
-const serializedCalendarDateSchema = Joi.string().pattern(/\d{4}-\d{2}-\d{2}/);
+const calendarDateSchema = Joi.object().instance(CalendarDate);
 
 const todoProperties = {
 		list: Joi.string().valid(...todoListTypes),
 		text: Joi.string().max(300),
-		date: serializedCalendarDateSchema,
+		date: calendarDateSchema,
 		completed: Joi.boolean(),
 	},
 	todoUpdateSchema = Joi.object({
@@ -22,16 +24,9 @@ const todoProperties = {
 	}).unknown(false),
 	rescheduleManySchema = Joi.object({
 		list: todoProperties.list.required(),
-		from: serializedCalendarDateSchema.required(),
-		to: serializedCalendarDateSchema.required(),
+		from: calendarDateSchema.required(),
+		to: calendarDateSchema.required(),
 	});
-
-const toDate = (str: string) => {
-	return CalendarDate.deserialize(str);
-};
-const serializeDate = (date: Date) => {
-	return CalendarDate.fromDate(date).serialize();
-};
 
 io.on('connection', (socket) => {
 	const userId = getUserIdFromSocket(socket);
@@ -40,6 +35,13 @@ io.on('connection', (socket) => {
 	}
 
 	const emitToUser = (eventName: string, ...args: any[]) => {
+		args = args.map((arg: any) => {
+			// prevent serializing of null, in JS it has a typeof 'object'
+			if (isOnajiSerializable(arg)) {
+				return serialize(arg);
+			}
+			return arg;
+		});
 		io.to(userId).emit(eventName, ...args);
 	};
 
@@ -57,48 +59,55 @@ io.on('connection', (socket) => {
 		}
 	}
 
-	socket.on('init', async (startOfWeek: string, done) => {
-		done(await TodoTracker.getWeek(userId, CalendarDate.deserialize(startOfWeek)));
+	const on = (eventName: string, listener: (...args: any[]) => any) => {
+		socket.on(eventName, (...args) => {
+			args = args.map((arg) => {
+				if (arg && isOnajiSerialized(arg)) {
+					return deserialize(arg);
+				}
+				return arg;
+			});
+			listener(...args);
+		});
+	};
+
+	on('init', async (startOfWeek: string) => {
+		emitToUser('todo:init', await TodoTracker.getWeek(userId, CalendarDate.deserialize(startOfWeek)));
 	});
 
-	socket.on('todo:new', async (todo) => {
+	on('todo:new', async (todo: TodoCreatable) => {
 		const { valid, value } = validateSchema(todo, todoNewSchema);
 		if (!valid) {
 			return;
 		}
 
-		const newTodo = await TodoTracker.addTodo(userId, CalendarDate.deserialize(value.date), value.list, value.text);
+		const newTodo = await TodoTracker.addTodo(userId, value.date, value.list, value.text);
 
 		emitToUser('todo:new', todo.date, newTodo);
 	});
 
-	socket.on('todo:update', async (id, todo) => {
+	on('todo:update', async (id, todo) => {
 		const { valid, value } = validateSchema(todo, todoUpdateSchema);
 		if (!valid) {
 			return;
 		}
 
 		const updatedTodo = await TodoTracker.updateTodo(userId, id, value);
-		emitToUser('todo:update', serializeDate(updatedTodo.date), updatedTodo);
+		emitToUser('todo:update', CalendarDate.fromDate(updatedTodo.date), updatedTodo);
 	});
 
-	socket.on('todo:delete', async (id) => {
+	on('todo:delete', async (id) => {
 		const deletedTodo = await TodoTracker.removeTodo(userId, id);
-		emitToUser('todo:delete', serializeDate(deletedTodo.date), deletedTodo.list, deletedTodo.id);
+		emitToUser('todo:delete', CalendarDate.fromDate(deletedTodo.date), deletedTodo.list, deletedTodo.id);
 	});
 
-	socket.on('todo:rescheduleMany', async (options) => {
+	on('todo:rescheduleMany', async (options: RescheduleManyOptions) => {
 		const { valid, value } = validateSchema(options, rescheduleManySchema);
 		if (!valid) {
 			return;
 		}
 
-		const todos = await TodoTracker.reschedule(
-			userId,
-			value.list as TodoListType,
-			toDate(value.from),
-			toDate(value.to)
-		);
+		const todos = await TodoTracker.reschedule(userId, value.list as TodoListType, value.from, value.to);
 
 		if (todos) {
 			emitToUser('todo:reschedule', {
@@ -106,20 +115,27 @@ io.on('connection', (socket) => {
 					return { date: value.from, list: todo.list, id: todo.id };
 				}),
 				add: todos.map((todo) => {
-					return { date: value.to, list: todo.list, todo };
+					return {
+						date: value.to,
+						list: todo.list,
+						todo: {
+							...todo,
+							date: CalendarDate.fromDate(todo.date),
+						},
+					};
 				}),
 			});
 		}
 	});
 
-	socket.on('todo:reschedule', async (todoId: string, to: string) => {
-		const update = await TodoTracker.rescheduleOne(userId, todoId, toDate(to));
+	on('todo:reschedule', async (todoId: string, to: CalendarDate) => {
+		const update = await TodoTracker.rescheduleOne(userId, todoId, to);
 
 		if (update) {
 			const { todo, fromDate } = update;
 			emitToUser('todo:reschedule', {
 				delete: [{ date: fromDate, list: todo.list, id: todo.id }],
-				add: [{ date: CalendarDate.fromDate(todo.date).serialize(), list: todo.list, todo }],
+				add: [{ date: CalendarDate.fromDate(todo.date), list: todo.list, todo }],
 			});
 		}
 	});

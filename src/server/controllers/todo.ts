@@ -1,7 +1,7 @@
 import { CalendarDate, Week } from '../../shared/dates.js';
 import { prisma } from '../prisma.js';
 import { Todo as PrismaTodo } from '@prisma/client';
-import type { TodoListType, DayTodosSerialized } from '../../shared/types/todos';
+import type { TodoListType, DayTodos } from '../../shared/types/todos';
 
 export const todoListTypes = ['work', 'home'];
 
@@ -9,7 +9,7 @@ function validList(list: string) {
 	return todoListTypes.includes(list);
 }
 
-function weekSkeleton(weekStart: Date): DayTodosSerialized[] {
+function weekSkeleton(weekStart: Date): DayTodos[] {
 	const week = new Week(weekStart);
 
 	return (
@@ -23,7 +23,7 @@ function weekSkeleton(weekStart: Date): DayTodosSerialized[] {
 			[6, 'Saturday'],
 		] as const
 	).map(([dayNum, dayName]) => {
-		return { date: week.getDayDate(dayNum).serialize(), dayName: dayName, work: [], home: [] };
+		return { date: week.getDayDate(dayNum), dayName: dayName, work: [], home: [] };
 	});
 }
 
@@ -46,10 +46,10 @@ export class TodoTracker {
 			});
 
 		// organize all the todos into lists associated with the days
-		const days = todosInWeek.reduce((week: DayTodosSerialized[], todoItem: PrismaTodo) => {
+		const days = todosInWeek.reduce((week: DayTodos[], todoItem: PrismaTodo) => {
 			week[todoItem.date.getDay()][todoItem.list as TodoListType].push({
 				...todoItem,
-				date: CalendarDate.fromDate(todoItem.date).serialize(),
+				date: CalendarDate.fromDate(todoItem.date),
 			});
 			return week;
 		}, weekSkeleton(weekStart));
@@ -145,7 +145,7 @@ export class TodoTracker {
 
 		return {
 			todo: updatedTodo,
-			fromDate: CalendarDate.fromDate(todo.date).serialize(),
+			fromDate: CalendarDate.fromDate(todo.date),
 		};
 	}
 }

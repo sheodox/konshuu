@@ -56,6 +56,10 @@ export class CalendarDate {
 		return new CalendarDate(segments[0], segments[1] - 1, segments[2]);
 	}
 
+	isSameDate(otherDate: CalendarDate) {
+		return this.serialize() === otherDate.serialize();
+	}
+
 	serialize() {
 		const pad = (num: number) => ('' + num).padStart(2, '0');
 
@@ -85,9 +89,6 @@ export class CalendarDate {
 	isWeekend() {
 		const day = this.asDate().getDay();
 		return day === 0 || day === 6;
-	}
-	toJSON() {
-		return this.serialize();
 	}
 }
 

@@ -34,6 +34,7 @@
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "nanoid": "^3.1.23",
+    "onaji": "^0.1.1",
     "page": "^1.11.6",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
@@ -51,6 +52,7 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.6",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
     "@tsconfig/svelte": "^2.0.1",
     "@types/bcrypt": "^5.0.0",

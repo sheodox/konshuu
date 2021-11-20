@@ -19,21 +19,22 @@
 			When should {todoCount === 1 ? 'this todo' : 'these todos'} be rescheduled to?
 		</p>
 		{#if !isToday}
-			<button on:click={() => reschedule('today')}> Today </button>
+			<button on:click={() => reschedule('today')}>Today</button>
 		{/if}
 		{#if !isTomorrow}
-			<button on:click={() => reschedule('tomorrow')}> Tomorrow </button>
+			<button on:click={() => reschedule('tomorrow')}>Tomorrow</button>
 		{/if}
 		{#if calendarDate.getDay() !== 6 && listType !== 'work'}
-			<button on:click={() => reschedule('saturday')}> Saturday </button>
+			<button on:click={() => reschedule('saturday')}>Saturday</button>
 		{/if}
-		<button on:click={() => reschedule('next-monday')}> Next Monday </button>
+		<button on:click={() => reschedule('next-week')}>Next Week</button>
+		<button on:click={() => reschedule('next-monday')}>Next Monday</button>
 		<br />
 		<p>Or a custom date...</p>
 		<form on:submit|preventDefault={() => reschedule(customReschedule)}>
 			<label class="input-group">
 				<input type="date" bind:value={customReschedule} required />
-				<button disabled={!customReschedule}> Reschedule </button>
+				<button disabled={!customReschedule}>Reschedule</button>
 			</label>
 		</form>
 	</div>
@@ -53,11 +54,11 @@
 	$: isToday = calendarDate.isToday();
 	$: isTomorrow = calendarDate.isTomorrow();
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{ reschedule: { to: string; originalDate: CalendarDate } }>();
 	let customReschedule: string;
 
 	function reschedule(to: string) {
-		dispatch('reschedule', to);
+		dispatch('reschedule', { to, originalDate: calendarDate });
 		visible = false;
 	}
 </script>

@@ -81,6 +81,7 @@
 					placeholder="new todo"
 					class="shdx-font-size-2 f-1"
 					on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
+					autocomplete="off"
 				/>
 				<button disabled={!newTodoText} class="p-1 shdx-font-size-2">
 					<Icon icon="plus" variant="icon-only" />
@@ -146,18 +147,18 @@
 		addTodo(newTodo);
 	}
 
-	function rescheduleAll(e: CustomEvent<string>) {
+	function rescheduleAll(e: CustomEvent<{ originalDate: CalendarDate; to: string }>) {
 		rescheduleMany({
 			list: listType,
-			from: calendarDate.serialize(),
-			to: getRescheduleDestination(e.detail).serialize(),
+			from: calendarDate,
+			to: getRescheduleDestination(e.detail.to, e.detail.originalDate),
 		});
 	}
 
 	async function drop(event: DragEvent) {
 		const todoId = event.dataTransfer.getData('todoId');
 		$draggingOverList = null;
-		reschedule(todoId, calendarDate.serialize());
+		reschedule(todoId, calendarDate);
 	}
 
 	function dragOver(event: DragEvent) {

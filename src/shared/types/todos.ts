@@ -9,10 +9,6 @@ export interface Todo extends Omit<RawTodo, 'date'> {
 export type TodoCreatable = Pick<Todo, 'text' | 'list' | 'date'>;
 export type TodoEditable = Partial<Pick<Todo, 'text' | 'list' | 'date' | 'completed'>>;
 
-export interface TodoSerialized extends Omit<RawTodo, 'date'> {
-	date: string;
-}
-
 export type TodoListType = 'work' | 'home';
 
 export interface DayTodos {
@@ -22,26 +18,26 @@ export interface DayTodos {
 	home: Todo[];
 }
 
-export interface DayTodosSerialized extends Omit<DayTodos, 'date' | 'work' | 'home'> {
-	date: string;
-	work: TodoSerialized[];
-	home: TodoSerialized[];
-}
-
 export interface DayTodosData {
-	days: DayTodosSerialized[];
+	days: DayTodos[];
 }
 
 export interface RescheduleDeleteCommand {
 	id: string;
-	date: string;
+	date: CalendarDate;
 	list: TodoListType;
 }
 
 export interface RescheduleAddCommand {
 	todo: Todo;
-	date: string;
+	date: CalendarDate;
 	list: TodoListType;
+}
+
+export interface RescheduleManyOptions {
+	list: TodoListType;
+	from: CalendarDate;
+	to: CalendarDate;
 }
 
 export interface RescheduleBatch {

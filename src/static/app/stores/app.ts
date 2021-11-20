@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store';
 import { io } from 'socket.io-client';
 import { User } from '../../../shared/types/app';
+import { isOnajiSerialized } from 'onaji';
+import { serialize, deserialize } from '../../../shared/serialization';
 
 interface AppBootstrap {
 	__APP_BOOTSTRAP__: {
@@ -19,6 +21,31 @@ export const socket = io();
 export const isBelowMobileBreakpoint = writable(checkIfBelowBreakpoint());
 
 export const socketConnected = writable(true);
+
+export const envoy = {
+	on: (eventName: string, listener: (...args: any[]) => any) => {
+		socket.on(eventName, (...args) => {
+			args = args.map((arg) => {
+				if (isOnajiSerialized(arg)) {
+					return deserialize(arg);
+				}
+				return arg;
+			});
+			listener(...args);
+		});
+	},
+	emit: (eventName: string, ...args: any[]) => {
+		args = args.map((arg: any) => {
+			// prevent serializing of null, in JS it has a typeof 'object'
+			if (arg && typeof arg === 'object') {
+				return serialize(arg);
+			}
+			return arg;
+		});
+
+		socket.emit(eventName, ...args);
+	},
+};
 
 socket.on('connect', () => socketConnected.set(true));
 socket.on('disconnect', () => socketConnected.set(false));

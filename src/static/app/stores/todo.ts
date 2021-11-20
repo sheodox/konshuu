@@ -1,15 +1,15 @@
 import { writable, get } from 'svelte/store';
 import { CalendarDate } from '../../../shared/dates';
-import { socket } from './app';
+import { socket, envoy } from './app';
 import type {
 	Todo,
 	DayTodosData,
 	DayTodos,
 	TodoListType,
 	RescheduleBatch,
-	TodoSerialized,
 	TodoCreatable,
 	TodoEditable,
+	RescheduleManyOptions,
 } from '../../../shared/types/todos';
 
 function getStartOfWeek(offsetWeeks: number) {
@@ -30,25 +30,8 @@ function checkWeekStart() {
 }
 setInterval(checkWeekStart, 10 * 1000);
 
-function deserializeTodo(todo: TodoSerialized): Todo {
-	return {
-		...todo,
-		date: CalendarDate.deserialize(todo.date),
-	};
-}
-
 function initTodos() {
-	socket.emit('init', get(startOfViewedWeek), (todos: DayTodosData) => {
-		const days = todos.days.map((day) => {
-			return {
-				...day,
-				date: CalendarDate.deserialize(day.date),
-				home: day.home.map(deserializeTodo),
-				work: day.work.map(deserializeTodo),
-			};
-		});
-		week.set(days);
-	});
+	socket.emit('init', get(startOfViewedWeek));
 }
 // reinit whenever we change week, or the date rolls over
 startOfViewedWeek.subscribe(() => {
@@ -60,7 +43,7 @@ weekOffset.subscribe((offset) => {
 });
 
 // initialize when the page loads, and any time the websocket reconnects (so we refresh any stale data)
-socket.on('connect', initTodos);
+envoy.on('connect', initTodos);
 
 function sortListChronologically(array: Todo[]) {
 	array.sort((a, b) => {
@@ -68,9 +51,9 @@ function sortListChronologically(array: Todo[]) {
 	});
 }
 
-const processNew = (date: string, newTodo: Todo) => {
+const processNew = (date: CalendarDate, newTodo: Todo) => {
 	week.update((week) => {
-		const matchingDay = week.find((day) => day.date.serialize() === date),
+		const matchingDay = week.find((day) => day.date.isSameDate(date)),
 			list = newTodo.list as TodoListType;
 
 		if (matchingDay) {
@@ -80,11 +63,16 @@ const processNew = (date: string, newTodo: Todo) => {
 		return [...week];
 	});
 };
-socket.on('todo:new', processNew);
 
-socket.on('todo:update', (date: string, updatedTodo: Todo) => {
+envoy.on('todo:init', (todos: DayTodosData) => {
+	week.set(todos.days);
+});
+
+envoy.on('todo:new', processNew);
+
+envoy.on('todo:update', (date: CalendarDate, updatedTodo: Todo) => {
 	week.update((week) => {
-		const matchingDay = week.find((day) => day.date.serialize() === date);
+		const matchingDay = week.find((day) => day.date.isSameDate(date));
 
 		if (matchingDay) {
 			const list = matchingDay[updatedTodo.list as TodoListType],
@@ -96,9 +84,9 @@ socket.on('todo:update', (date: string, updatedTodo: Todo) => {
 	});
 });
 
-const processDelete = (date: string, list: TodoListType, id: string) => {
+const processDelete = (date: CalendarDate, list: TodoListType, id: string) => {
 	week.update((week) => {
-		const matchingDay = week.find((day) => day.date.serialize() === date);
+		const matchingDay = week.find((day) => day.date.isSameDate(date));
 
 		if (matchingDay) {
 			matchingDay[list] = matchingDay[list].filter((todo) => todo.id !== id);
@@ -106,10 +94,10 @@ const processDelete = (date: string, list: TodoListType, id: string) => {
 		return week;
 	});
 };
-socket.on('todo:delete', processDelete);
+envoy.on('todo:delete', processDelete);
 
-socket.on('todo:reschedule', (batch: RescheduleBatch) => {
-	batch.delete.forEach(({ date, list, id }: { date: string; list: TodoListType; id: string }) => {
+envoy.on('todo:reschedule', (batch: RescheduleBatch) => {
+	batch.delete.forEach(({ date, list, id }) => {
 		processDelete(date, list, id);
 	});
 
@@ -123,23 +111,23 @@ export const newTodo = (todoData: TodoCreatable) => {
 		return;
 	}
 
-	socket.emit('todo:new', todoData);
+	envoy.emit('todo:new', todoData);
 };
 
 export const updateTodo = (id: string, todoData: TodoEditable) => {
-	socket.emit('todo:update', id, todoData);
+	envoy.emit('todo:update', id, todoData);
 };
 
 export const deleteTodo = (id: string) => {
-	socket.emit('todo:delete', id);
+	envoy.emit('todo:delete', id);
 };
 
-export const reschedule = (id: string, to: string) => {
-	socket.emit('todo:reschedule', id, to);
+export const reschedule = (id: string, to: CalendarDate) => {
+	envoy.emit('todo:reschedule', id, to);
 };
 
-export const rescheduleMany = (options: { list: TodoListType; from: string; to: string }) => {
-	socket.emit('todo:rescheduleMany', options);
+export const rescheduleMany = (options: RescheduleManyOptions) => {
+	envoy.emit('todo:rescheduleMany', options);
 };
 
 export const nextWeek = () => {
