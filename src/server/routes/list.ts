@@ -34,15 +34,21 @@ io.on('connection', (socket) => {
 		return;
 	}
 
-	const emitToUser = (eventName: string, ...args: any[]) => {
-		args = args.map((arg: any) => {
+	function serializeArgs(args: any[]) {
+		return args.map((arg: any) => {
 			// prevent serializing of null, in JS it has a typeof 'object'
 			if (isOnajiSerializable(arg)) {
 				return serialize(arg);
 			}
 			return arg;
 		});
-		io.to(userId).emit(eventName, ...args);
+	}
+
+	const emitToSocket = (eventName: string, ...args: any[]) => {
+		socket.emit(eventName, ...serializeArgs(args));
+	};
+	const emitToUser = (eventName: string, ...args: any[]) => {
+		io.to(userId).emit(eventName, ...serializeArgs(args));
 	};
 
 	function validateSchema(data: any, schema: Joi.Schema) {
@@ -72,7 +78,9 @@ io.on('connection', (socket) => {
 	};
 
 	on('init', async (startOfWeek: string) => {
-		emitToUser('todo:init', await TodoTracker.getWeek(userId, CalendarDate.deserialize(startOfWeek)));
+		// emit this only to the single socket, not all sockets for this user, or each session
+		// can't page individually, as paging in one tab/device will page all of them
+		emitToSocket('todo:init', await TodoTracker.getWeek(userId, CalendarDate.deserialize(startOfWeek)));
 	});
 
 	on('todo:new', async (todo: TodoCreatable) => {
