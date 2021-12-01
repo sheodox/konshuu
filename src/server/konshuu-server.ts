@@ -71,7 +71,7 @@ app.get(
 		} else {
 			const { scriptEntryFile, cssImports } = await getManifest('src/static/landing.ts');
 			res.render('landing', {
-				title: 'Konshuu',
+				title: 'Konshuu - Weekly planning at a glance',
 				scriptEntryFile,
 				cssImports,
 				development: process.env.NODE_ENV === 'development',
@@ -83,7 +83,7 @@ app.get(
 //for each allowed front end route, render the home page if logged in, otherwise redirect
 //to the login page at the proper `/` route so they don't get some content that doesn't
 //match the url
-['/settings'].forEach((route) => {
+['/settings', '/about'].forEach((route) => {
 	app.get(
 		route,
 		safeAsyncRoute(async (req, res) => {

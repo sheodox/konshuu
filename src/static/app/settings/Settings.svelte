@@ -11,26 +11,27 @@
 	}
 </style>
 
-<div id="settings">
-	<h1>Settings</h1>
+<SecondaryLayout title="Settings">
+	<div id="settings">
+		<div class="mb-3">
+			<TabList bind:selectedTab {tabs} />
+		</div>
 
-	<div class="mb-3">
-		<TabList bind:selectedTab {tabs} />
+		<Tab tabId="profile" {selectedTab}>
+			<SettingsProfile />
+		</Tab>
+
+		<Tab tabId="password" {selectedTab}>
+			<SettingsPassword />
+		</Tab>
 	</div>
-
-	<Tab tabId="profile" {selectedTab}>
-		<SettingsProfile />
-	</Tab>
-
-	<Tab tabId="password" {selectedTab}>
-		<SettingsPassword />
-	</Tab>
-</div>
+</SecondaryLayout>
 
 <script lang="ts">
 	import { TabList, Tab } from 'sheodox-ui';
 	import SettingsProfile from './SettingsProfile.svelte';
 	import SettingsPassword from './SettingsPassword.svelte';
+	import SecondaryLayout from '../SecondaryLayout.svelte';
 
 	const tabs = [
 		{

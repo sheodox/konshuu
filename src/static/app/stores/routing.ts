@@ -10,5 +10,6 @@ function setRoute(routeId: string) {
 }
 
 page(`/settings`, setRoute('settings'));
+page(`/about`, setRoute('about'));
 page(`/`, setRoute('app'));
 page();

@@ -32,9 +32,12 @@
 			<Icon icon="angle-right" variant="append" />
 		</button>
 	</li>
-{:else if $activeRoute === 'settings'}
+{:else}
 	<li>
-		<Link classes="a" href="/">Todos</Link>
+		<Link classes="a" href="/">
+			<Icon icon="calendar-week" />
+			Todo Planner
+		</Link>
 	</li>
 {/if}
 

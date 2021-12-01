@@ -7,10 +7,15 @@
 	section {
 		padding-top: var(--shdx-spacing-10);
 		padding-bottom: var(--shdx-spacing-10);
-		width: 100vw;
+		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		padding-left: var(--shdx-spacing-4);
+		padding-right: var(--shdx-spacing-4);
+	}
+	p {
+		font-size: var(--shdx-font-size-4);
 	}
 	.hero {
 		flex-direction: row;
@@ -27,6 +32,10 @@
 		max-width: 40rem;
 		padding: var(--shdx-spacing-4);
 	}
+	h2 {
+		font-size: var(--shdx-font-size-9);
+		margin-bottom: 0;
+	}
 	@media (max-width: 800px) {
 		.hero {
 			flex-direction: column;
@@ -41,6 +50,13 @@
 		}
 		.hero-subtitle {
 			font-size: var(--shdx-font-size-6);
+		}
+		p {
+			font-size: var(--shdx-font-size-3);
+		}
+		h2 {
+			font-size: var(--shdx-font-size-7);
+			margin-bottom: 0;
 		}
 	}
 	section:nth-of-type(even) {

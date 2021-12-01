@@ -12,6 +12,12 @@
 				</Link>
 			</li>
 			<li>
+				<Link href="/about" classes="button">
+					<Icon icon="address-card" />
+					About
+				</Link>
+			</li>
+			<li>
 				<a href="/logout" class="button">
 					<Icon icon="sign-out-alt" />
 					Logout
