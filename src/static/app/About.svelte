@@ -20,8 +20,16 @@
 		</p>
 
 		<h2>Why "Konshuu"</h2>
-
 		<p>Konshuu is the pronunciation of the Japanese word 今週 which means "this week".</p>
+
+		<h2>Support Development</h2>
+		<p>
+			If you'd like to donate to support development of Konshuu you can tip me on <a
+				href="https://www.buymeacoffee.com/sheodox">Buy me a coffee</a
+			>. Any support is appreciated, either financially or by sharing the site with your friends!
+		</p>
+
+		<p><strong>Have a great week!</strong></p>
 	</div>
 </SecondaryLayout>
 
