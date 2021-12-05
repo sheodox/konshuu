@@ -8,6 +8,8 @@ services:
       - .env:/usr/src/app/.env
     depends_on:
       - postgres
+    ports:
+      - 5043:4001
     restart: unless-stopped
   postgres:
     image: postgres:13-alpine
@@ -24,10 +26,6 @@ services:
     restart: unless-stopped
   nginx:
     image: nginx:1.18
-    ports:
-      - 80:80
-      - 443:443
-      - 4001:4001
     depends_on:
       - app
     restart: unless-stopped
