@@ -5,6 +5,7 @@ import { getUserIdFromSocket, io } from '../server.js';
 import { RescheduleManyOptions, TodoCreatable, TodoListType } from '../../shared/types/todos.js';
 import { deserialize, serialize } from '../../shared/serialization.js';
 import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
+import metrics from '../metrics.js';
 
 const calendarDateSchema = Joi.object().instance(CalendarDate);
 
@@ -90,6 +91,7 @@ io.on('connection', (socket) => {
 		}
 
 		const newTodo = await TodoTracker.addTodo(userId, value.date, value.list, value.text);
+		metrics.todos.inc();
 
 		emitToUser('todo:new', todo.date, newTodo);
 	});
@@ -106,6 +108,7 @@ io.on('connection', (socket) => {
 
 	on('todo:delete', async (id) => {
 		const deletedTodo = await TodoTracker.removeTodo(userId, id);
+		metrics.todos.dec();
 		emitToUser('todo:delete', CalendarDate.fromDate(deletedTodo.date), deletedTodo.list, deletedTodo.id);
 	});
 

@@ -8,9 +8,15 @@ import jwt from 'jsonwebtoken';
 import { errorHandler } from './middleware/error-handler.js';
 import { requestId } from './middleware/request-id.js';
 import { appLogger, remoteTransport } from './logger.js';
+import { register } from './metrics.js';
 
 const app = express();
 app.use(requestId);
+
+app.get('/metrics', async (req, res) => {
+	res.set('Content-Type', 'text/plain');
+	res.send(await register.metrics());
+});
 
 app.use((req, res, next) => {
 	const token = req.header('Authorization')?.replace('Bearer ', '');

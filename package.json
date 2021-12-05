@@ -39,6 +39,7 @@
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "pg": "^8.2.1",
+    "prom-client": "^14.0.1",
     "pug": "^3.0.2",
     "redis": "^3.1.2",
     "sass": "^1.32.5",

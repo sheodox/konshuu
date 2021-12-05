@@ -7,6 +7,7 @@ import bcrypt from 'bcrypt';
 import { authLogger } from '../logger.js';
 import { Prisma } from '@prisma/client';
 import { requireAuth } from '../middleware/require-auth.js';
+import metrics from '../metrics.js';
 
 export const router = Router();
 
@@ -71,6 +72,7 @@ router.post(
 				},
 			});
 		authLogger.info(`New user signed up ${user.id}`);
+		metrics.users.inc();
 
 		const safeUser = await findUserNoSensitiveData({ id: user.id });
 
