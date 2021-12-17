@@ -35,12 +35,15 @@
 		class="todo-item f-row align-items-start px-1"
 		draggable="true"
 		on:dragstart={dragStart}
+		on:click={() => toggleTodo(!todo.completed)}
 		class:muted={todo.completed}
 		bind:this={li}
 	>
-		<Checkbox bind:checked={todo.completed} on:change={() => toggleTodo()} id={todo.id}>
-			{todo.text}
-		</Checkbox>
+		<div on:click|stopPropagation>
+			<Checkbox bind:checked={todo.completed} on:change={() => toggleTodo(todo.completed)} id={todo.id}>
+				{todo.text}
+			</Checkbox>
+		</div>
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
 			<span slot="trigger">
 				<span class="sr-only">Menu</span>
@@ -95,9 +98,9 @@
 	let showReschedule = false,
 		li: HTMLLIElement;
 
-	function toggleTodo() {
+	function toggleTodo(completed: boolean) {
 		updateTodo(todo.id, {
-			completed: todo.completed,
+			completed,
 		});
 	}
 
