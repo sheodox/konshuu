@@ -47,6 +47,9 @@
 		jumping when the reschedule button show up */
 		margin-top: -4px;
 	}
+	.all-done {
+		visibility: hidden;
+	}
 	@media (max-width: 600px) {
 		form {
 			display: none;
@@ -96,7 +99,13 @@
 					</button>
 				</label>
 			</form>
-			<progress value={completedCount} max={list.length} aria-label="todo completion for this list" class="my-2" />
+			<progress
+				value={completedCount}
+				max={list.length}
+				aria-label="todo completion for this list"
+				class="my-2"
+				class:all-done={completedCount === list.length}
+			/>
 			<ul class="m-0 p-0 f-1">
 				{#each list as todo (todo.id)}
 					<TodoItem {todo} {listType} {calendarDate} />

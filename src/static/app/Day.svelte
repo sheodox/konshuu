@@ -6,8 +6,7 @@
 		overflow: auto;
 	}
 	.today h2 {
-		background: var(--shdx-accent-gradient);
-		border-radius: 0.2rem;
+		color: var(--shdx-pink-400);
 	}
 	h2 {
 		white-space: nowrap;
@@ -34,7 +33,7 @@
 </style>
 
 <div id="todo-day-{day.date.getDay()}" class="f-column" class:today={isToday} use:scrollToView={day.date.isToday()}>
-	<h2>{day.date.dayName()} {day.date.toLocaleDateString()}</h2>
+	<h2 class="mt-2">{day.date.dayName()} {day.date.toLocaleDateString()}</h2>
 	<!-- don't show the work list on the weekend -->
 	{#if !day.date.isWeekend()}
 		<TodoList calendarDate={day.date} listName="Work" list={day.work} listType="work" {isToday} />
