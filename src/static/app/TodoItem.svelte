@@ -1,6 +1,7 @@
 <style>
 	li {
 		position: relative;
+		align-items: center;
 	}
 	li:hover {
 		background: var(--shdx-gray-400);
