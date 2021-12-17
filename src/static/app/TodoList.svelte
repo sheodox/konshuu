@@ -1,7 +1,13 @@
-<style>
-	.todo-list {
-		margin-top: 2px;
+<style lang="scss">
+	section {
+		padding: 2px;
+		border-radius: 0.2rem;
+
+		&.today {
+			background: var(--shdx-accent-gradient);
+		}
 	}
+
 	h3 {
 		text-transform: capitalize;
 	}
@@ -51,57 +57,60 @@
 	}
 </style>
 
-<div
-	class="panel todo-list f-column f-1 mt-2"
-	class:dragging-over={$draggingOverList === listId}
-	on:drop|preventDefault={drop}
-	on:dragover|preventDefault={dragOver}
->
-	<div class="header f-row f-0">
-		<h3 class="f-1">{listName}</h3>
-		<button class="mobile-add-todo-button" on:click={promptNewTodo}>
-			<Icon icon="plus" variant="icon-only" />
-			<span class="sr-only">Add todo</span>
-		</button>
-		{#if list.some((t) => !t.completed)}
-			<button on:click={() => (showRescheduleModal = true)} title="Reschedule unfinished todos">
-				<Icon icon="calendar-day" variant="icon-only" />
-				<span class="sr-only">Reschedule undone todos</span>
+<section class:today={isToday} class="f-column f-1 mt-2">
+	<div
+		class="panel todo-list f-column f-1"
+		class:dragging-over={$draggingOverList === listId}
+		on:drop|preventDefault={drop}
+		on:dragover|preventDefault={dragOver}
+	>
+		<div class="header f-row f-0">
+			<h3 class="f-1">{listName}</h3>
+			<button class="mobile-add-todo-button" on:click={promptNewTodo}>
+				<Icon icon="plus" variant="icon-only" />
+				<span class="sr-only">Add todo</span>
 			</button>
-		{/if}
-	</div>
-	<div class="panel-body f-column f-1">
-		<form on:submit|preventDefault={() => addTodo()}>
-			<label class="f-row f-1 input-group">
-				<span class="sr-only">New todo</span>
-				<input
-					id={`new-todo-input-${calendarDate.getDay()}-${listType}`}
-					bind:value={newTodoText}
-					type="text"
-					placeholder="new todo"
-					class="shdx-font-size-2 f-1"
-					on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
-					autocomplete="off"
-				/>
-				<button disabled={!newTodoText} class="p-1 shdx-font-size-2">
-					<Icon icon="plus" variant="icon-only" />
-					<span class="sr-only">Add Todo</span>
+			{#if list.some((t) => !t.completed)}
+				<button on:click={() => (showRescheduleModal = true)} title="Reschedule unfinished todos">
+					<Icon icon="calendar-day" variant="icon-only" />
+					<span class="sr-only">Reschedule undone todos</span>
 				</button>
-			</label>
-		</form>
-		<progress value={completedCount} max={list.length} aria-label="todo completion for this list" class="my-2" />
-		<ul class="m-0 p-0 f-1">
-			{#each list as todo (todo.id)}
-				<TodoItem {todo} {listType} {calendarDate} />
-			{/each}
-		</ul>
-		{#if $hideCompleted && completedCount > 0}
-			<small>
-				{completedCount} completed todos hidden
-			</small>
-		{/if}
+			{/if}
+		</div>
+		<div class="panel-body f-column f-1">
+			<form on:submit|preventDefault={() => addTodo()}>
+				<label class="f-row f-1 input-group">
+					<span class="sr-only">New todo</span>
+					<input
+						id={`new-todo-input-${calendarDate.getDay()}-${listType}`}
+						bind:value={newTodoText}
+						type="text"
+						placeholder="new todo"
+						class="shdx-font-size-2 f-1"
+						on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
+						autocomplete="off"
+					/>
+					<button disabled={!newTodoText} class="p-1 shdx-font-size-2">
+						<Icon icon="plus" variant="icon-only" />
+						<span class="sr-only">Add Todo</span>
+					</button>
+				</label>
+			</form>
+			<progress value={completedCount} max={list.length} aria-label="todo completion for this list" class="my-2" />
+			<ul class="m-0 p-0 f-1">
+				{#each list as todo (todo.id)}
+					<TodoItem {todo} {listType} {calendarDate} />
+				{/each}
+			</ul>
+			{#if $hideCompleted && completedCount > 0}
+				<small>
+					{completedCount} completed todos hidden
+				</small>
+			{/if}
+		</div>
 	</div>
-</div>
+</section>
+
 {#if showRescheduleModal}
 	<Reschedule
 		bind:visible={showRescheduleModal}
@@ -125,6 +134,7 @@
 	export let listType: TodoListType; //list type
 	export let list: Todo[] = [];
 	export let calendarDate: CalendarDate;
+	export let isToday: boolean;
 
 	const listId = `${listName}-${calendarDate.serialize()}`;
 

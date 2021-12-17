@@ -24,5 +24,6 @@ module.exports = {
 	},
 	settings: {
 		'svelte3/typescript': true,
+		'svelte3/ignore-styles': () => true,
 	},
 };

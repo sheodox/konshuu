@@ -4,10 +4,8 @@
 		flex-shrink: 0;
 		flex-basis: 15rem;
 		overflow: auto;
-		/* allow the .today background to stick out as a 1px border */
-		padding: 1px;
 	}
-	.today {
+	.today h2 {
 		background: var(--shdx-accent-gradient);
 		border-radius: 0.2rem;
 	}
@@ -35,18 +33,13 @@
 	}
 </style>
 
-<div
-	id="todo-day-{day.date.getDay()}"
-	class="f-column"
-	class:today={day.date.serialize() === $today}
-	use:scrollToView={day.date.isToday()}
->
+<div id="todo-day-{day.date.getDay()}" class="f-column" class:today={isToday} use:scrollToView={day.date.isToday()}>
 	<h2>{day.date.dayName()} {day.date.toLocaleDateString()}</h2>
 	<!-- don't show the work list on the weekend -->
 	{#if !day.date.isWeekend()}
-		<TodoList calendarDate={day.date} listName="Work" list={day.work} listType="work" />
+		<TodoList calendarDate={day.date} listName="Work" list={day.work} listType="work" {isToday} />
 	{/if}
-	<TodoList calendarDate={day.date} listName="Home" list={day.home} listType="home" />
+	<TodoList calendarDate={day.date} listName="Home" list={day.home} listType="home" {isToday} />
 	{#if day.date.isWeekend()}
 		<button class="quick-week-switch m-0 mt-1" on:click={quickWeekSwitch}>
 			{#if day.date.getDay() === 6}
@@ -68,6 +61,8 @@
 	import type { DayTodos } from '../../shared/types/todos';
 
 	export let day: DayTodos;
+
+	$: isToday = day.date.serialize() === $today;
 
 	function scrollToView(el: HTMLElement, isToday: boolean) {
 		//if this Day is today, scroll it into view
