@@ -3,8 +3,7 @@ WORKDIR /usr/src/app
 
 ENV NODE_ENV=development
 COPY package*.json ./
-# need to install depenencies so different distros other than ubuntu can be used on the host machine 
-RUN npm install
+RUN npm ci
 COPY prisma prisma
 RUN npx prisma generate
 CMD npx nodemon dist/server/konshuu-server.js
