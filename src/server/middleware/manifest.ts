@@ -28,7 +28,7 @@ export async function getManifest(entryPath: string) {
 	// script imports are loaded automatically via es imports, but we
 	// need to figure out all of the dependent styles for all imports
 	for (const imp of imports) {
-		manifest[imp].css.forEach((importCss: string) => {
+		manifest[imp].css?.forEach((importCss: string) => {
 			css.push(importCss);
 		});
 	}
