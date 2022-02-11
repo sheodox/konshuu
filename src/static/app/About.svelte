@@ -12,11 +12,19 @@
 
 <SecondaryLayout title="About Konshuu">
 	<div class="has-inline-links">
-		<p>Konshuu is built by <a href="https://github.com/sheodox">sheodox</a>.</p>
+		<p>Konshuu is built by <ExternalLink href="https://sheodox.com/">sheodox</ExternalLink>.</p>
 
 		<p>
-			Feel free to request features or report issues by <a href="mailto:sheodox@gmail.com">emailing me</a> or submitting
-			an issue on <a href="https://github.com/sheodox/konshuu/issues">Github</a>!
+			Feel free to request features or report issues by <ExternalLink href="mailto:sheodox@gmail.com"
+				>emailing me</ExternalLink
+			> or submitting an issue on <ExternalLink href="https://github.com/sheodox/konshuu/issues">Github</ExternalLink>!
+		</p>
+
+		<h2>Other Project By Me</h2>
+
+		<p>
+			<ExternalLink href="https://sheodox.com/">Check out my other projects!</ExternalLink> I have several projects both
+			for productivity and learning Japanese, you might find something you like!
 		</p>
 
 		<h2>Why "Konshuu"</h2>
@@ -24,8 +32,8 @@
 
 		<h2>Support Development</h2>
 		<p>
-			If you'd like to donate to support development of Konshuu you can tip me on <a
-				href="https://www.buymeacoffee.com/sheodox">Buy me a coffee</a
+			If you'd like to donate to support development of Konshuu you can tip me on <ExternalLink
+				href="https://www.buymeacoffee.com/sheodox">Buy me a coffee</ExternalLink
 			>. Any support is appreciated, either financially or by sharing the site with your friends!
 		</p>
 
@@ -35,4 +43,5 @@
 
 <script lang="ts">
 	import SecondaryLayout from './SecondaryLayout.svelte';
+	import ExternalLink from './ExternalLink.svelte';
 </script>
