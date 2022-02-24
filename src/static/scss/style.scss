@@ -1,7 +1,12 @@
+@font-face {
+	font-family: 'Kanit';
+	src: url('/Kanit-Light.ttf');
+}
 h1,
 h2,
 h3 {
 	margin: 0;
+	font-family: 'Kanit', sans-serif;
 }
 
 .panel {
