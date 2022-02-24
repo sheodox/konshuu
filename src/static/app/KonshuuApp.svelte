@@ -17,9 +17,13 @@
 		<image xlink:href="/logo.svg" />
 	</svg>
 
-	<nav slot="nav">
+	<nav slot="headerCenter">
 		<ul>
 			<HeaderNav />
+		</ul>
+	</nav>
+	<nav slot="headerEnd">
+		<ul>
 			<li>
 				<UserMenu />
 			</li>
