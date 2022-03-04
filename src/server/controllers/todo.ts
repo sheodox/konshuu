@@ -131,21 +131,26 @@ export class TodoTracker {
 			where: { id: { in: updatingIds } },
 		});
 	}
-	static async rescheduleOne(userId: string, id: string, toDate: CalendarDate) {
-		const todo = await prisma.todo.findUnique({ where: { id } });
+	static async rescheduleOne(userId: string, id: string, toDate: CalendarDate, list: string) {
+		if (!validList(list)) {
+			return;
+		}
+
+		const originalTodo = await prisma.todo.findUnique({ where: { id } });
 
 		//don't allow scheduling work items for the weekend, they'll disappear forever!
-		if (todo.userId !== userId || (todo.list === 'work' && toDate.isWeekend())) {
+		if (originalTodo.userId !== userId || (list === 'work' && toDate.isWeekend())) {
 			return;
 		}
 		const updatedTodo = await prisma.todo.update({
 			where: { id },
-			data: { date: toDate.asDate() },
+			data: { date: toDate.asDate(), list },
 		});
 
 		return {
 			todo: updatedTodo,
-			fromDate: CalendarDate.fromDate(todo.date),
+			originalTodo,
+			fromDate: CalendarDate.fromDate(originalTodo.date),
 		};
 	}
 }

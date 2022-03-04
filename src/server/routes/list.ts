@@ -139,13 +139,13 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	on('todo:reschedule', async (todoId: string, to: CalendarDate) => {
-		const update = await TodoTracker.rescheduleOne(userId, todoId, to);
+	on('todo:reschedule', async (todoId: string, to: CalendarDate, list: string) => {
+		const update = await TodoTracker.rescheduleOne(userId, todoId, to, list);
 
 		if (update) {
 			const { todo, fromDate } = update;
 			emitToUser('todo:reschedule', {
-				delete: [{ date: fromDate, list: todo.list, id: todo.id }],
+				delete: [{ date: fromDate, list: update.originalTodo.list, id: todo.id }],
 				add: [{ date: CalendarDate.fromDate(todo.date), list: todo.list, todo }],
 			});
 		}

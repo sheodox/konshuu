@@ -6,6 +6,14 @@
 		&.today {
 			background: var(--shdx-accent-gradient);
 		}
+		&.dragging-over {
+			background: var(--shdx-blue-500);
+			box-shadow: 0 0 1.5rem var(--shdx-blue-700);
+
+			.todo-list {
+				background: var(--shdx-gray-500);
+			}
+		}
 	}
 
 	h3 {
@@ -36,9 +44,6 @@
 	progress {
 		height: 2px;
 	}
-	.dragging-over {
-		background: var(--shdx-gray-500);
-	}
 	.mobile-add-todo-button {
 		display: none;
 	}
@@ -60,13 +65,8 @@
 	}
 </style>
 
-<section class:today={isToday} class="f-column f-1 mt-2">
-	<div
-		class="panel todo-list f-column f-1"
-		class:dragging-over={$draggingOverList === listId}
-		on:drop|preventDefault={drop}
-		on:dragover|preventDefault={dragOver}
-	>
+<section class:today={isToday} class="f-column f-1 mt-2" class:dragging-over={$draggingOverList === listId}>
+	<div class="panel todo-list f-column f-1" on:drop|preventDefault={drop} on:dragover|preventDefault={dragOver}>
 		<div class="header f-row f-0">
 			<h3 class="f-1">{listName}</h3>
 			<button class="mobile-add-todo-button" on:click={promptNewTodo}>
@@ -177,7 +177,7 @@
 	async function drop(event: DragEvent) {
 		const todoId = event.dataTransfer.getData('todoId');
 		$draggingOverList = null;
-		reschedule(todoId, calendarDate);
+		reschedule(todoId, calendarDate, listType);
 	}
 
 	function dragOver(event: DragEvent) {

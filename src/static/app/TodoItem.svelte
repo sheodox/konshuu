@@ -115,7 +115,7 @@
 
 	async function rescheduleTodo(e: CustomEvent<{ to: string; originalDate: CalendarDate }>) {
 		//serialize the date the same way the date input would use for the value
-		reschedule(todo.id, getRescheduleDestination(e.detail.to, e.detail.originalDate));
+		reschedule(todo.id, getRescheduleDestination(e.detail.to, e.detail.originalDate), listType);
 	}
 
 	function dragStart(event: DragEvent) {
