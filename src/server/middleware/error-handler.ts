@@ -18,6 +18,9 @@ export const getHttpStatusDescription = (statusCode: number) => {
 	return httpStatusDescriptions.get(statusCode) ?? `HTTP Status ${statusCode}`;
 };
 
+// statuses that we don't need to log
+const uninterestingStatusCodes = [401, 404];
+
 /**
  * Create an http error handler middleware.
  * @param internal - whether this is used on an non-public server. private servers treat any errors as a bigger deal
@@ -29,15 +32,18 @@ export const errorHandler =
 			message = getHttpStatusDescription(status),
 			level = internal || status === 500 ? 'error' : 'info';
 
-		httpLogger[level](`${message}: "${req.url}"`, {
-			status,
-			error: error instanceof Error ? error : undefined,
-			internal,
-			path: req.url,
-			userId: req.user?.id,
-			requestId: req.requestId,
-			userAgent: req.get('User-Agent'),
-		});
+		// always log errors on internal servers, but don't log for any random 404 error, not useful
+		if (internal || !uninterestingStatusCodes.includes(status)) {
+			httpLogger[level](`${message}: "${req.url}"`, {
+				status,
+				error: error instanceof Error ? error : undefined,
+				internal,
+				path: req.url,
+				userId: req.user?.id,
+				requestId: req.requestId,
+				userAgent: req.get('User-Agent'),
+			});
+		}
 
 		res.status(status);
 		res.send({
