@@ -19,7 +19,9 @@
 						{progress.progress} of {progress.goal} time{progress.goal === 1 ? '' : 's'}
 					</label>
 				</div>
-				<button on:click={startEdit}><Icon icon="ellipsis-v" /><span class="sr-only">Edit</span></button>
+				<button on:click={startEdit} title="Edit progress this weeek"
+					><Icon icon="ellipsis-v" variant="icon-only" /><span class="sr-only">Edit</span></button
+				>
 			</div>
 			{#if progress.progress < progress.goal}
 				<Progress value={Math.min(progress.progress, progress.goal)} max={progress.goal} id="prog-{weekly.id}" />
@@ -27,8 +29,8 @@
 		{:else if showing === 'edit'}
 			<form on:submit|preventDefault={edit} class="f-column gap-2">
 				<TextInput id="{weekly.id}-progress" type="number" bind:value={newProgress}>Current Progress</TextInput>
-				<TextInput id="{weekly.id}-goal" type="number" bind:value={newGoal}>Goal</TextInput>
-				<small> Changing the goal here only affects this week's goal. </small>
+				<TextInput id="{weekly.id}-goal" type="number" bind:value={newGoal}>Goal This Week</TextInput>
+				<small>Changing the goal here only affects this week's goal.</small>
 				<div class="f-row">
 					<button disabled={newProgress < 0 || newGoal < 0} class="f-1 primary">Save</button>
 					<button type="button" on:click={clear} class="danger">Clear Progress</button>
