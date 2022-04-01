@@ -44,3 +44,29 @@ export interface RescheduleBatch {
 	add: RescheduleAddCommand[];
 	delete: RescheduleDeleteCommand[];
 }
+
+export interface Weekly {
+	id: string;
+	createdAt: Date;
+	goal: number;
+	name: string;
+	deleted: boolean;
+}
+
+export interface WeeklyEditable {
+	goal?: number;
+	name?: string;
+}
+
+export interface WeeklyProgress {
+	id: string;
+	createdAt: Date;
+	weeklyId: string;
+	progress: number;
+	goal: number;
+}
+
+export interface WeeklyProgressEditable {
+	progress?: number;
+	goal?: number;
+}

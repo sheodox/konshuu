@@ -111,11 +111,15 @@ export class Week {
 		return new CalendarDate(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
 	}
 
+	getWeekStart() {
+		//sunday at the beginning of the week
+		return new Date(this.date.getTime() - this.date.getDay() * DAY_MS);
+	}
+
 	getWeekBounds() {
 		//since date doesn't have a setDay() we're just gonna do some math to get dates at the beginning and end of week
-		const weekStart = new Date(this.date.getTime() - this.date.getDay() * DAY_MS), //sunday at the beginning of the week
-			weekEnd = new Date(this.date.getTime() + (6 - this.date.getDay()) * DAY_MS); //saturday at the end of this week
+		const weekEnd = new Date(this.date.getTime() + (6 - this.date.getDay()) * DAY_MS); //saturday at the end of this week
 
-		return { weekStart, weekEnd };
+		return { weekStart: this.getWeekStart(), weekEnd };
 	}
 }

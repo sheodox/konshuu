@@ -15,7 +15,9 @@ model User {
   passwordHash String
   todos        Todo[]
 
+  Weekly Weekly[]
   @@unique([email])
+  WeeklyProgress WeeklyProgress[]
 }
 
 model Todo {
@@ -29,4 +31,37 @@ model Todo {
   list      String
 
   @@index([userId, date])
+}
+
+model Weekly {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  name      String
+  // the number of times this weekly needs to be done
+  goal      Int
+  // soft-delete for keeping old weekly progress around
+  deleted Boolean @default(false)
+
+  @@index([userId])
+  WeeklyProgress WeeklyProgress[]
+}
+
+model WeeklyProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  weeklyId  String
+  weekly    Weekly   @relation(fields: [weeklyId], references: [id], onDelete: Cascade)
+  // the number of times this weekly has been performed
+  progress  Int
+  // store the goal with the number, so it can be changed independently of the weekly
+  goal      Int
+  // a serialized CalendarDate for Sunday of the week this corresponds to
+  week      String
+
+  @@unique([userId, weeklyId, week])
+  @@index([userId, week])
 }

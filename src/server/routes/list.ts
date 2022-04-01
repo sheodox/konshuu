@@ -2,10 +2,20 @@ import { CalendarDate } from '../../shared/dates.js';
 import { todoListTypes, TodoTracker } from '../controllers/todo.js';
 import Joi from 'joi';
 import { getUserIdFromSocket, io } from '../server.js';
-import { RescheduleManyOptions, TodoCreatable, TodoListType } from '../../shared/types/todos.js';
+import {
+	RescheduleManyOptions,
+	TodoCreatable,
+	TodoListType,
+	Weekly,
+	WeeklyProgress,
+	WeeklyEditable,
+	WeeklyProgressEditable,
+} from '../../shared/types/todos.js';
 import { deserialize, serialize } from '../../shared/serialization.js';
 import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
 import metrics from '../metrics.js';
+import { WeeklyInteractor } from '../controllers/weekly.js';
+import type { Weekly as PrismaWeekly, WeeklyProgress as PrismaWeeklyProgress } from '@prisma/client';
 
 const calendarDateSchema = Joi.object().instance(CalendarDate);
 
@@ -28,6 +38,27 @@ const todoProperties = {
 		from: calendarDateSchema.required(),
 		to: calendarDateSchema.required(),
 	});
+
+const toDTO = {
+	weekly: (weeklyEntity: PrismaWeekly): Weekly => {
+		return {
+			id: weeklyEntity.id,
+			name: weeklyEntity.name,
+			createdAt: weeklyEntity.createdAt,
+			goal: weeklyEntity.goal,
+			deleted: weeklyEntity.deleted,
+		};
+	},
+	progress: (progressEntity: PrismaWeeklyProgress): WeeklyProgress => {
+		return {
+			id: progressEntity.id,
+			weeklyId: progressEntity.weeklyId,
+			createdAt: progressEntity.createdAt,
+			goal: progressEntity.goal,
+			progress: progressEntity.progress,
+		};
+	},
+};
 
 io.on('connection', (socket) => {
 	const userId = getUserIdFromSocket(socket);
@@ -79,9 +110,30 @@ io.on('connection', (socket) => {
 	};
 
 	on('init', async (startOfWeek: string) => {
+		const week = CalendarDate.deserialize(startOfWeek),
+			weeklies = await WeeklyInteractor.getWeeklies(userId),
+			weeklyProgress = await WeeklyInteractor.getWeeklyProgress(userId, week),
+			// if the user hasn't yet
+			temporaryUpsertProgress = weeklies.map((weekly) => {
+				const existing = weeklyProgress.find((p) => p.weeklyId === weekly.id);
+
+				return (
+					existing ?? {
+						id: null,
+						weeklyId: weekly.id,
+						goal: weekly.goal,
+						progress: 0,
+					}
+				);
+			});
+
 		// emit this only to the single socket, not all sockets for this user, or each session
 		// can't page individually, as paging in one tab/device will page all of them
-		emitToSocket('todo:init', await TodoTracker.getWeek(userId, CalendarDate.deserialize(startOfWeek)));
+		emitToSocket('todo:init', {
+			todos: await TodoTracker.getWeek(userId, week),
+			weeklies: weeklies.map(toDTO.weekly),
+			weeklyProgress: temporaryUpsertProgress.map(toDTO.progress),
+		});
 	});
 
 	on('todo:new', async (todo: TodoCreatable) => {
@@ -149,5 +201,71 @@ io.on('connection', (socket) => {
 				add: [{ date: CalendarDate.fromDate(todo.date), list: todo.list, todo }],
 			});
 		}
+	});
+
+	on('weekly:new', async (name: string, goal: number) => {
+		const weekly = await WeeklyInteractor.new(userId, name, goal);
+
+		if (!weekly) {
+			return;
+		}
+
+		emitToUser('weekly:new', {
+			weekly: toDTO.weekly(weekly),
+		});
+	});
+
+	on('weekly:edit', async (weeklyId: string, update: WeeklyEditable) => {
+		const weekly = await WeeklyInteractor.update(userId, weeklyId, update);
+
+		if (!weekly) {
+			return;
+		}
+
+		emitToUser('weekly:edit', {
+			weekly: toDTO.weekly(weekly),
+		});
+	});
+
+	on('weekly:delete', async (weeklyId: string, hardDelete: boolean) => {
+		await WeeklyInteractor.delete(userId, weeklyId, hardDelete);
+
+		emitToUser('weekly:delete', {
+			weeklyId,
+			hardDelete,
+		});
+	});
+
+	on('weekly:progress', async (weeklyId: string, weeklyProgressId: string, week: CalendarDate) => {
+		const progress = await WeeklyInteractor.progress(userId, weeklyId, weeklyProgressId, week);
+
+		if (!progress) {
+			return;
+		}
+		emitToUser('weekly:progress:update', {
+			progress: toDTO.progress(progress),
+		});
+	});
+
+	on(
+		'weekly:progressEdit',
+		async (weeklyId: string, weeklyProgressId: string, week: CalendarDate, update: WeeklyProgressEditable) => {
+			const progress = await WeeklyInteractor.progressEdit(userId, weeklyId, weeklyProgressId, week, update);
+			if (!progress) {
+				return;
+			}
+
+			emitToUser('weekly:progress:update', {
+				progress: toDTO.progress(progress),
+			});
+		}
+	);
+
+	on('weekly:progressDelete', async (weeklyProgressId: string) => {
+		await WeeklyInteractor.progressDelete(userId, weeklyProgressId);
+
+		emitToUser('weekly:progress:delete', {
+			weeklyProgressId,
+		});
 	});
 });

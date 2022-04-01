@@ -17,17 +17,21 @@
 </style>
 
 <div class="week gap-2 p-1">
-	{#each $week as day}
-		<Day {day} />
+	{#if $week.length}
+		{#each $week as day}
+			<Day {day} />
+		{/each}
+		<Weekly />
 	{:else}
 		<div class="loading">
 			<Loading size="large" />
 		</div>
-	{/each}
+	{/if}
 </div>
 
 <script lang="ts">
 	import { week } from './stores/todo';
 	import { Loading } from 'sheodox-ui';
+	import Weekly from './Weekly.svelte';
 	import Day from './Day.svelte';
 </script>

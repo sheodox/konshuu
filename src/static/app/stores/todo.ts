@@ -10,7 +10,10 @@ import type {
 	TodoCreatable,
 	TodoEditable,
 	RescheduleManyOptions,
+	Weekly,
+	WeeklyProgress,
 } from '../../../shared/types/todos';
+import { weeklies, weeklyProgress } from './weekly';
 
 function getStartOfWeek(offsetWeeks: number) {
 	return CalendarDate.getStartOfWeekByOffset(new Date(), offsetWeeks).serialize();
@@ -64,8 +67,10 @@ const processNew = (date: CalendarDate, newTodo: Todo) => {
 	});
 };
 
-envoy.on('todo:init', (todos: DayTodosData) => {
-	week.set(todos.days);
+envoy.on('todo:init', (initData: { todos: DayTodosData; weeklies: Weekly[]; weeklyProgress: WeeklyProgress[] }) => {
+	week.set(initData.todos.days);
+	weeklies.set(initData.weeklies);
+	weeklyProgress.set(initData.weeklyProgress);
 });
 
 envoy.on('todo:new', processNew);
