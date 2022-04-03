@@ -22,23 +22,26 @@ export const weekliesOrdered = derived(weeklies, (weeklies) => {
 export const weeklyProgress = writable<WeeklyProgress[]>([]);
 export const weeklyProgressOrdered = derived(weeklyProgress, (progresses) => {
 	const weekliesMap = get(weeklies).reduce((done, weekly) => {
-		done[weekly.id] = weekly;
-		return done;
-	}, {} as Record<string, Weekly>);
+			done[weekly.id] = weekly;
+			return done;
+		}, {} as Record<string, Weekly>),
+		sortByName = (a: WeeklyProgress, b: WeeklyProgress) => {
+			const aName = weekliesMap[a.weeklyId].name.toLowerCase(),
+				bName = weekliesMap[b.weeklyId].name.toLowerCase();
 
-	const sorted = [...progresses];
+			if (aName === bName) {
+				return 0;
+			}
+			return aName > bName ? 1 : -1;
+		};
 
-	sorted.sort((a, b) => {
-		const aName = weekliesMap[a.weeklyId].name.toLowerCase(),
-			bName = weekliesMap[b.weeklyId].name.toLowerCase();
+	const unfinished = progresses.filter((p) => p.progress < p.goal),
+		finished = progresses.filter((p) => p.progress >= p.goal);
 
-		if (aName === bName) {
-			return 0;
-		}
-		return aName > bName ? 1 : -1;
-	});
+	unfinished.sort(sortByName);
+	finished.sort(sortByName);
 
-	return sorted;
+	return [...unfinished, ...finished];
 });
 
 export const weeklyOps = {

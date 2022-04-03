@@ -1,6 +1,10 @@
-<style>
+<style lang="scss">
 	.weekly.done {
-		opacity: 0.7;
+		opacity: 0.5;
+
+		fieldset {
+			border-color: transparent;
+		}
 	}
 </style>
 
