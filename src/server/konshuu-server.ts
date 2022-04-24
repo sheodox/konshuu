@@ -27,6 +27,10 @@ app.disable('x-powered-by');
 app.set('views', path.resolve('src/server/views'));
 app.set('view engine', 'pug');
 
+app.use('/health', (req, res) => {
+	res.send();
+});
+
 const RedisStore = connectRedis(expressSession),
 	sessionStore = new RedisStore({ client: redisClient }),
 	session = expressSession({
