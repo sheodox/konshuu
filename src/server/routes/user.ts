@@ -71,7 +71,7 @@ router.post(
 					passwordHash,
 				},
 			});
-		authLogger.info(`New user signed up ${user.id}`);
+		authLogger.info(`New user signed up`);
 		metrics.users.inc();
 
 		const safeUser = await findUserNoSensitiveData({ id: user.id });

@@ -4,7 +4,6 @@ import passport from 'passport';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Request, Router } from 'express';
 import { prisma } from '../prisma.js';
-import { authLogger } from '../logger.js';
 import { findUserNoSensitiveData } from './user.js';
 
 export const router = Router();
@@ -21,7 +20,6 @@ passport.use(
 				passwordCorrect = user && (await bcrypt.compare(password, user.passwordHash));
 
 			if (passwordCorrect) {
-				authLogger.info(`User logged in ${user.id}`);
 				const safeUser = await findUserNoSensitiveData({ id: user.id });
 				done(null, safeUser);
 			} else {
