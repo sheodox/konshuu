@@ -7,7 +7,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import { errorHandler } from './middleware/error-handler.js';
 import { requestId } from './middleware/request-id.js';
-import { appLogger, remoteTransport } from './logger.js';
+import { remoteTransport } from './logger.js';
 import { register } from './metrics.js';
 
 const app = express();
@@ -37,6 +37,4 @@ app.use((req, res, next) => {
 });
 app.use(errorHandler(true));
 
-app.listen(4001, () => {
-	appLogger.info('Internal server started');
-});
+app.listen(4001);
