@@ -2,7 +2,7 @@
 	.error-banner {
 		text-align: center;
 		color: black;
-		background: var(--shdx-red-400);
+		background: var(--sx-red-400);
 	}
 </style>
 

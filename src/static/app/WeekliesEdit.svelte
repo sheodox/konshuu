@@ -1,7 +1,7 @@
 <style>
 	hr {
 		width: 50%;
-		border-color: var(--shdx-pink-500);
+		border-color: var(--sx-pink-500);
 	}
 </style>
 

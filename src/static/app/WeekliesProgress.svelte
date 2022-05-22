@@ -1,6 +1,6 @@
 <style>
 	p {
-		font-size: var(--shdx-font-size-4);
+		font-size: var(--sx-font-size-4);
 	}
 </style>
 

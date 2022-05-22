@@ -1,7 +1,7 @@
 <style lang="scss">
 	h2 {
-		margin-bottom: var(--shdx-spacing-1);
-		margin-top: var(--shdx-spacing-6);
+		margin-bottom: var(--sx-spacing-1);
+		margin-top: var(--sx-spacing-6);
 	}
 
 	p:first-of-type,

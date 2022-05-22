@@ -4,7 +4,7 @@
 		align-items: center;
 	}
 	li:hover {
-		background: var(--shdx-gray-400);
+		background: var(--sx-gray-400);
 		border-radius: 0.2rem;
 	}
 	li :global(div) {
@@ -25,7 +25,7 @@
 	}
 	@media (max-width: 600px) {
 		li :global(label) {
-			font-size: var(--shdx-font-size-3);
+			font-size: var(--sx-font-size-3);
 		}
 	}
 </style>

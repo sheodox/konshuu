@@ -6,7 +6,7 @@
 		overflow: auto;
 	}
 	.today h2 {
-		color: var(--shdx-pink-400);
+		color: var(--sx-pink-400);
 	}
 	h2 {
 		white-space: nowrap;

@@ -4,14 +4,14 @@
 		border-radius: 0.2rem;
 
 		&.today {
-			background: var(--shdx-accent-gradient);
+			background: var(--sx-accent-gradient);
 		}
 		&.dragging-over {
-			background: var(--shdx-blue-500);
-			box-shadow: 0 0 1.5rem var(--shdx-blue-700);
+			background: var(--sx-blue-500);
+			box-shadow: 0 0 1.5rem var(--sx-blue-700);
 
 			.todo-list {
-				background: var(--shdx-gray-500);
+				background: var(--sx-gray-500);
 			}
 		}
 	}
@@ -31,7 +31,7 @@
 		flex-shrink: 0;
 	}
 	form {
-		margin: 0 auto var(--shdx-spacing-1) auto;
+		margin: 0 auto var(--sx-spacing-1) auto;
 		width: 100%;
 	}
 	.header button {
@@ -48,7 +48,7 @@
 		display: none;
 	}
 	.header button {
-		/* negative --shdx-spacing-1, used to prevent the header height 
+		/* negative --sx-spacing-1, used to prevent the header height 
 		jumping when the reschedule button show up */
 		margin-top: -4px;
 	}
@@ -89,11 +89,11 @@
 						bind:value={newTodoText}
 						type="text"
 						placeholder="new todo"
-						class="shdx-font-size-2 f-1"
+						class="sx-font-size-2 f-1"
 						on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
 						autocomplete="off"
 					/>
-					<button disabled={!newTodoText} class="p-1 shdx-font-size-2">
+					<button disabled={!newTodoText} class="p-1 sx-font-size-2">
 						<Icon icon="plus" variant="icon-only" />
 						<span class="sr-only">Add Todo</span>
 					</button>
