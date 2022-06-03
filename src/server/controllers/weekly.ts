@@ -30,7 +30,7 @@ export class WeeklyInteractor {
 		}
 
 		return await prisma.weekly.findMany({
-			where: { userId },
+			where: { userId, deleted: false },
 		});
 	}
 	static async getWeeklyProgress(userId: string, startOfWeek: CalendarDate) {
@@ -42,6 +42,9 @@ export class WeeklyInteractor {
 			where: {
 				userId,
 				week: startOfWeek.serialize(),
+			},
+			include: {
+				weekly: true,
 			},
 		});
 	}

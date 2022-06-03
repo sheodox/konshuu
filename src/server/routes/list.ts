@@ -117,27 +117,37 @@ io.on('connection', (socket) => {
 
 	on('init', async (startOfWeek: string) => {
 		const week = CalendarDate.deserialize(startOfWeek),
-			weeklies = await WeeklyInteractor.getWeeklies(userId),
 			weeklyProgress = await WeeklyInteractor.getWeeklyProgress(userId, week),
-			// if the user hasn't yet
-			temporaryUpsertProgress = weeklies.map((weekly) => {
-				const existing = weeklyProgress.find((p) => p.weeklyId === weekly.id);
+			activeWeeklies = await WeeklyInteractor.getWeeklies(userId),
+			allWeeklies = [
+				...activeWeeklies,
+				// add any weeklies that aren't active (deleted but have progress for this week)
+				...weeklyProgress
+					.filter((progress) => {
+						return !activeWeeklies.some(({ id }) => id === progress.weekly.id);
+					})
+					.map((w) => w.weekly),
+			];
+		// if the user hasn't yet tracked any progress this week we need to fake an empty progress object
+		// which will be upserted to a real progress object once they track progress or edit this in some way
+		const temporaryUpsertProgress = allWeeklies.map((weekly) => {
+			const existing = weeklyProgress.find((p) => p.weeklyId === weekly.id);
 
-				return (
-					existing ?? {
-						id: null,
-						weeklyId: weekly.id,
-						goal: weekly.goal,
-						progress: 0,
-					}
-				);
-			});
+			return (
+				existing ?? {
+					id: null,
+					weeklyId: weekly.id,
+					goal: weekly.goal,
+					progress: 0,
+				}
+			);
+		});
 
 		// emit this only to the single socket, not all sockets for this user, or each session
 		// can't page individually, as paging in one tab/device will page all of them
 		emitToSocket('todo:init', {
 			todos: await TodoTracker.getWeek(userId, week),
-			weeklies: weeklies.map(toDTO.weekly),
+			weeklies: allWeeklies.map(toDTO.weekly),
 			weeklyProgress: temporaryUpsertProgress.map(toDTO.progress),
 		});
 	});
