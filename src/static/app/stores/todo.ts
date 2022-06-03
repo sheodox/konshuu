@@ -128,6 +128,10 @@ export const deleteTodo = (id: string) => {
 };
 
 export const reschedule = (id: string, to: CalendarDate, list: TodoListType) => {
+	if (!id) {
+		return;
+	}
+
 	envoy.emit('todo:reschedule', id, to, list);
 };
 

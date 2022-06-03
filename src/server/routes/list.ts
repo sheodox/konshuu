@@ -192,6 +192,10 @@ io.on('connection', (socket) => {
 	});
 
 	on('todo:reschedule', async (todoId: string, to: CalendarDate, list: string) => {
+		if (!todoId) {
+			return;
+		}
+
 		const update = await TodoTracker.rescheduleOne(userId, todoId, to, list);
 
 		if (update) {
