@@ -139,7 +139,7 @@ export class TodoTracker {
 		const originalTodo = await prisma.todo.findUnique({ where: { id } });
 
 		//don't allow scheduling work items for the weekend, they'll disappear forever!
-		if (originalTodo.userId !== userId || (list === 'work' && toDate.isWeekend())) {
+		if (!originalTodo || originalTodo.userId !== userId || (list === 'work' && toDate.isWeekend())) {
 			return;
 		}
 		const updatedTodo = await prisma.todo.update({

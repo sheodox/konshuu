@@ -16,6 +16,7 @@ import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
 import metrics from '../metrics.js';
 import { WeeklyInteractor } from '../controllers/weekly.js';
 import type { Weekly as PrismaWeekly, WeeklyProgress as PrismaWeeklyProgress } from '@prisma/client';
+import { todoLogger } from '../logger.js';
 
 const calendarDateSchema = Joi.object().instance(CalendarDate);
 
@@ -105,7 +106,12 @@ io.on('connection', (socket) => {
 				}
 				return arg;
 			});
-			listener(...args);
+
+			Promise.resolve()
+				.then(() => listener(...args))
+				.catch((error) => {
+					todoLogger.error(`Error processing handler for "${eventName}"`, { error });
+				});
 		});
 	};
 
