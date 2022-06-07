@@ -32,6 +32,12 @@
 			<Icon icon="angle-right" variant="append" />
 		</button>
 	</li>
+	<li>
+		<button class="a" on:click={() => ($showGotoDate = !$showGotoDate)}>
+			<Icon icon="calendar-alt" />
+			<span class="button-text">Go To</span>
+		</button>
+	</li>
 {:else}
 	<li>
 		<Link classes="a" href="/">
@@ -42,7 +48,7 @@
 {/if}
 
 <script lang="ts">
-	import { weekOffset, resetWeek, nextWeek, prevWeek } from './stores/todo';
+	import { weekOffset, resetWeek, nextWeek, prevWeek, showGotoDate } from './stores/todo';
 	import { Icon } from 'sheodox-ui';
 	import { activeRoute } from './stores/routing';
 	import Link from './Link.svelte';

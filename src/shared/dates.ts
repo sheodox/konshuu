@@ -1,4 +1,5 @@
 export const DAY_MS = 24 * 60 * 60 * 1000;
+export const WEEK_MS = 7 * DAY_MS;
 
 // a date class that targets just a date without a time, do date math without
 // being tripped up by time zones
@@ -54,6 +55,12 @@ export class CalendarDate {
 		const segments = serialized.split('-').map((segment) => parseInt(segment, 10));
 
 		return new CalendarDate(segments[0], segments[1] - 1, segments[2]);
+	}
+
+	getWeekOffset() {
+		const thisWeek = CalendarDate.getStartOfWeekDate(this.asDate()),
+			nowWeek = CalendarDate.getStartOfWeekDate(new Date());
+		return Math.round((thisWeek.asDate().getTime() - nowWeek.asDate().getTime()) / WEEK_MS);
 	}
 
 	isSameDate(otherDate: CalendarDate) {

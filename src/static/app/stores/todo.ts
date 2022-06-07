@@ -23,6 +23,7 @@ export const week = writable<DayTodos[]>([]);
 export const weekOffset = writable(0);
 export const hideCompleted = writable(false);
 export const startOfViewedWeek = writable(getStartOfWeek(0));
+export const showGotoDate = writable(false);
 export const today = writable(CalendarDate.now().serialize());
 setInterval(() => {
 	today.set(CalendarDate.now().serialize());
@@ -36,6 +37,20 @@ setInterval(checkWeekStart, 10 * 1000);
 function initTodos() {
 	socket.emit('init', get(startOfViewedWeek));
 }
+
+export function goTo(date: Date) {
+	weekOffset.set(CalendarDate.getStartOfWeekDate(date).getWeekOffset());
+	scrollToDay(CalendarDate.fromDate(date).getDay());
+}
+
+function scrollToDay(dayOfWeek: number) {
+	document.getElementById(`todo-day-${dayOfWeek}`).scrollIntoView({
+		behavior: 'smooth',
+		block: 'start',
+		inline: 'center',
+	});
+}
+
 // reinit whenever we change week, or the date rolls over
 startOfViewedWeek.subscribe(() => {
 	initTodos();
