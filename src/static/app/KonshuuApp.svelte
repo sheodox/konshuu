@@ -5,7 +5,7 @@
 		background: var(--sx-red-400);
 	}
 	:root {
-		--sx-hue-gray: 260;
+		--sx-hue-gray: 260 !important;
 	}
 </style>
 
