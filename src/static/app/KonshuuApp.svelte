@@ -4,6 +4,9 @@
 		color: black;
 		background: var(--sx-red-400);
 	}
+	:root {
+		--sx-hue-gray: 260;
+	}
 </style>
 
 {#if !$socketConnected}

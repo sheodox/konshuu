@@ -46,7 +46,7 @@
 
 <script lang="ts">
 	import { showGotoDate, week, goTo } from './stores/todo';
-	import { Loading, Modal, TextInput } from 'sheodox-ui';
+	import { Loading, Modal } from 'sheodox-ui';
 	import Weekly from './Weekly.svelte';
 	import Day from './Day.svelte';
 	import { CalendarDate } from '../../shared/dates';
