@@ -14,6 +14,7 @@ import path from 'path';
 import { router as authRouter } from './routes/auth.js';
 import { router as userRouter } from './routes/user.js';
 import './routes/list.js';
+import './routes/anytime.js';
 import './internal-server.js';
 import { getManifest } from './middleware/manifest.js';
 
@@ -87,7 +88,7 @@ app.get(
 //for each allowed front end route, render the home page if logged in, otherwise redirect
 //to the login page at the proper `/` route so they don't get some content that doesn't
 //match the url
-['/settings', '/about'].forEach((route) => {
+['/settings', '/about', '/anytime'].forEach((route) => {
 	app.get(
 		route,
 		safeAsyncRoute(async (req, res) => {

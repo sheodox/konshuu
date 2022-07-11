@@ -10,6 +10,8 @@
 	<About />
 {:else if $activeRoute === 'app'}
 	<Todos />
+{:else if $activeRoute === 'anytime'}
+	<Anytime />
 {:else}
 	<div class="not-found has-inline-links">
 		<h1>Not Found</h1>
@@ -24,4 +26,5 @@
 	import Settings from './settings/Settings.svelte';
 	import About from './About.svelte';
 	import Link from './Link.svelte';
+	import Anytime from './anytime/Anytime.svelte';
 </script>

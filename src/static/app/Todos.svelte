@@ -14,7 +14,37 @@
 			scroll-snap-type: y mandatory;
 		}
 	}
+	@media (max-width: 700px) {
+		/* hide the button text with .sr-only styles when the screen is small or it'll wrap */
+		.button-text {
+			position: absolute;
+			left: -10000px;
+			top: auto;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+		}
+	}
 </style>
+
+<div class="f-row gap-2 justify-content-center">
+	<button class="a" on:click={prevWeek}>
+		<Icon icon="angle-left" />
+		<span class="button-text"> Previous Week </span>
+	</button>
+	<button class="a" on:click={resetWeek} disabled={$weekOffset === 0}>
+		<Icon icon="align-center" />
+		<span class="button-text"> This Week </span>
+	</button>
+	<button class="a" on:click={nextWeek}>
+		<span class="button-text"> Next Week </span>
+		<Icon icon="angle-right" variant="append" />
+	</button>
+	<button class="a" on:click={() => ($showGotoDate = !$showGotoDate)}>
+		<Icon icon="calendar-alt" />
+		<span class="button-text">Go To</span>
+	</button>
+</div>
 
 <div class="week gap-2 p-1">
 	{#if $showGotoDate}
@@ -45,8 +75,8 @@
 </div>
 
 <script lang="ts">
-	import { showGotoDate, week, goTo } from './stores/todo';
-	import { Loading, Modal } from 'sheodox-ui';
+	import { weekOffset, resetWeek, nextWeek, prevWeek, showGotoDate, week, goTo } from './stores/todo';
+	import { Loading, Modal, Icon } from 'sheodox-ui';
 	import Weekly from './Weekly.svelte';
 	import Day from './Day.svelte';
 	import { CalendarDate } from '../../shared/dates';

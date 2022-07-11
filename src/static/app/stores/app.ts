@@ -57,3 +57,12 @@ function checkIfBelowBreakpoint() {
 window.addEventListener('resize', () => {
 	isBelowMobileBreakpoint.set(checkIfBelowBreakpoint());
 });
+
+export function copyToClipboard(text: string) {
+	const el = document.createElement('textarea');
+	document.body.appendChild(el);
+	el.textContent = text;
+	el.select();
+	document.execCommand('copy');
+	el.remove();
+}

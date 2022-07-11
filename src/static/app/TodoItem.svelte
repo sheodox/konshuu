@@ -84,7 +84,8 @@
 {/if}
 
 <script lang="ts">
-	import { hideCompleted, copyToClipboard, updateTodo, deleteTodo, reschedule } from './stores/todo';
+	import { hideCompleted, updateTodo, deleteTodo, reschedule } from './stores/todo';
+	import { copyToClipboard } from './stores/app';
 	import { Icon, Checkbox, MenuButton } from 'sheodox-ui';
 	import Reschedule from './Reschedule.svelte';
 	import { getRescheduleDestination } from './reschedule-utils';

@@ -165,15 +165,6 @@ export const resetWeek = () => {
 	weekOffset.set(0);
 };
 
-export function copyToClipboard(text: string) {
-	const el = document.createElement('textarea');
-	document.body.appendChild(el);
-	el.textContent = text;
-	el.select();
-	document.execCommand('copy');
-	el.remove();
-}
-
 export function focusNewTodoInput(day: number, list: TodoListType = 'home') {
 	// mobile doesn't show the new todo input (it's just a "+" button that opens
 	// a prompt dialog), but this function is still used to at least scroll to the day

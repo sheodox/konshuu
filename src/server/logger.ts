@@ -68,3 +68,4 @@ export const authLogger = createConcernLogger('auth');
 export const httpLogger = createConcernLogger('http');
 export const databaseLogger = createConcernLogger('database');
 export const todoLogger = createConcernLogger('todo');
+export const anytimeLogger = createConcernLogger('anytime');

@@ -15,9 +15,11 @@ model User {
   passwordHash String
   todos        Todo[]
 
-  Weekly Weekly[]
-  @@unique([email])
+  Weekly         Weekly[]
   WeeklyProgress WeeklyProgress[]
+  Anytime        Anytime[]
+  AnytimeTodo    AnytimeTodo[]
+  @@unique([email])
 }
 
 model Todo {
@@ -26,6 +28,7 @@ model Todo {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   text      String
+  href      String @default("")
   date      DateTime @db.Date
   completed Boolean  @default(false)
   list      String
@@ -42,10 +45,10 @@ model Weekly {
   // the number of times this weekly needs to be done
   goal      Int
   // soft-delete for keeping old weekly progress around
-  deleted Boolean @default(false)
+  deleted   Boolean  @default(false)
 
-  @@index([userId])
   WeeklyProgress WeeklyProgress[]
+  @@index([userId])
 }
 
 model WeeklyProgress {
@@ -64,4 +67,34 @@ model WeeklyProgress {
 
   @@unique([userId, weeklyId, week])
   @@index([userId, week])
+}
+
+model Anytime {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  name      String
+  type      String
+
+  count         Int     @default(0)
+  showCountUp   Boolean @default(true)
+  showCountDown Boolean @default(true)
+
+  todos AnytimeTodo[]
+  @@index([userId])
+}
+
+model AnytimeTodo {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  text      String
+  href      String @default("")
+  completed Boolean  @default(false)
+  anytimeId String
+  anytime   Anytime  @relation(fields: [anytimeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, anytimeId])
 }
