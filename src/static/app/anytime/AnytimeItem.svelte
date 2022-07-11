@@ -3,6 +3,10 @@
 		margin: 0;
 	}
 
+	.todo-header button {
+		padding: 0.25rem 0.5rem;
+	}
+
 	hr {
 		width: 100%;
 		border-color: var(--sx-gray-200);
@@ -10,9 +14,9 @@
 </style>
 
 <div class="anytime-item f-column">
-	<div class="f-row justify-content-between align-items-baseline">
+	<div class="f-row justify-content-between align-items-baseline todo-header">
 		<h2>{data.name}</h2>
-		<div>
+		<div class="f-row">
 			{#if data.type === 'todos' && mode === 'view'}
 				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo">
 					<Icon icon="plus" variant="icon-only" />
