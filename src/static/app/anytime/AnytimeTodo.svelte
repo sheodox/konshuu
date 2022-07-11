@@ -78,6 +78,12 @@
 						Copy
 					</button>
 				</li>
+				<li>
+					<button class="a" on:click={() => copyToClipboard(todo.href)}>
+						<Icon icon="copy" />
+						Copy URL
+					</button>
+				</li>
 			</ul>
 		</MenuButton>
 	</li>
