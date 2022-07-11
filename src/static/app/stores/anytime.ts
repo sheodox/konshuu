@@ -10,6 +10,7 @@ import type {
 } from '../../../shared/types/anytime';
 
 export const anytimes = writable<Anytime[]>([]);
+export const anytimesInitialized = writable(false);
 
 export const anytimeOps = {
 	new(data: AnytimeNew) {
@@ -29,9 +30,13 @@ export const anytimeOps = {
 	},
 	todo: {
 		new(anytimeId: string, data: AnytimeTodoNew) {
+			data.href = data.href.trim();
+			data.text = data.text.trim();
 			envoy.emit('anytime:todo:new', anytimeId, data);
 		},
 		edit(id: string, data: AnytimeTodoEditable) {
+			data.href = data.href.trim();
+			data.text = data.text.trim();
 			envoy.emit('anytime:todo:edit', id, data);
 		},
 		delete(anytimeId: string, id: string) {
@@ -45,6 +50,7 @@ export const anytimeOps = {
 
 envoy.on('anytime:init', (a: Anytime[]) => {
 	anytimes.set(a);
+	anytimesInitialized.set(true);
 });
 envoy.on('anytime:new', (anytime: Anytime) => {
 	anytimes.update((a) => [...a, anytime]);

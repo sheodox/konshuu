@@ -131,6 +131,8 @@ export const newTodo = (todoData: TodoCreatable) => {
 		return;
 	}
 
+	todoData.text = todoData.text.trim();
+
 	envoy.emit('todo:new', todoData);
 };
 
