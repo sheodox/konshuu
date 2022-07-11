@@ -1,19 +1,34 @@
-<div class="anytime-item f-column gap-1">
-	<h2>New</h2>
-	<TextInput id="new-anytime-name" bind:value={name}>Name</TextInput>
+<style>
+	.new-padding {
+		padding: 2px;
+		border-radius: 0.2rem;
+		background: var(--sx-accent-gradient);
+	}
+</style>
 
-	<p class="text-align-center" class:muted={!name}>Choose a type</p>
-	{#each types as type}
-		<button on:click={() => makeType(type.kind)} class="secondary" disabled={!name}>
-			<Icon icon={type.icon} />
-			{type.name}
-		</button>
-	{/each}
+<div class="new-padding">
+	<div class="anytime-item f-column gap-1">
+		<h2>New Anytime</h2>
+		<TextInput id="new-anytime-name" bind:value={name}>Name</TextInput>
+
+		<p class="text-align-center" class:muted={!name}>Choose a type</p>
+		<div class="f-column gap-1 f-1">
+			{#each types as type}
+				<button on:click={() => makeType(type.kind)} class="secondary" disabled={!name}>
+					<Icon icon={type.icon} />
+					{type.name}
+				</button>
+			{/each}
+		</div>
+		<button on:click={() => (visible = false)} class="secondary">Cancel</button>
+	</div>
 </div>
 
 <script lang="ts">
 	import { Icon, TextInput } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
+
+	export let visible: boolean;
 
 	let name = '';
 
@@ -33,5 +48,6 @@
 	function makeType(type: string) {
 		anytimeOps.new({ name, type });
 		name = '';
+		visible = false;
 	}
 </script>

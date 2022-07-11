@@ -6,11 +6,6 @@
 	.todo-header button {
 		padding: 0.25rem 0.5rem;
 	}
-
-	hr {
-		width: 100%;
-		border-color: var(--sx-gray-200);
-	}
 </style>
 
 <div class="anytime-item f-column">
@@ -18,7 +13,7 @@
 		<h2>{data.name}</h2>
 		<div class="f-row">
 			{#if data.type === 'todos' && mode === 'view'}
-				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo">
+				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo" aria-pressed={showNewTodo}>
 					<Icon icon="plus" variant="icon-only" />
 					<span class="sr-only">Add Todo</span>
 				</button>
@@ -39,18 +34,18 @@
 			<p>Unknown type <code>{data.type}</code></p>
 		{/if}
 	{:else if mode === 'edit'}
-		<form on:submit|preventDefault={submit} class="f-column gap-2">
-			<TextInput id="name-{data.id}" bind:value={editingData.name}>Name</TextInput>
+		<form on:submit|preventDefault={submit} class="f-column gap-2 f-1">
+			<div class="f-column gap-2 f-1">
+				<TextInput id="name-{data.id}" bind:value={editingData.name}>Name</TextInput>
 
-			{#if data.type === 'counter'}
-				<AnytimeCounterSettings bind:data={editingData} id={data.id} />
-			{:else if data.type === 'todos'}
-				<AnytimeTodoSettings {data} />
-			{:else}
-				<p>Unknown type <code>{data.type}</code></p>
-			{/if}
-
-			<hr />
+				{#if data.type === 'counter'}
+					<AnytimeCounterSettings bind:data={editingData} id={data.id} />
+				{:else if data.type === 'todos'}
+					<AnytimeTodoSettings {data} />
+				{:else}
+					<p>Unknown type <code>{data.type}</code></p>
+				{/if}
+			</div>
 
 			<button class="primary">Save</button>
 			<button class="secondary" type="button" on:click={switchMode}>Cancel</button>
