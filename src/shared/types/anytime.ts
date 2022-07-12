@@ -15,6 +15,17 @@ export interface Anytime {
 	showCountUp: boolean;
 	showCountDown: boolean;
 	todos: AnytimeTodo[];
+	tags: AnytimeTagAssignment[];
+}
+
+export interface AnytimeTag {
+	id: string;
+	name: string;
+}
+
+export interface AnytimeTagAssignment {
+	id: string;
+	anytimeTagId: string;
 }
 
 export type AnytimeNew = Pick<Anytime, 'name' | 'type'>;

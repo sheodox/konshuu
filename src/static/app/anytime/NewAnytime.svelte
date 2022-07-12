@@ -20,15 +20,15 @@
 				</button>
 			{/each}
 		</div>
-		<button on:click={() => (visible = false)} class="secondary">Cancel</button>
+		<button on:click={close} class="secondary">Cancel</button>
 	</div>
 </div>
 
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { Icon, TextInput } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
-
-	export let visible: boolean;
+	const dispatch = createEventDispatcher<{ close: void }>();
 
 	let name = '';
 
@@ -48,6 +48,9 @@
 	function makeType(type: string) {
 		anytimeOps.new({ name, type });
 		name = '';
-		visible = false;
+		close();
+	}
+	function close() {
+		dispatch('close');
 	}
 </script>

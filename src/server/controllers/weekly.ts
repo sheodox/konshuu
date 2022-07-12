@@ -49,6 +49,9 @@ export class WeeklyInteractor {
 		});
 	}
 	static async new(userId: string, name: string, goal: number) {
+		if (!userId) {
+			return;
+		}
 		const { error, value } = weeklySchemas.new.validate({ name, goal });
 
 		if (!error) {
@@ -62,6 +65,9 @@ export class WeeklyInteractor {
 		}
 	}
 	static async update(userId: string, id: string, update: WeeklyEditable) {
+		if (!userId || !id) {
+			return;
+		}
 		const { error, value } = weeklySchemas.update.validate(update);
 
 		if (!error) {
@@ -155,6 +161,10 @@ export class WeeklyInteractor {
 		startOfWeek: CalendarDate,
 		update: WeeklyProgressEditable
 	) {
+		if (!userId || !weeklyId || !weeklyProgressId) {
+			return;
+		}
+
 		const { value, error } = weeklyProgressSchema.validate(update);
 
 		if (error) {

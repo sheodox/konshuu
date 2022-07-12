@@ -15,10 +15,12 @@ model User {
   passwordHash String
   todos        Todo[]
 
-  Weekly         Weekly[]
-  WeeklyProgress WeeklyProgress[]
-  Anytime        Anytime[]
-  AnytimeTodo    AnytimeTodo[]
+  Weekly               Weekly[]
+  WeeklyProgress       WeeklyProgress[]
+  Anytime              Anytime[]
+  AnytimeTodo          AnytimeTodo[]
+  AnytimeTag           AnytimeTag[]
+  AnytimeTagAssignment AnytimeTagAssignment[]
   @@unique([email])
 }
 
@@ -28,7 +30,7 @@ model Todo {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   text      String
-  href      String @default("")
+  href      String   @default("")
   date      DateTime @db.Date
   completed Boolean  @default(false)
   list      String
@@ -82,6 +84,32 @@ model Anytime {
   showCountDown Boolean @default(true)
 
   todos AnytimeTodo[]
+  tags  AnytimeTagAssignment[]
+  @@index([userId])
+}
+
+model AnytimeTag {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  name      String
+
+  AnytimeTagAssignment AnytimeTagAssignment[]
+  @@index([userId])
+}
+
+model AnytimeTagAssignment {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  anytimeId    String
+  anytime      Anytime    @relation(fields: [anytimeId], references: [id], onDelete: Cascade)
+  anytimeTagId String
+  anytimeTag   AnytimeTag @relation(fields: [anytimeTagId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, anytimeId, anytimeTagId])
   @@index([userId])
 }
 
@@ -91,7 +119,7 @@ model AnytimeTodo {
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   text      String
-  href      String @default("")
+  href      String   @default("")
   completed Boolean  @default(false)
   anytimeId String
   anytime   Anytime  @relation(fields: [anytimeId], references: [id], onDelete: Cascade)

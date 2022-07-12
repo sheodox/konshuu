@@ -63,19 +63,25 @@ export class AnytimeInteractor {
 			return;
 		}
 
-		return await prisma.anytime.findMany({
-			where: { userId },
-			include: {
-				todos: {
-					orderBy: {
-						createdAt: 'asc',
+		return {
+			anytimes: await prisma.anytime.findMany({
+				where: { userId },
+				include: {
+					todos: {
+						orderBy: {
+							createdAt: 'asc',
+						},
 					},
+					tags: true,
 				},
-			},
-			orderBy: {
-				createdAt: 'asc',
-			},
-		});
+				orderBy: {
+					createdAt: 'asc',
+				},
+			}),
+			tags: await prisma.anytimeTag.findMany({
+				where: { userId },
+			}),
+		};
 	}
 	static async newAnytime(userId: string, data: AnytimeNew) {
 		const { value, valid } = validateSchema(data, schemas.anytime.new);
@@ -209,6 +215,80 @@ export class AnytimeInteractor {
 				userId,
 				anytimeId,
 				completed: true,
+			},
+		});
+	}
+	static async newTag(userId: string, name: string) {
+		name = name?.trim();
+		if (!name || !userId) {
+			return;
+		}
+
+		return await prisma.anytimeTag.create({
+			data: {
+				userId,
+				name,
+			},
+		});
+	}
+	static async editTag(userId: string, id: string, name: string) {
+		name = name?.trim();
+		if (!name || !userId || !id) {
+			return;
+		}
+
+		await prisma.anytimeTag.updateMany({
+			where: {
+				userId,
+				id,
+			},
+			data: {
+				userId,
+				name,
+			},
+		});
+
+		return prisma.anytimeTag.findFirst({
+			where: {
+				userId,
+				id,
+			},
+		});
+	}
+	static async deleteTag(userId: string, id: string) {
+		if (!userId || !id) {
+			return;
+		}
+
+		return await prisma.anytimeTag.deleteMany({
+			where: {
+				userId,
+				id,
+			},
+		});
+	}
+	static async assignTag(userId: string, anytimeId: string, anytimeTagId: string) {
+		if (!userId || !anytimeId || !anytimeTagId) {
+			return;
+		}
+
+		return await prisma.anytimeTagAssignment.create({
+			data: {
+				userId,
+				anytimeId,
+				anytimeTagId,
+			},
+		});
+	}
+	static async unassignTag(userId: string, assignmentId: string) {
+		if (!userId || !assignmentId) {
+			return;
+		}
+
+		return await prisma.anytimeTagAssignment.deleteMany({
+			where: {
+				userId,
+				id: assignmentId,
 			},
 		});
 	}

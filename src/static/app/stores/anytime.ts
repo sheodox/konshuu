@@ -1,16 +1,42 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { envoy } from './app';
-import type {
+import {
 	Anytime,
 	AnytimeTodo,
 	AnytimeEditable,
 	AnytimeTodoEditable,
 	AnytimeTodoNew,
 	AnytimeNew,
+	AnytimeTag,
 } from '../../../shared/types/anytime';
 
 export const anytimes = writable<Anytime[]>([]);
+export const filterTags = writable<string[]>([]);
+export const tags = writable<AnytimeTag[]>([]);
 export const anytimesInitialized = writable(false);
+export const tagsSorted = derived([tags, anytimes], ([tags, anytimes]) => {
+	const withCounts = new Map<string, number>();
+	for (const anytime of anytimes) {
+		for (const assignment of anytime.tags) {
+			const countForTag = withCounts.get(assignment.anytimeTagId);
+			if (countForTag) {
+				withCounts.set(assignment.anytimeTagId, countForTag + 1);
+			} else {
+				withCounts.set(assignment.anytimeTagId, 1);
+			}
+		}
+	}
+
+	const asArray = Array.from(withCounts.entries());
+	asArray.sort((a, b) => b[1] - a[1]);
+
+	const sortedTags = [];
+	for (const [id] of asArray) {
+		sortedTags.push(tags.find((tag) => tag.id === id));
+	}
+
+	return sortedTags;
+});
 
 export const anytimeOps = {
 	new(data: AnytimeNew) {
@@ -46,10 +72,28 @@ export const anytimeOps = {
 			envoy.emit('anytime:todo:deleteCompleted', anytimeId);
 		},
 	},
+	tag: {
+		new(name: string) {
+			envoy.emit('anytime:tag:new', name);
+		},
+		edit(id: string, name: string) {
+			envoy.emit('anytime:tag:edit', id, name);
+		},
+		delete(id: string) {
+			envoy.emit('anytime:tag:delete', id);
+		},
+		assign(anytimeId: string, anytimeTagId: string) {
+			envoy.emit('anytime:tag:assign', anytimeId, anytimeTagId);
+		},
+		unassign(anytimeId: string, assignmentId: string) {
+			envoy.emit('anytime:tag:unassign', anytimeId, assignmentId);
+		},
+	},
 };
 
-envoy.on('anytime:init', (a: Anytime[]) => {
-	anytimes.set(a);
+envoy.on('anytime:init', (data: { anytimes: Anytime[]; tags: AnytimeTag[] }) => {
+	anytimes.set(data.anytimes);
+	tags.set(data.tags);
 	anytimesInitialized.set(true);
 });
 envoy.on('anytime:new', (anytime: Anytime) => {
@@ -134,6 +178,36 @@ envoy.on('anytime:todo:deleteCompleted', (anytimeId: string) => {
 			...anytime,
 			// filter down to only those uncompleted
 			todos: anytime.todos.filter((todo) => !todo.completed),
+		};
+	});
+});
+
+envoy.on('anytime:tag:new', (tag: AnytimeTag) => {
+	tags.update((tags) => [...tags, tag]);
+});
+
+envoy.on('anytime:tag:edit', (tag: AnytimeTag) => {
+	tags.update((tags) => tags.map((t) => (t.id === tag.id ? tag : t)));
+});
+
+envoy.on('anytime:tag:delete', (id: string) => {
+	tags.update((tags) => tags.filter((t) => t.id !== id));
+});
+
+envoy.on('anytime:tag:assign', (anytimeId: string, assignment) => {
+	updateAnytime(anytimeId, (anytime: Anytime) => {
+		return {
+			...anytime,
+			tags: [...anytime.tags, assignment],
+		};
+	});
+});
+
+envoy.on('anytime:tag:unassign', (anytimeId: string, assignmentId) => {
+	updateAnytime(anytimeId, (anytime: Anytime) => {
+		return {
+			...anytime,
+			tags: anytime.tags.filter((tag) => tag.id !== assignmentId),
 		};
 	});
 });

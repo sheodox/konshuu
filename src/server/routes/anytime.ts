@@ -3,11 +3,17 @@ import { deserialize, serialize } from '../../shared/serialization.js';
 import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
 import { anytimeLogger } from '../logger.js';
 import { AnytimeInteractor } from '../controllers/anytime.js';
-import type { Anytime as PrismaAnytime, AnytimeTodo as PrismaAnytimeTodo } from '@prisma/client';
-import type { Anytime, AnytimeTodo } from '../../shared/types/anytime.js';
+import type {
+	Anytime as PrismaAnytime,
+	AnytimeTodo as PrismaAnytimeTodo,
+	AnytimeTag as PrismaAnytimeTag,
+	AnytimeTagAssignment as PrismaAnytimeTagAssignment,
+} from '@prisma/client';
+import type { Anytime, AnytimeTodo, AnytimeTag, AnytimeTagAssignment } from '../../shared/types/anytime.js';
 
 interface PrismaAnytimeWithTodos extends PrismaAnytime {
 	todos: PrismaAnytimeTodo[];
+	tags: PrismaAnytimeTagAssignment[];
 }
 
 const toDTO = {
@@ -21,12 +27,14 @@ const toDTO = {
 			showCountUp: anytime.showCountUp,
 			showCountDown: anytime.showCountDown,
 			todos: [],
+			tags: [],
 		};
 	},
-	anytimeWithTodos: (anytime: PrismaAnytimeWithTodos): Anytime => {
+	anytimeHydrated: (anytime: PrismaAnytimeWithTodos): Anytime => {
 		return {
 			...toDTO.anytime(anytime),
 			todos: anytime.todos.map(toDTO.anytimeTodo),
+			tags: anytime.tags.map(toDTO.tagAssignment),
 		};
 	},
 	anytimeTodo: (todo: PrismaAnytimeTodo): AnytimeTodo => {
@@ -36,6 +44,18 @@ const toDTO = {
 			text: todo.text,
 			href: todo.href,
 			completed: todo.completed,
+		};
+	},
+	tag: (tag: PrismaAnytimeTag): AnytimeTag => {
+		return {
+			id: tag.id,
+			name: tag.name,
+		};
+	},
+	tagAssignment: (assignment: PrismaAnytimeTagAssignment): AnytimeTagAssignment => {
+		return {
+			id: assignment.id,
+			anytimeTagId: assignment.anytimeTagId,
 		};
 	},
 };
@@ -81,11 +101,14 @@ io.on('connection', (socket) => {
 	};
 
 	on('init', async () => {
-		const anytimes = await AnytimeInteractor.list(userId);
+		const data = await AnytimeInteractor.list(userId);
 
 		// emit this only to the single socket, not all sockets for this user, or each session
 		// can't page individually, as paging in one tab/device will page all of them
-		emitToSocket('anytime:init', anytimes.map(toDTO.anytimeWithTodos));
+		emitToSocket('anytime:init', {
+			anytimes: data.anytimes.map(toDTO.anytimeHydrated),
+			tags: data.tags.map(toDTO.tag),
+		});
 	});
 
 	on('anytime:new', async (data) => {
@@ -139,5 +162,30 @@ io.on('connection', (socket) => {
 	on('anytime:todo:deleteCompleted', async (anytimeId) => {
 		await AnytimeInteractor.deleteCompletedAnytimeTodo(userId, anytimeId);
 		emitToUser('anytime:todo:deleteCompleted', anytimeId);
+	});
+
+	on('anytime:tag:new', async (name) => {
+		const tag = await AnytimeInteractor.newTag(userId, name);
+		emitToUser('anytime:tag:new', toDTO.tag(tag));
+	});
+
+	on('anytime:tag:edit', async (id, name) => {
+		const tag = await AnytimeInteractor.editTag(userId, id, name);
+		emitToUser('anytime:tag:edit', toDTO.tag(tag));
+	});
+
+	on('anytime:tag:delete', async (id) => {
+		await AnytimeInteractor.deleteTag(userId, id);
+		emitToUser('anytime:tag:delete', id);
+	});
+
+	on('anytime:tag:assign', async (anytimeId, anytimeTagId) => {
+		const assignment = await AnytimeInteractor.assignTag(userId, anytimeId, anytimeTagId);
+		emitToUser('anytime:tag:assign', anytimeId, toDTO.tagAssignment(assignment));
+	});
+
+	on('anytime:tag:unassign', async (anytimeId, assignmentId) => {
+		await AnytimeInteractor.unassignTag(userId, assignmentId);
+		emitToUser('anytime:tag:unassign', anytimeId, assignmentId);
 	});
 });
