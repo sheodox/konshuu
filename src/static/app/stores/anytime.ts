@@ -117,6 +117,7 @@ envoy.on('anytime:edit', (anytime: Anytime) => {
 		return {
 			...anytime,
 			todos: old.todos,
+			tags: old.tags,
 		};
 	});
 });
