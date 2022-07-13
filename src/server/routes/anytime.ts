@@ -114,7 +114,7 @@ io.on('connection', (socket) => {
 	on('anytime:new', async (data) => {
 		const anytime = await AnytimeInteractor.newAnytime(userId, data);
 		if (anytime) {
-			emitToUser('anytime:new', toDTO.anytime(anytime));
+			emitToUser('anytime:new', toDTO.anytimeHydrated({ todos: [], ...anytime }));
 		}
 	});
 

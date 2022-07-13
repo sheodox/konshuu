@@ -193,6 +193,15 @@ envoy.on('anytime:tag:edit', (tag: AnytimeTag) => {
 
 envoy.on('anytime:tag:delete', (id: string) => {
 	tags.update((tags) => tags.filter((t) => t.id !== id));
+	filterTags.update((tags) => tags.filter((filteredId) => filteredId !== id));
+	anytimes.update((anytimes) => {
+		return anytimes.map((anytime) => {
+			return {
+				...anytime,
+				tags: anytime.tags.filter((tag) => tag.anytimeTagId !== id),
+			};
+		});
+	});
 });
 
 envoy.on('anytime:tag:assign', (anytimeId: string, assignment) => {

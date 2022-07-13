@@ -22,6 +22,8 @@
 	}
 
 	function remove() {
-		anytimeOps.tag.delete(tag.id);
+		if (confirm(`Are you sure you want to delete the tag "${tag.name}"?`)) {
+			anytimeOps.tag.delete(tag.id);
+		}
 	}
 </script>

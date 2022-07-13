@@ -62,7 +62,6 @@
 	import AnytimeCounterSettings from './AnytimeCounterSettings.svelte';
 	import AnytimeTodos from './AnytimeTodos.svelte';
 	import AnytimeTodoSettings from './AnytimeTodoSettings.svelte';
-
 	export let data: Anytime;
 	let editingData: AnytimeEditable = data;
 	let showNewTodo = !data.todos.length;

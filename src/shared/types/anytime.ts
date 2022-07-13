@@ -28,7 +28,7 @@ export interface AnytimeTagAssignment {
 	anytimeTagId: string;
 }
 
-export type AnytimeNew = Pick<Anytime, 'name' | 'type'>;
+export type AnytimeNew = Pick<Anytime, 'name' | 'type'> & { tags: string[] };
 export type AnytimeEditable = Pick<Anytime, 'name' | 'count' | 'showCountUp' | 'showCountDown'>;
 export type AnytimeTodoNew = Pick<AnytimeTodo, 'text' | 'href'>;
 export type AnytimeTodoEditable = Pick<AnytimeTodo, 'text' | 'href' | 'completed'>;

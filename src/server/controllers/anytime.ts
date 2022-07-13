@@ -36,6 +36,7 @@ const anytimeTypes = ['counter', 'todos'],
 			new: Joi.object({
 				name: anytimeProperties.name.required(),
 				type: anytimeProperties.type.required(),
+				tags: Joi.array().items(Joi.string()),
 			}),
 			edit: Joi.object({
 				name: anytimeProperties.name,
@@ -89,10 +90,24 @@ export class AnytimeInteractor {
 			return;
 		}
 
-		return await prisma.anytime.create({
+		const anytime = await prisma.anytime.create({
 			data: {
 				userId,
-				...value,
+				name: value.name,
+				type: value.type,
+			},
+		});
+
+		if (data.tags) {
+			for (const tagId of data.tags) {
+				await AnytimeInteractor.assignTag(userId, anytime.id, tagId);
+			}
+		}
+
+		return await prisma.anytime.findUnique({
+			where: { id: anytime.id },
+			include: {
+				tags: true,
 			},
 		});
 	}
