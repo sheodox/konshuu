@@ -7,8 +7,10 @@
 <fieldset>
 	<legend>{title}</legend>
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
-		<TextInput id="todo-text-{id}" bind:value={text}>Text</TextInput>
-		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://...">URL (optional)</TextInput>
+		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown}>Text</TextInput>
+		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
+			>URL (optional)</TextInput
+		>
 		<div class="f-row gap-2">
 			{#if showCancel}
 				<button class="secondary f-1" type="button" on:click={() => dispatch('cancel')}>Cancel</button>
@@ -31,4 +33,10 @@
 	export let showCancel = true;
 
 	$: invalid = !text || (href && !/https?:/.test(href));
+
+	function keydown(e: KeyboardEvent) {
+		if (showCancel && e.key === 'Escape' && !text && !href) {
+			dispatch('cancel');
+		}
+	}
 </script>
