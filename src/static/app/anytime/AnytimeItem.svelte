@@ -18,8 +18,8 @@
 					<span class="sr-only">Add Todo</span>
 				</button>
 			{/if}
-			<button on:click={switchMode}>
-				<Icon icon="ellipsis-v" variant="icon-only" />
+			<button on:click={switchMode} aria-pressed={mode === 'edit'}>
+				<Icon icon="cog" variant="icon-only" />
 				<span class="sr-only">Options</span>
 			</button>
 		</div>
@@ -30,6 +30,8 @@
 			<AnytimeCounter {data} />
 		{:else if data.type === 'todos'}
 			<AnytimeTodos {data} bind:showNewTodo />
+		{:else if data.type === 'countdown'}
+			<AnytimeCountdown {data} />
 		{:else}
 			<p>Unknown type <code>{data.type}</code></p>
 		{/if}
@@ -42,12 +44,14 @@
 					<AnytimeCounterSettings bind:data={editingData} id={data.id} />
 				{:else if data.type === 'todos'}
 					<AnytimeTodoSettings {data} />
+				{:else if data.type === 'countdown'}
+					<CountdownSettings bind:data={editingData} bind:valid={typeSettingsValid} />
 				{:else}
 					<p>Unknown type <code>{data.type}</code></p>
 				{/if}
 			</div>
 
-			<button class="primary">Save</button>
+			<button class="primary" disabled={!typeSettingsValid}>Save</button>
 			<button class="secondary" type="button" on:click={switchMode}>Cancel</button>
 			<button class="danger" type="button" on:click={confirmDelete}>Delete "{data.name}"</button>
 		</form>
@@ -58,13 +62,17 @@
 	import { Icon, TextInput } from 'sheodox-ui';
 	import type { Anytime, AnytimeEditable } from '../../../shared/types/anytime';
 	import { anytimeOps } from '../stores/anytime';
+	import AnytimeCountdown from './AnytimeCountdown.svelte';
 	import AnytimeCounter from './AnytimeCounter.svelte';
 	import AnytimeCounterSettings from './AnytimeCounterSettings.svelte';
 	import AnytimeTodos from './AnytimeTodos.svelte';
 	import AnytimeTodoSettings from './AnytimeTodoSettings.svelte';
+	import CountdownSettings from './CountdownSettings.svelte';
 	export let data: Anytime;
-	let editingData: AnytimeEditable = data;
-	let showNewTodo = !data.todos.length;
+
+	let editingData: AnytimeEditable = data,
+		showNewTodo = !data.todos.length,
+		typeSettingsValid = true;
 
 	let mode = 'view';
 
@@ -75,6 +83,7 @@
 				name: data.name,
 				showCountUp: data.showCountUp,
 				showCountDown: data.showCountDown,
+				countdownEnd: data.countdownEnd,
 			};
 			mode = 'edit';
 		} else {

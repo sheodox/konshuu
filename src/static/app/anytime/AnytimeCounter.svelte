@@ -19,7 +19,7 @@
 		<Icon icon="plus" variant="icon-only" />
 		<span class="sr-only">Increment</span>
 	</button>
-	<div class="count sx-badge-pink sx-font-size-9">{data.count}</div>
+	<div class="count sx-badge-gray sx-font-size-9">{data.count}</div>
 	<button on:click={decrement} disabled={!data.showCountDown}>
 		<Icon icon="minus" variant="icon-only" />
 		<span class="sr-only">Decrement</span>

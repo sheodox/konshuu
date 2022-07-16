@@ -26,6 +26,7 @@ const toDTO = {
 			count: anytime.count,
 			showCountUp: anytime.showCountUp,
 			showCountDown: anytime.showCountDown,
+			countdownEnd: anytime.countdownEnd,
 			todos: [],
 			tags: [],
 		};

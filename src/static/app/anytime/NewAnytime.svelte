@@ -4,6 +4,9 @@
 		border-radius: 0.2rem;
 		background: var(--sx-accent-gradient);
 	}
+	select {
+		width: 100%;
+	}
 </style>
 
 <div class="new-padding">
@@ -14,15 +17,25 @@
 			<Checkbox bind:checked={useCurrentFilters}>Assign current filtered tags</Checkbox>
 		{/if}
 
-		<p class="text-align-center" class:muted={!name}>Choose a type</p>
 		<div class="f-column gap-2 f-1">
-			{#each types as type}
-				<button on:click={() => makeType(type.kind)} class="secondary" disabled={!name}>
-					<Icon icon={type.icon} />
-					{type.name}
-				</button>
-			{/each}
+			<label>
+				Choose a type
+				<br />
+				<select bind:value={kind} class="py-2">
+					{#each types as type}
+						<option value={type.kind}>
+							<Icon icon={type.icon} />
+							<span>{type.name}</span>
+						</option>
+					{/each}
+				</select>
+			</label>
+
+			{#if kind === 'countdown'}
+				<CountdownSettings bind:valid={typeSettingsValid} bind:data={kindSpecificData} />
+			{/if}
 		</div>
+		<button on:click={create} class="primary" disabled={!name || !kind || !typeSettingsValid}>Create</button>
 		<button on:click={close} class="secondary">Cancel</button>
 	</div>
 </div>
@@ -31,11 +44,18 @@
 	import { createEventDispatcher } from 'svelte';
 	import { Checkbox, Icon, TextInput } from 'sheodox-ui';
 	import { anytimeOps, filterTags } from '../stores/anytime';
+	import CountdownSettings from './CountdownSettings.svelte';
+	import { AnytimeNew } from '../../../shared/types/anytime';
 	const dispatch = createEventDispatcher<{ close: void }>();
 
 	let name = '',
-		useCurrentFilters = true;
+		kind = '',
+		useCurrentFilters = true,
+		kindSpecificData: Partial<AnytimeNew> = {},
+		typeSettingsValid = true;
 	$: hasFilters = !!$filterTags.length;
+
+	$: kind && reset();
 
 	const types = [
 		{
@@ -48,14 +68,29 @@
 			name: 'Counter',
 			kind: 'counter',
 		},
+		{
+			icon: 'clock',
+			name: 'Countdown',
+			kind: 'countdown',
+		},
 	];
 
-	function makeType(type: string) {
-		anytimeOps.new({ name, type, tags: hasFilters && useCurrentFilters ? $filterTags : [] });
+	function create() {
+		anytimeOps.new({
+			name,
+			type: kind,
+			tags: hasFilters && useCurrentFilters ? $filterTags : [],
+			countdownEnd: kindSpecificData.countdownEnd,
+		});
 		name = '';
 		close();
 	}
 	function close() {
 		dispatch('close');
+	}
+
+	function reset() {
+		typeSettingsValid = true;
+		kindSpecificData = {};
 	}
 </script>

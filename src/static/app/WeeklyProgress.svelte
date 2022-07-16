@@ -24,7 +24,7 @@
 					</label>
 				</div>
 				<button on:click={startEdit} title="Edit progress this weeek"
-					><Icon icon="ellipsis-v" variant="icon-only" /><span class="sr-only">Edit</span></button
+					><Icon icon="cog" variant="icon-only" /><span class="sr-only">Edit</span></button
 				>
 			</div>
 			{#if progress.progress < progress.goal}

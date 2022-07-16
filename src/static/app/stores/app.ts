@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, readable } from 'svelte/store';
 import { io } from 'socket.io-client';
 import { User } from '../../../shared/types/app';
 import { isOnajiSerialized } from 'onaji';
@@ -19,6 +19,13 @@ const breakpoint = parseInt(
 
 export const socket = io();
 export const isBelowMobileBreakpoint = writable(checkIfBelowBreakpoint());
+export const now = readable<Date>(new Date(), (set) => {
+	const interval = setInterval(() => {
+		set(new Date());
+	}, 1000);
+
+	return () => clearInterval(interval);
+});
 
 export const socketConnected = writable(true);
 

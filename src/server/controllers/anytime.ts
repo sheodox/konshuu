@@ -14,13 +14,14 @@ function validateSchema(data: any, schema: Joi.Schema) {
 	}
 }
 
-const anytimeTypes = ['counter', 'todos'],
+const anytimeTypes = ['counter', 'todos', 'countdown'],
 	anytimeProperties = {
 		name: Joi.string().max(300),
 		type: Joi.string().valid(...anytimeTypes),
 		count: Joi.number().integer(),
 		showCountUp: Joi.boolean(),
 		showCountDown: Joi.boolean(),
+		countdownEnd: Joi.date(),
 	},
 	anytimeTodoProperties = {
 		text: Joi.string().max(300),
@@ -37,12 +38,14 @@ const anytimeTypes = ['counter', 'todos'],
 				name: anytimeProperties.name.required(),
 				type: anytimeProperties.type.required(),
 				tags: Joi.array().items(Joi.string()),
+				countdownEnd: anytimeProperties.countdownEnd.optional(),
 			}),
 			edit: Joi.object({
 				name: anytimeProperties.name,
 				count: anytimeProperties.count,
 				showCountUp: anytimeProperties.showCountUp,
 				showCountDown: anytimeProperties.showCountDown,
+				countdownEnd: anytimeProperties.countdownEnd.optional(),
 			}),
 		},
 		anytimeTodo: {
@@ -95,6 +98,7 @@ export class AnytimeInteractor {
 				userId,
 				name: value.name,
 				type: value.type,
+				countdownEnd: value.countdownEnd || null,
 			},
 		});
 

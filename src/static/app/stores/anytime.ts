@@ -43,6 +43,8 @@ export const anytimeOps = {
 		envoy.emit('anytime:new', data);
 	},
 	edit(id: string, data: AnytimeEditable) {
+		// if we're not editing a countdown, we need to not include a null date
+		data.countdownEnd = data.countdownEnd ? data.countdownEnd : undefined;
 		envoy.emit('anytime:edit', id, data);
 	},
 	increment(id: string) {

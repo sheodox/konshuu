@@ -72,12 +72,13 @@ model WeeklyProgress {
 }
 
 model Anytime {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  name      String
-  type      String
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id])
+  createdAt    DateTime  @default(now())
+  name         String
+  type         String
+  countdownEnd DateTime?
 
   count         Int     @default(0)
   showCountUp   Boolean @default(true)
