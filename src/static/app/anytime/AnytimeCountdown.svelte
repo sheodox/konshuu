@@ -9,7 +9,7 @@
 
 <div class="f-column align-items-center justify-content-center f-1" class:expired={hasExpired}>
 	{#if hasValidDate}
-		<div class="time sx-font-size-6">
+		<div class="time sx-font-size-6 my-4">
 			{#if !hasExpired}
 				<strong>{formatAbsolute(data.countdownEnd)}</strong> is in
 				<br />
