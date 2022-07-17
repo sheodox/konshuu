@@ -6,6 +6,9 @@
 	.reschedule-modal form {
 		justify-content: center;
 	}
+	.date-hint {
+		color: var(--sx-gray-100);
+	}
 	form,
 	form label {
 		display: flex;
@@ -18,17 +21,15 @@
 		<p>
 			When should {todoCount === 1 ? 'this todo' : 'these todos'} be rescheduled to?
 		</p>
-		{#if !isToday}
-			<button on:click={() => reschedule('today')}>Today</button>
-		{/if}
-		{#if !isTomorrow}
-			<button on:click={() => reschedule('tomorrow')}>Tomorrow</button>
-		{/if}
-		{#if calendarDate.getDay() !== 6 && listType !== 'work'}
-			<button on:click={() => reschedule('saturday')}>Saturday</button>
-		{/if}
-		<button on:click={() => reschedule('next-week')}>Next Week</button>
-		<button on:click={() => reschedule('next-monday')}>Next Monday</button>
+		{#each quickReschedules as { dest, text, show }}
+			{#if show}
+				<button on:click={() => reschedule(dest)} class="secondary">
+					{text}
+					<br />
+					<span class="date-hint">{getRescheduleDestinationDate(dest)}</span>
+				</button>
+			{/if}
+		{/each}
 		<br />
 		<p>Or a custom date...</p>
 		<form on:submit|preventDefault={() => reschedule(customReschedule)}>
@@ -45,14 +46,40 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { CalendarDate } from '../../shared/dates';
 	import type { TodoListType } from '../../shared/types/todos';
+	import { getRescheduleDestination } from './reschedule-utils';
 
 	export let visible: boolean;
 	export let calendarDate: CalendarDate;
 	export let listType: TodoListType;
 	export let todoCount: number;
 
-	$: isToday = calendarDate.isToday();
-	$: isTomorrow = calendarDate.isTomorrow();
+	$: quickReschedules = [
+		{
+			dest: 'today',
+			text: 'Today',
+			show: !calendarDate.isToday(),
+		},
+		{
+			dest: 'tomorrow',
+			text: 'Tomorrow',
+			show: !calendarDate.isTomorrow(),
+		},
+		{
+			dest: 'saturday',
+			text: 'Saturday',
+			show: calendarDate.getDay() !== 6 && listType !== 'work',
+		},
+		{
+			dest: 'next-week',
+			text: 'Next Week',
+			show: true,
+		},
+		{
+			dest: 'next-monday',
+			text: 'Next Monday',
+			show: true,
+		},
+	];
 
 	const dispatch = createEventDispatcher<{ reschedule: { to: string; originalDate: CalendarDate } }>();
 	let customReschedule: string;
@@ -60,5 +87,9 @@
 	function reschedule(to: string) {
 		dispatch('reschedule', { to, originalDate: calendarDate });
 		visible = false;
+	}
+
+	function getRescheduleDestinationDate(dest: string) {
+		return getRescheduleDestination(dest, calendarDate).asDate().toLocaleDateString();
 	}
 </script>
