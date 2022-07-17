@@ -57,6 +57,7 @@ const toDTO = {
 			createdAt: progressEntity.createdAt,
 			goal: progressEntity.goal,
 			progress: progressEntity.progress,
+			week: progressEntity.week,
 		};
 	},
 };
@@ -139,6 +140,7 @@ io.on('connection', (socket) => {
 					weeklyId: weekly.id,
 					goal: weekly.goal,
 					progress: 0,
+					week: startOfWeek,
 				}
 			);
 		});

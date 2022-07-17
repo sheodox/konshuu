@@ -2,6 +2,7 @@ import { writable, get, derived } from 'svelte/store';
 import { envoy } from './app';
 import type { Weekly, WeeklyEditable, WeeklyProgress, WeeklyProgressEditable } from '../../../shared/types/todos';
 import { CalendarDate } from '../../../shared/dates';
+import { startOfViewedWeek } from './todo';
 
 export const weeklies = writable<Weekly[]>([]);
 export const weekliesOrdered = derived(weeklies, (weeklies) => {
@@ -80,6 +81,7 @@ envoy.on('weekly:new', ({ weekly }) => {
 				progress: 0,
 				weeklyId: weekly.id,
 				createdAt: new Date(),
+				week: get(startOfViewedWeek),
 			},
 		];
 	});
@@ -120,7 +122,9 @@ envoy.on('weekly:progress:update', ({ progress }) => {
 	// there won't be any weekly progress for a week until the first time they record progress.
 	// so id will be null, we have to go off of the matching weeklyId instead as the id will be
 	// upserted to something else
-	weeklyProgress.update((progresses) => progresses.map((p) => (p.weeklyId === progress.weeklyId ? progress : p)));
+	weeklyProgress.update((progresses) =>
+		progresses.map((p) => (p.weeklyId === progress.weeklyId && p.week === progress.week ? progress : p))
+	);
 });
 
 envoy.on('weekly:progress:delete', ({ weeklyProgressId }) => {

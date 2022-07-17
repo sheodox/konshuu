@@ -64,6 +64,7 @@ export interface WeeklyProgress {
 	weeklyId: string;
 	progress: number;
 	goal: number;
+	week: string;
 }
 
 export interface WeeklyProgressEditable {
