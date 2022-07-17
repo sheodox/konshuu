@@ -6,7 +6,7 @@ import type { WeeklyEditable, WeeklyProgressEditable } from '../../shared/types/
 const weeklyFields = {
 		name: Joi.string(),
 		progress: Joi.number().min(0),
-		goal: Joi.number().min(1),
+		goal: Joi.number().min(0),
 	},
 	weeklySchemas = {
 		new: Joi.object({
@@ -161,7 +161,7 @@ export class WeeklyInteractor {
 		startOfWeek: CalendarDate,
 		update: WeeklyProgressEditable
 	) {
-		if (!userId || !weeklyId || !weeklyProgressId) {
+		if (!userId || !weeklyId) {
 			return;
 		}
 
