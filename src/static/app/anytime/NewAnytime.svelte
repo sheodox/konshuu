@@ -30,10 +30,9 @@
 					Choose a type
 					<br />
 					<select bind:value={kind} class="py-2">
-						{#each types as type}
+						{#each anytimeTypes as type}
 							<option value={type.kind}>
-								<Icon icon={type.icon} />
-								<span>{type.name}</span>
+								{type.name}
 							</option>
 						{/each}
 					</select>
@@ -41,6 +40,8 @@
 
 				{#if kind === 'countdown'}
 					<CountdownSettings bind:valid={typeSettingsValid} bind:data={kindSpecificData} />
+				{:else if kind === 'countup'}
+					<CountupSettings bind:valid={typeSettingsValid} bind:data={kindSpecificData} />
 				{/if}
 			</div>
 			<button on:click={create} class="primary" disabled={!name || !kind || !typeSettingsValid}>Create</button>
@@ -51,9 +52,10 @@
 
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import { Checkbox, Icon, TextInput } from 'sheodox-ui';
-	import { anytimeOps, filterTags } from '../stores/anytime';
+	import { Checkbox, TextInput } from 'sheodox-ui';
+	import { anytimeOps, anytimeTypes, filterTags } from '../stores/anytime';
 	import CountdownSettings from './CountdownSettings.svelte';
+	import CountupSettings from './CountupSettings.svelte';
 	import { AnytimeNew } from '../../../shared/types/anytime';
 	const dispatch = createEventDispatcher<{ close: void }>();
 
@@ -65,24 +67,6 @@
 	$: hasFilters = !!$filterTags.length;
 
 	$: kind && reset();
-
-	const types = [
-		{
-			icon: 'list',
-			name: 'Todo List',
-			kind: 'todos',
-		},
-		{
-			icon: 'calculator',
-			name: 'Counter',
-			kind: 'counter',
-		},
-		{
-			icon: 'clock',
-			name: 'Countdown',
-			kind: 'countdown',
-		},
-	];
 
 	function create() {
 		anytimeOps.new({

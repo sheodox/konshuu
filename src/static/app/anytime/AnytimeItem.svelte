@@ -32,6 +32,8 @@
 			<AnytimeTodos {data} bind:showNewTodo />
 		{:else if data.type === 'countdown'}
 			<AnytimeCountdown {data} />
+		{:else if data.type === 'countup'}
+			<Countup {data} />
 		{:else}
 			<p>Unknown type <code>{data.type}</code></p>
 		{/if}
@@ -46,6 +48,8 @@
 					<AnytimeTodoSettings {data} />
 				{:else if data.type === 'countdown'}
 					<CountdownSettings bind:data={editingData} bind:valid={typeSettingsValid} />
+				{:else if data.type === 'countup'}
+					<CountupSettings bind:data={editingData} bind:valid={typeSettingsValid} />
 				{:else}
 					<p>Unknown type <code>{data.type}</code></p>
 				{/if}
@@ -68,6 +72,8 @@
 	import AnytimeTodos from './AnytimeTodos.svelte';
 	import AnytimeTodoSettings from './AnytimeTodoSettings.svelte';
 	import CountdownSettings from './CountdownSettings.svelte';
+	import Countup from './Countup.svelte';
+	import CountupSettings from './CountupSettings.svelte';
 	export let data: Anytime;
 
 	let editingData: AnytimeEditable = data,

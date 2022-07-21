@@ -38,6 +38,29 @@ export const tagsSorted = derived([tags, anytimes], ([tags, anytimes]) => {
 	return sortedTags;
 });
 
+export const anytimeTypes = [
+	{
+		name: 'Todo List',
+		kind: 'todos',
+		icon: 'list',
+	},
+	{
+		name: 'Counter',
+		kind: 'counter',
+		icon: 'calculator',
+	},
+	{
+		name: 'Countdown',
+		kind: 'countdown',
+		icon: 'angle-double-down',
+	},
+	{
+		name: 'Countup',
+		kind: 'countup',
+		icon: 'angle-double-up',
+	},
+];
+
 export const anytimeOps = {
 	new(data: AnytimeNew) {
 		envoy.emit('anytime:new', data);

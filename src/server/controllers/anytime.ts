@@ -14,7 +14,7 @@ function validateSchema(data: any, schema: Joi.Schema) {
 	}
 }
 
-const anytimeTypes = ['counter', 'todos', 'countdown'],
+const anytimeTypes = ['counter', 'todos', 'countdown', 'countup'],
 	anytimeProperties = {
 		name: Joi.string().max(300),
 		type: Joi.string().valid(...anytimeTypes),
