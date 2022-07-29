@@ -2,6 +2,7 @@
 	textarea {
 		resize: none;
 		transition: background 0.1s;
+		min-height: 20rem;
 
 		&:not(:hover):not(:focus):not(.dirty) {
 			background: transparent;
