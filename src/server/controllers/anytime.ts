@@ -14,7 +14,7 @@ function validateSchema(data: any, schema: Joi.Schema) {
 	}
 }
 
-const anytimeTypes = ['counter', 'todos', 'countdown', 'countup'],
+const anytimeTypes = ['counter', 'todos', 'countdown', 'countup', 'notes'],
 	anytimeProperties = {
 		name: Joi.string().max(300),
 		type: Joi.string().valid(...anytimeTypes),
@@ -22,6 +22,7 @@ const anytimeTypes = ['counter', 'todos', 'countdown', 'countup'],
 		showCountUp: Joi.boolean(),
 		showCountDown: Joi.boolean(),
 		countdownEnd: Joi.date(),
+		notes: Joi.string().allow('').max(20000),
 	},
 	anytimeTodoProperties = {
 		text: Joi.string().max(300),
@@ -46,6 +47,7 @@ const anytimeTypes = ['counter', 'todos', 'countdown', 'countup'],
 				showCountUp: anytimeProperties.showCountUp,
 				showCountDown: anytimeProperties.showCountDown,
 				countdownEnd: anytimeProperties.countdownEnd.optional(),
+				notes: anytimeProperties.notes.optional(),
 			}),
 		},
 		anytimeTodo: {

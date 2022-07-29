@@ -59,11 +59,26 @@ export const anytimeTypes = [
 		kind: 'countup',
 		icon: 'angle-double-up',
 	},
+	{
+		name: 'Notes',
+		kind: 'notes',
+		icon: 'sticky-note',
+	},
 ];
 
 export const anytimeOps = {
 	new(data: AnytimeNew) {
 		envoy.emit('anytime:new', data);
+	},
+	anytimeToEditable(data: Anytime): AnytimeEditable {
+		return {
+			notes: data.notes,
+			name: data.name,
+			count: data.count,
+			countdownEnd: data.countdownEnd,
+			showCountUp: data.showCountUp,
+			showCountDown: data.showCountDown,
+		};
 	},
 	edit(id: string, data: AnytimeEditable) {
 		// if we're not editing a countdown, we need to not include a null date

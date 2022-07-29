@@ -71,7 +71,7 @@
 			<TagAssignment data={anytime} />
 		{/each}
 	{:else}
-		{#each $anytimes as anytime (anytime.id)}
+		{#each $anytimes as anytime (anytime.id + anytime.notes)}
 			{#if isFiltered(anytime, $filterTags)}
 				<AnytimeItem data={anytime} />
 			{/if}

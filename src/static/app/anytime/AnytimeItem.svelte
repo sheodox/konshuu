@@ -18,7 +18,7 @@
 					<span class="sr-only">Add Todo</span>
 				</button>
 			{/if}
-			<button on:click={switchMode} aria-pressed={mode === 'edit'}>
+			<button on:click={switchMode} aria-pressed={mode === 'edit'} disabled={!allowSettings}>
 				<Icon icon="cog" variant="icon-only" />
 				<span class="sr-only">Options</span>
 			</button>
@@ -34,6 +34,8 @@
 			<AnytimeCountdown {data} />
 		{:else if data.type === 'countup'}
 			<Countup {data} />
+		{:else if data.type === 'notes'}
+			<Notes bind:allowSettings {data} />
 		{:else}
 			<p>Unknown type <code>{data.type}</code></p>
 		{/if}
@@ -50,6 +52,8 @@
 					<CountdownSettings bind:data={editingData} bind:valid={typeSettingsValid} />
 				{:else if data.type === 'countup'}
 					<CountupSettings bind:data={editingData} bind:valid={typeSettingsValid} />
+				{:else if data.type === 'notes'}
+					<div />
 				{:else}
 					<p>Unknown type <code>{data.type}</code></p>
 				{/if}
@@ -74,23 +78,19 @@
 	import CountdownSettings from './CountdownSettings.svelte';
 	import Countup from './Countup.svelte';
 	import CountupSettings from './CountupSettings.svelte';
+	import Notes from './Notes.svelte';
+
 	export let data: Anytime;
 
 	let editingData: AnytimeEditable = data,
 		showNewTodo = !data.todos.length,
-		typeSettingsValid = true;
-
-	let mode = 'view';
+		typeSettingsValid = true,
+		allowSettings = true,
+		mode = 'view';
 
 	function switchMode() {
 		if (mode === 'view') {
-			editingData = {
-				count: data.count,
-				name: data.name,
-				showCountUp: data.showCountUp,
-				showCountDown: data.showCountDown,
-				countdownEnd: data.countdownEnd,
-			};
+			editingData = anytimeOps.anytimeToEditable(data);
 			mode = 'edit';
 		} else {
 			mode = 'view';
