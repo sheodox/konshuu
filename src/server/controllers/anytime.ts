@@ -131,6 +131,7 @@ export class AnytimeInteractor {
 			},
 			data: {
 				...value,
+				updatedAt: new Date(),
 			},
 		});
 
@@ -168,6 +169,7 @@ export class AnytimeInteractor {
 				count: {
 					increment: by,
 				},
+				updatedAt: new Date(),
 			},
 		});
 	}

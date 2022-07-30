@@ -206,6 +206,9 @@ envoy.on('anytime:increment', (anytimeId: string) => {
 	updateAnytime(anytimeId, (anytime: Anytime) => {
 		return {
 			...anytime,
+			//inc/dec are atomic operations that dont't return any data in particular (as to avoid issues caused by out of order updates)
+			//the current updatedAt isn't sent with messages, we can assume a new date puts us pretty close to the real thing
+			updatedAt: new Date(),
 			count: anytime.count + 1,
 		};
 	});
@@ -215,6 +218,9 @@ envoy.on('anytime:decrement', (anytimeId: string) => {
 	updateAnytime(anytimeId, (anytime: Anytime) => {
 		return {
 			...anytime,
+			//inc/dec are atomic operations that dont't return any data in particular (as to avoid issues caused by out of order updates)
+			//the current updatedAt isn't sent with messages, we can assume a new date puts us pretty close to the real thing
+			updatedAt: new Date(),
 			count: anytime.count - 1,
 		};
 	});

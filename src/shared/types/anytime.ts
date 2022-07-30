@@ -9,6 +9,7 @@ export interface AnytimeTodo {
 export interface Anytime {
 	id: string;
 	createdAt: Date;
+	updatedAt: Date;
 	name: string;
 	type: string;
 	count: number;

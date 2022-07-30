@@ -59,6 +59,7 @@
 				{/if}
 			</div>
 
+			<p class="m-0 sx-font-size-2 text-align-center">Last updated {data.updatedAt.toLocaleString()}</p>
 			<button class="primary" disabled={!typeSettingsValid}>Save</button>
 			<button class="secondary" type="button" on:click={switchMode}>Cancel</button>
 			<button class="danger" type="button" on:click={confirmDelete}>Delete "{data.name}"</button>

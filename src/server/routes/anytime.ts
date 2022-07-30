@@ -21,6 +21,7 @@ const toDTO = {
 		return {
 			id: anytime.id,
 			createdAt: anytime.createdAt,
+			updatedAt: anytime.updatedAt,
 			name: anytime.name,
 			type: anytime.type,
 			count: anytime.count,
