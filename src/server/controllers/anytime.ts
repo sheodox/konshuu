@@ -28,6 +28,7 @@ const anytimeTypes = ['counter', 'todos', 'countdown', 'countup', 'notes'],
 		text: Joi.string().max(300),
 		completed: Joi.boolean(),
 		href: Joi.string()
+			.max(2000)
 			.uri({
 				scheme: ['http', 'https'],
 			})

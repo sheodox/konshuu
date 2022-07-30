@@ -9,6 +9,14 @@ import {
 	AnytimeNew,
 	AnytimeTag,
 } from '../../../shared/types/anytime';
+import {
+	differenceInDays,
+	differenceInHours,
+	differenceInMinutes,
+	differenceInSeconds,
+	formatDuration,
+	intervalToDuration,
+} from 'date-fns';
 
 export const anytimes = writable<Anytime[]>([]);
 export const filterTags = writable<string[]>([]);
@@ -37,6 +45,38 @@ export const tagsSorted = derived([tags, anytimes], ([tags, anytimes]) => {
 
 	return sortedTags;
 });
+
+function formatTimeToUnit(
+	date: Date,
+	now: Date,
+	singular: string,
+	plural: string,
+	differenceFn: (date1: Date, date2: Date) => number
+) {
+	const diff = Math.abs(differenceFn(date, now));
+	return `${diff} ${diff === 1 ? singular : plural}`;
+}
+
+export function formatRelative(date: Date, now: Date, units: string) {
+	if (units === 'days') {
+		return formatTimeToUnit(date, now, 'day', 'days', differenceInDays);
+	} else if (units === 'hours') {
+		return formatTimeToUnit(date, now, 'hour', 'hours', differenceInHours);
+	} else if (units === 'minutes') {
+		return formatTimeToUnit(date, now, 'minute', 'minutes', differenceInMinutes);
+	} else if (units === 'seconds') {
+		return formatTimeToUnit(date, now, 'second', 'seconds', differenceInSeconds);
+	}
+
+	const duration = intervalToDuration({ start: now, end: date }),
+		secondsDifference = differenceInSeconds(date, now);
+	// we don't show seconds for far off dates as it's distracting to see them change constantly, but for close
+	// dates we should show the full timer
+	if (Math.abs(secondsDifference) < 60) {
+		return formatDuration(duration);
+	}
+	return formatDuration(duration, { format: ['years', 'months', 'days', 'hours', 'minutes'] });
+}
 
 export const anytimeTypes = [
 	{
