@@ -11,7 +11,7 @@
 	}
 	@media (max-width: 600px) {
 		.week {
-			scroll-snap-type: y mandatory;
+			scroll-snap-type: x mandatory;
 		}
 	}
 	@media (max-width: 700px) {
