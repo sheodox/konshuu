@@ -54,7 +54,7 @@ function formatTimeToUnit(
 	differenceFn: (date1: Date, date2: Date) => number
 ) {
 	const diff = Math.abs(differenceFn(date, now));
-	return `${diff} ${diff === 1 ? singular : plural}`;
+	return `${diff.toLocaleString()} ${diff === 1 ? singular : plural}`;
 }
 
 export function formatRelative(date: Date, now: Date, units: string) {
