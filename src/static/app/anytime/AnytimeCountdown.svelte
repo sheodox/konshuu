@@ -1,18 +1,20 @@
 <style>
 	.time {
 		text-align: center;
+		font-weight: normal;
 	}
 	.expired {
-		color: var(--sx-green-400);
-	}
-	button {
-		font-weight: normal;
+		color: var(--sx-blue-400);
 	}
 </style>
 
-<div class="f-column align-items-center justify-content-center f-1 gap-2" class:expired={hasExpired}>
+<div class="f-column align-items-center justify-content-center f-1 gap-2">
 	{#if hasValidDate}
-		<button class="time sx-font-size-6 my-4" on:click={() => (showEditUnits = !showEditUnits)}>
+		<button
+			class="time sx-font-size-6 my-4"
+			on:click={() => (showEditUnits = !showEditUnits)}
+			class:expired={hasExpired}
+		>
 			{#if !hasExpired}
 				<strong>{formatAbsolute(data.countdownEnd)}</strong> is in
 				<br />

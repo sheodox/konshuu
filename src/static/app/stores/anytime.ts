@@ -1,5 +1,5 @@
-import { writable, derived } from 'svelte/store';
-import { envoy } from './app';
+import { writable, derived, get } from 'svelte/store';
+import { envoy, now } from './app';
 import {
 	Anytime,
 	AnytimeTodo,
@@ -16,7 +16,9 @@ import {
 	differenceInSeconds,
 	formatDuration,
 	intervalToDuration,
+	isBefore,
 } from 'date-fns';
+import { createPersistentToast } from 'sheodox-ui';
 
 export const anytimes = writable<Anytime[]>([]);
 export const filterTags = writable<string[]>([]);
@@ -44,6 +46,33 @@ export const tagsSorted = derived([tags, anytimes], ([tags, anytimes]) => {
 	}
 
 	return sortedTags;
+});
+
+function isExpiredCountdown(anytime: Anytime, now: Date) {
+	return anytime.type === 'countdown' && isBefore(anytime.countdownEnd, now);
+}
+
+export const hasExpiredCountdown = derived([anytimes, now], ([anytimes, now]) => {
+	return anytimes.some((anytime) => {
+		return isExpiredCountdown(anytime, now);
+	});
+});
+
+const alertedExpiredCountdowns: Set<string> = new Set();
+now.subscribe((now) => {
+	get(anytimes).forEach((anytime) => {
+		const hasAlerted = alertedExpiredCountdowns.has(anytime.id);
+
+		if (!hasAlerted && isExpiredCountdown(anytime, now)) {
+			alertedExpiredCountdowns.add(anytime.id);
+
+			createPersistentToast({
+				title: 'Countdown expired',
+				message: `The countdown "${anytime.name}" has expired.`,
+				href: '/anytime',
+			});
+		}
+	});
 });
 
 function formatTimeToUnit(
