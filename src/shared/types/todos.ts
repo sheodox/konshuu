@@ -71,3 +71,26 @@ export interface WeeklyProgressEditable {
 	progress?: number;
 	goal?: number;
 }
+
+export type RecurringRepeats = 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type Day = 'sunday' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday';
+
+export interface RecurringTodo {
+	id: string;
+	text: string;
+	list: TodoListType;
+	startDate: CalendarDate;
+	repeats: RecurringRepeats;
+	repeatEvery: number;
+	weeklyDayRepeats: Day[];
+}
+
+export type RecurringTodoCreatable = Omit<RecurringTodo, 'id'>;
+
+export interface RecurringTodoCompletion {
+	id: string;
+	date: CalendarDate;
+	recurringTodoId: string;
+}
+
+export type RecurringTodoCompletionCreatable = Omit<RecurringTodoCompletion, 'id'>;

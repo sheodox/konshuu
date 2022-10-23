@@ -1,7 +1,7 @@
-import { writable, get } from 'svelte/store';
+import { writable, get, derived } from 'svelte/store';
 import { CalendarDate } from '../../../shared/dates';
 import { socket, envoy } from './app';
-import type {
+import {
 	Todo,
 	DayTodosData,
 	DayTodos,
@@ -12,14 +12,36 @@ import type {
 	RescheduleManyOptions,
 	Weekly,
 	WeeklyProgress,
+	RecurringTodo,
+	RecurringTodoCompletion,
+	RecurringTodoCreatable,
+	RecurringTodoCompletionCreatable,
 } from '../../../shared/types/todos';
 import { weeklies, weeklyProgress } from './weekly';
+import {
+	differenceInCalendarDays,
+	differenceInCalendarMonths,
+	differenceInCalendarWeeks,
+	differenceInCalendarYears,
+	isBefore,
+} from 'date-fns';
 
 function getStartOfWeek(offsetWeeks: number) {
 	return CalendarDate.getStartOfWeekByOffset(new Date(), offsetWeeks).serialize();
 }
 
 export const week = writable<DayTodos[]>([]);
+export const recurringTodos = writable<RecurringTodo[]>([]);
+export const recurringTodosOrdered = derived(recurringTodos, (recurringTodos) => {
+	const sorted = [...recurringTodos];
+
+	sorted.sort((a, b) => {
+		return a.text.localeCompare(b.text);
+	});
+
+	return sorted;
+});
+export const recurringTodoCompletion = writable<RecurringTodoCompletion[]>([]);
 export const weekOffset = writable(0);
 export const hideCompleted = writable(false);
 export const startOfViewedWeek = writable(getStartOfWeek(0));
@@ -82,11 +104,22 @@ const processNew = (date: CalendarDate, newTodo: Todo) => {
 	});
 };
 
-envoy.on('todo:init', (initData: { todos: DayTodosData; weeklies: Weekly[]; weeklyProgress: WeeklyProgress[] }) => {
-	week.set(initData.todos.days);
-	weeklies.set(initData.weeklies);
-	weeklyProgress.set(initData.weeklyProgress);
-});
+envoy.on(
+	'todo:init',
+	(initData: {
+		todos: DayTodosData;
+		weeklies: Weekly[];
+		weeklyProgress: WeeklyProgress[];
+		recurringTodos: RecurringTodo[];
+		recurringTodoCompletion: RecurringTodoCompletion[];
+	}) => {
+		week.set(initData.todos.days);
+		weeklies.set(initData.weeklies);
+		weeklyProgress.set(initData.weeklyProgress);
+		recurringTodos.set(initData.recurringTodos);
+		recurringTodoCompletion.set(initData.recurringTodoCompletion);
+	}
+);
 
 envoy.on('todo:new', processNew);
 
@@ -125,6 +158,118 @@ envoy.on('todo:reschedule', (batch: RescheduleBatch) => {
 		processNew(date, todo);
 	});
 });
+
+envoy.on('recurring:new', (rec: RecurringTodo) => {
+	recurringTodos.update((recs) => {
+		return [...recs, rec];
+	});
+});
+
+envoy.on('recurring:edit', (rec: RecurringTodo) => {
+	recurringTodos.update((recs) => {
+		return recs.map((r) => (r.id === rec.id ? rec : r));
+	});
+});
+
+envoy.on('recurring:delete', (id: string) => {
+	recurringTodos.update((recs) => {
+		return recs.filter((r) => r.id !== id);
+	});
+});
+
+envoy.on('recurring-completion:new', (prog: RecurringTodoCompletion) => {
+	recurringTodoCompletion.update((progs) => {
+		// no need to check if this is for the current week, changing week overwrites progress,
+		// and having unneeded progress in the store won't impact what's showing
+		return [...progs, prog];
+	});
+});
+
+envoy.on('recurring-completion:delete', (id) => {
+	recurringTodoCompletion.update((progs) => {
+		return progs.filter((prog) => prog.id !== id);
+	});
+});
+
+export const recurringOps = {
+	new(data: RecurringTodoCreatable) {
+		envoy.emit('recurring:new', data);
+	},
+	edit(id: string, data: RecurringTodoCreatable) {
+		envoy.emit('recurring:edit', id, data);
+	},
+	delete(id: string) {
+		envoy.emit('recurring:delete', id);
+	},
+};
+export const recurringCompletionOps = {
+	complete(data: RecurringTodoCompletionCreatable) {
+		envoy.emit('recurring-completion:new', data);
+	},
+	delete(id: string) {
+		envoy.emit('recurring-completion:delete', id);
+	},
+};
+
+function isDateApplicable(date: CalendarDate, todo: RecurringTodo) {
+	const asDate = {
+		// the date we're trying to see if fits on the schedule of a recurring todo
+		date: date.asDate(),
+		// the first day a recurring todo is valid
+		startDate: todo.startDate.asDate(),
+	};
+
+	if (isBefore(asDate.date, asDate.startDate)) {
+		return false;
+	}
+
+	if (todo.repeats === 'daily') {
+		// if the difference between the dates falls on a multiple of repeatEvery
+		return differenceInCalendarDays(asDate.date, asDate.startDate) % todo.repeatEvery === 0;
+	} else if (todo.repeats === 'weekly') {
+		// ensure it's a valid day of the week
+		if (!todo.weeklyDayRepeats.includes(date.dayId())) {
+			return false;
+		}
+
+		//valid if it's a correct multiple of repeatEvery
+		return differenceInCalendarWeeks(asDate.date, asDate.startDate) % todo.repeatEvery === 0;
+	} else if (todo.repeats === 'monthly') {
+		// must be the same day of the month first of all
+		if (asDate.date.getDate() !== asDate.startDate.getDate()) {
+			return false;
+		}
+
+		//valid if it's a correct multiple of repeatEvery
+		return differenceInCalendarMonths(asDate.date, asDate.startDate) % todo.repeatEvery === 0;
+	} else if (todo.repeats === 'yearly') {
+		// must have the same month/date first of all
+		if (
+			asDate.date.getDate() !== asDate.startDate.getDate() ||
+			asDate.date.getMonth() !== asDate.startDate.getMonth()
+		) {
+			return false;
+		}
+
+		// valid if it's a correct multiple of repeatEvery
+		return differenceInCalendarYears(asDate.date, asDate.startDate) % todo.repeatEvery === 0;
+	}
+}
+
+// TODO: someday make RecurringView show the next few dates as an example,
+// this function would need to do the reverse of isDateApplicable and extrapolate
+// a few dates out given the recurring settings
+// function getNextApplicableDates(todo: RecurringTodo, numApplicable: number) {}
+
+export function getRecurringTodosForList(list: TodoListType, date: CalendarDate, todos: RecurringTodo[]) {
+	return todos.filter((todo) => {
+		if (todo.list !== list) {
+			return;
+		}
+
+		return isDateApplicable(date, todo);
+	});
+}
 
 export const newTodo = (todoData: TodoCreatable) => {
 	if (!todoData.text) {

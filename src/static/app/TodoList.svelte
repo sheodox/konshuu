@@ -55,6 +55,18 @@
 	.all-done {
 		visibility: hidden;
 	}
+	.recurring-container {
+		$recColor: var(--sx-pink-400);
+		border-color: #{$recColor};
+
+		legend {
+			font-size: var(--sx-font-size-1);
+			background: #{$recColor};
+			border: 1px solid #{$recColor};
+			color: black;
+			border-radius: 2px;
+		}
+	}
 	@media (max-width: 600px) {
 		form {
 			display: none;
@@ -101,15 +113,23 @@
 			</form>
 			<progress
 				value={completedCount}
-				max={list.length}
+				max={todayTodosTotal}
 				aria-label="todo completion for this list"
 				class="my-2"
-				class:all-done={completedCount === list.length}
+				class:all-done={completedCount === todayTodosTotal}
 			/>
 			<ul class="m-0 p-0 f-1">
 				{#each list as todo (todo.id)}
 					<TodoItem {todo} {listType} {calendarDate} />
 				{/each}
+				{#if recurringTodos.length}
+					<fieldset class="recurring-container p-2 f-column gap-2" class:mt-2={list.length}>
+						<legend class="px-1 fw-bold">Recurring</legend>
+						{#each recurringTodos as todo (todo.id)}
+							<RecurringTodoItem {todo} {calendarDate} />
+						{/each}
+					</fieldset>
+				{/if}
 			</ul>
 			{#if $hideCompleted && completedCount > 0}
 				<small>
@@ -131,11 +151,21 @@
 {/if}
 
 <script lang="ts">
-	import { hideCompleted, newTodo, rescheduleMany, reschedule, todoKeydown } from './stores/todo';
+	import {
+		hideCompleted,
+		newTodo,
+		rescheduleMany,
+		reschedule,
+		todoKeydown,
+		recurringTodos as recurringTodosStore,
+		getRecurringTodosForList,
+		recurringTodoCompletion,
+	} from './stores/todo';
 	import Reschedule from './Reschedule.svelte';
 	import { Icon } from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
 	import { draggingOverList, getRescheduleDestination } from './reschedule-utils';
+	import RecurringTodoItem from './RecurringTodoItem.svelte';
 	import type { Todo, TodoListType } from '../../shared/types/todos';
 	import type { CalendarDate } from '../../shared/dates';
 
@@ -146,11 +176,23 @@
 	export let isToday: boolean;
 
 	const listId = `${listName}-${calendarDate.serialize()}`;
+	$: recurringTodos = getRecurringTodosForList(listType, calendarDate, $recurringTodosStore);
 
 	let newTodoText = '',
 		showRescheduleModal = false;
 
-	$: completedCount = list.filter((todo) => todo.completed).length;
+	$: completedCount =
+		list.filter((todo) => todo.completed).length +
+		recurringTodos.reduce(
+			(complete, todo) =>
+				complete +
+				($recurringTodoCompletion.some((comp) => calendarDate.isSameDate(comp.date) && todo.id === comp.recurringTodoId)
+					? 1
+					: 0),
+			0
+		);
+
+	$: todayTodosTotal = list.length + recurringTodos.length;
 
 	async function addTodo(text = newTodoText.trim()) {
 		newTodo({

@@ -66,7 +66,7 @@
 		{#each $week as day}
 			<Day {day} />
 		{/each}
-		<Weekly />
+		<WeekSidebar />
 	{:else}
 		<div class="loading">
 			<Loading size="large" />
@@ -77,7 +77,7 @@
 <script lang="ts">
 	import { weekOffset, resetWeek, nextWeek, prevWeek, showGotoDate, week, goTo } from './stores/todo';
 	import { Loading, Modal, Icon } from 'sheodox-ui';
-	import Weekly from './Weekly.svelte';
+	import WeekSidebar from './WeekSidebar.svelte';
 	import Day from './Day.svelte';
 	import { CalendarDate } from '../../shared/dates';
 

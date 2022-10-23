@@ -21,7 +21,9 @@ model User {
   AnytimeTodo          AnytimeTodo[]
   AnytimeTag           AnytimeTag[]
   AnytimeTagAssignment AnytimeTagAssignment[]
+  RecurringTodo        RecurringTodo[]
   @@unique([email])
+  RecurringTodoCompletion RecurringTodoCompletion[]
 }
 
 model Todo {
@@ -36,6 +38,36 @@ model Todo {
   list      String
 
   @@index([userId, date])
+}
+
+model RecurringTodo {
+  id               String   @id @default(cuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id])
+  createdAt        DateTime @default(now())
+  text             String
+  list             String
+  startDate        DateTime
+  repeats          String
+  repeatEvery      Int
+  weeklyDayRepeats String[]
+
+  @@index([userId])
+  RecurringTodoCompletion RecurringTodoCompletion[]
+}
+
+model RecurringTodoCompletion {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  createdAt       DateTime      @default(now())
+  recurringTodoId String
+  RecurringTodo   RecurringTodo @relation(fields: [recurringTodoId], references: [id], onDelete: Cascade)
+  date            DateTime      @db.Date
+  // not tracking 'completed' like on todos, the existance of a completion on a date means it's done
+
+  @@index([userId, date])
+  @@unique([userId, recurringTodoId, date])
 }
 
 model Weekly {

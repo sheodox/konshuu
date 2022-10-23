@@ -1,5 +1,5 @@
 import { CalendarDate } from '../../shared/dates.js';
-import { todoListTypes, TodoTracker } from '../controllers/todo.js';
+import { daysOfTheWeek, recurringRepeatTypes, todoListTypes, TodoTracker } from '../controllers/todo.js';
 import Joi from 'joi';
 import { getUserIdFromSocket, io } from '../server.js';
 import {
@@ -10,12 +10,23 @@ import {
 	WeeklyProgress,
 	WeeklyEditable,
 	WeeklyProgressEditable,
+	RecurringTodo,
+	RecurringTodoCompletion,
+	RecurringTodoCreatable,
+	RecurringTodoCompletionCreatable,
+	RecurringRepeats,
+	Day,
 } from '../../shared/types/todos.js';
 import { deserialize, serialize } from '../../shared/serialization.js';
 import { isOnajiSerializable, isOnajiSerialized } from 'onaji';
 import metrics from '../metrics.js';
 import { WeeklyInteractor } from '../controllers/weekly.js';
-import type { Weekly as PrismaWeekly, WeeklyProgress as PrismaWeeklyProgress } from '@prisma/client';
+import type {
+	Weekly as PrismaWeekly,
+	WeeklyProgress as PrismaWeeklyProgress,
+	RecurringTodo as PrismaRecurringTodo,
+	RecurringTodoCompletion as PrismaRecurringTodoCompletion,
+} from '@prisma/client';
 import { todoLogger } from '../logger.js';
 
 const calendarDateSchema = Joi.object().instance(CalendarDate);
@@ -38,7 +49,31 @@ const todoProperties = {
 		list: todoProperties.list.required(),
 		from: calendarDateSchema.required(),
 		to: calendarDateSchema.required(),
-	});
+	}),
+	recurringTodoProperties = {
+		text: todoProperties.text,
+		list: todoProperties.list,
+		startDate: calendarDateSchema,
+		repeats: Joi.string().valid(...recurringRepeatTypes),
+		repeatEvery: Joi.number().min(1),
+		weeklyDayRepeats: Joi.array().items(Joi.string().valid(...daysOfTheWeek)),
+	},
+	recurringNewSchema = Joi.object({
+		text: recurringTodoProperties.text.required(),
+		list: recurringTodoProperties.list.required(),
+		startDate: recurringTodoProperties.startDate.required(),
+		repeats: recurringTodoProperties.repeats.required(),
+		repeatEvery: recurringTodoProperties.repeatEvery.required(),
+		weeklyDayRepeats: recurringTodoProperties.weeklyDayRepeats.required(),
+	}).unknown(false),
+	recurringTodoCompletionProperties = {
+		date: calendarDateSchema,
+		recurringTodoId: Joi.string(),
+	},
+	recurringTodoCompletionSchema = Joi.object({
+		date: recurringTodoCompletionProperties.date.required(),
+		recurringTodoId: recurringTodoCompletionProperties.recurringTodoId.required(),
+	}).unknown(false);
 
 const toDTO = {
 	weekly: (weeklyEntity: PrismaWeekly): Weekly => {
@@ -58,6 +93,24 @@ const toDTO = {
 			goal: progressEntity.goal,
 			progress: progressEntity.progress,
 			week: progressEntity.week,
+		};
+	},
+	recurringTodo: (entity: PrismaRecurringTodo): RecurringTodo => {
+		return {
+			id: entity.id,
+			text: entity.text,
+			list: entity.list as TodoListType,
+			repeatEvery: entity.repeatEvery,
+			repeats: entity.repeats as RecurringRepeats,
+			startDate: CalendarDate.fromDate(entity.startDate),
+			weeklyDayRepeats: entity.weeklyDayRepeats as Day[],
+		};
+	},
+	recurringTodoCompletion: (entity: PrismaRecurringTodoCompletion): RecurringTodoCompletion => {
+		return {
+			id: entity.id,
+			date: CalendarDate.fromDate(entity.date),
+			recurringTodoId: entity.recurringTodoId,
 		};
 	},
 };
@@ -151,6 +204,10 @@ io.on('connection', (socket) => {
 			todos: await TodoTracker.getWeek(userId, week),
 			weeklies: allWeeklies.map(toDTO.weekly),
 			weeklyProgress: temporaryUpsertProgress.map(toDTO.progress),
+			recurringTodos: (await TodoTracker.getRecurring(userId)).map(toDTO.recurringTodo),
+			recurringTodoCompletion: (await TodoTracker.getRecurringCompletion(userId, week)).map(
+				toDTO.recurringTodoCompletion
+			),
 		});
 	});
 
@@ -289,5 +346,55 @@ io.on('connection', (socket) => {
 		emitToUser('weekly:progress:delete', {
 			weeklyProgressId,
 		});
+	});
+
+	on('recurring:new', async (data: RecurringTodoCreatable) => {
+		const { valid, value } = validateSchema(data, recurringNewSchema);
+		if (!valid) {
+			return;
+		}
+
+		const rec = await TodoTracker.addRecurring(userId, value);
+
+		if (rec) {
+			emitToUser('recurring:new', toDTO.recurringTodo(rec));
+		}
+	});
+
+	on('recurring:edit', async (id: string, data: RecurringTodoCreatable) => {
+		const { valid, value } = validateSchema(data, recurringNewSchema);
+		if (!valid || !id) {
+			return;
+		}
+
+		const rec = await TodoTracker.editRecurring(userId, id, value);
+
+		if (rec) {
+			emitToUser('recurring:edit', toDTO.recurringTodo(rec));
+		}
+	});
+
+	on('recurring:delete', async (id: string) => {
+		await TodoTracker.deleteRecurring(userId, id);
+
+		emitToUser('recurring:delete', id);
+	});
+
+	on('recurring-completion:new', async (data: RecurringTodoCompletionCreatable) => {
+		const { valid, value } = validateSchema(data, recurringTodoCompletionSchema);
+		if (!valid) {
+			return;
+		}
+
+		const rec = await TodoTracker.completeRecurring(userId, value);
+
+		if (rec) {
+			emitToUser('recurring-completion:new', toDTO.recurringTodoCompletion(rec));
+		}
+	});
+	on('recurring-completion:delete', async (id: string) => {
+		await TodoTracker.deleteRecurringCompletion(userId, id);
+
+		emitToUser('recurring-completion:delete', id);
 	});
 });

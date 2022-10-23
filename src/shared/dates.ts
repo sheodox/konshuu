@@ -1,3 +1,5 @@
+import { Day } from './types/todos';
+
 export const DAY_MS = 24 * 60 * 60 * 1000;
 export const WEEK_MS = 7 * DAY_MS;
 
@@ -89,8 +91,14 @@ export class CalendarDate {
 	}
 
 	dayName() {
+		const name = this.dayId();
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
+	// used to compare the valid days of the week for a recurring todo with arbitrary CalendarDates
+	dayId(): Day {
 		const day = this.asDate().getDay();
-		return ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][day];
+		return (['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const)[day];
 	}
 
 	isWeekend() {

@@ -1,9 +1,16 @@
 import { CalendarDate, Week } from '../../shared/dates.js';
 import { prisma } from '../prisma.js';
 import { Todo as PrismaTodo } from '@prisma/client';
-import type { TodoListType, DayTodos } from '../../shared/types/todos';
+import type {
+	TodoListType,
+	DayTodos,
+	RecurringTodoCreatable,
+	RecurringTodoCompletionCreatable,
+} from '../../shared/types/todos';
 
 export const todoListTypes = ['work', 'home'];
+export const recurringRepeatTypes = ['daily', 'weekly', 'monthly', 'yearly'];
+export const daysOfTheWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 function validList(list: string) {
 	return todoListTypes.includes(list);
@@ -29,6 +36,10 @@ function weekSkeleton(weekStart: Date): DayTodos[] {
 
 export class TodoTracker {
 	static async getWeek(userId: string, dayInTheWeek: CalendarDate) {
+		if (!userId) {
+			return;
+		}
+
 		const week = dayInTheWeek.getWeek();
 
 		const { weekStart, weekEnd } = week.getWeekBounds(),
@@ -58,8 +69,38 @@ export class TodoTracker {
 			days,
 		};
 	}
+
+	static async getRecurring(userId: string) {
+		if (!userId) {
+			return [];
+		}
+		return await prisma.recurringTodo.findMany({ where: { userId } });
+	}
+
+	static async getRecurringCompletion(userId: string, dayInTheWeek: CalendarDate) {
+		if (!userId) {
+			return [];
+		}
+		const week = dayInTheWeek.getWeek();
+
+		const { weekStart, weekEnd } = week.getWeekBounds(),
+			todosInWeek = await prisma.recurringTodoCompletion.findMany({
+				where: {
+					userId,
+					date: {
+						gte: weekStart,
+						lte: weekEnd,
+					},
+				},
+				orderBy: {
+					createdAt: 'asc',
+				},
+			});
+
+		return todosInWeek;
+	}
 	static async addTodo(userId: string, date: CalendarDate, list: TodoListType, text: string) {
-		if (validList(list)) {
+		if (validList(list) && !!userId) {
 			return await prisma.todo.create({
 				data: {
 					userId,
@@ -71,6 +112,10 @@ export class TodoTracker {
 		}
 	}
 	static async updateTodo(userId: string, id: string, data: Partial<PrismaTodo>) {
+		if (!userId) {
+			return;
+		}
+
 		const thisTodo = await prisma.todo.findUnique({ where: { id } });
 		if (thisTodo.userId !== userId) {
 			return;
@@ -92,7 +137,7 @@ export class TodoTracker {
 		});
 	}
 	static async reschedule(userId: string, list: TodoListType, fromDate: CalendarDate, toDate: CalendarDate) {
-		if (!validList(list)) {
+		if (!validList(list) || !userId) {
 			return;
 		}
 
@@ -132,7 +177,7 @@ export class TodoTracker {
 		});
 	}
 	static async rescheduleOne(userId: string, id: string, toDate: CalendarDate, list: string) {
-		if (!validList(list)) {
+		if (!validList(list) || !userId) {
 			return;
 		}
 
@@ -152,5 +197,89 @@ export class TodoTracker {
 			originalTodo,
 			fromDate: CalendarDate.fromDate(originalTodo.date),
 		};
+	}
+
+	static async addRecurring(userId: string, data: RecurringTodoCreatable) {
+		if (!validList(data.list) || !userId) {
+			return;
+		}
+
+		return await prisma.recurringTodo.create({
+			data: {
+				...data,
+				startDate: data.startDate.asDate(),
+				userId,
+			},
+		});
+	}
+
+	static async editRecurring(userId: string, id: string, data: RecurringTodoCreatable) {
+		if (!validList(data.list) || !userId || !id) {
+			return;
+		}
+
+		const existingRec = await prisma.recurringTodo.findUnique({ where: { id } });
+
+		if (!existingRec || existingRec.userId !== userId) {
+			return;
+		}
+
+		return await prisma.recurringTodo.update({
+			where: { id },
+			data: {
+				...data,
+				startDate: data.startDate.asDate(),
+			},
+		});
+	}
+
+	static async deleteRecurring(userId: string, id: string) {
+		if (!userId || !id) {
+			return;
+		}
+
+		await prisma.recurringTodo.deleteMany({
+			where: {
+				id,
+				userId,
+			},
+		});
+	}
+
+	static async completeRecurring(userId: string, data: RecurringTodoCompletionCreatable) {
+		if (!userId || !data.recurringTodoId || !data.date) {
+			return;
+		}
+
+		const existingCompletion = await prisma.recurringTodoCompletion.findMany({
+			where: {
+				userId,
+				date: data.date.asDate(),
+				recurringTodoId: data.recurringTodoId,
+			},
+		});
+
+		// already exists, don't make another
+		if (existingCompletion.length) {
+			return;
+		}
+
+		return await prisma.recurringTodoCompletion.create({
+			data: {
+				userId,
+				recurringTodoId: data.recurringTodoId,
+				date: data.date.asDate(),
+			},
+		});
+	}
+
+	static async deleteRecurringCompletion(userId: string, id: string) {
+		if (!userId || !id) {
+			return;
+		}
+
+		await prisma.recurringTodoCompletion.deleteMany({
+			where: { userId, id },
+		});
 	}
 }
