@@ -72,12 +72,12 @@
 				icon: 'redo-alt',
 			},
 		] as const,
-		defaultApp: SidebarApp = 'recurring';
+		defaultApp: SidebarApp = 'weeklies';
 
 	type SidebarApp = null | typeof sidebarApps[number]['id'];
 
 	let selectedApp: SidebarApp = defaultApp;
-	let lastSelectedApp: SidebarApp = 'recurring';
+	let lastSelectedApp: SidebarApp = defaultApp;
 	$: selectedAppName = sidebarApps.find(({ id }) => id === selectedApp)?.title;
 
 	function menuButtonClick() {
