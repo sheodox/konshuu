@@ -57,14 +57,22 @@
 	}
 	.recurring-container {
 		$recColor: var(--sx-pink-400);
+		$doneColor: var(--sx-gray-300);
 		border-color: #{$recColor};
 
 		legend {
 			font-size: var(--sx-font-size-1);
 			background: #{$recColor};
-			border: 1px solid #{$recColor};
 			color: black;
 			border-radius: 2px;
+		}
+
+		&.all-recurring-done {
+			border-color: #{$doneColor};
+			legend {
+				background: #{$doneColor};
+				color: white;
+			}
 		}
 
 		/* override some checkbox styling so the label is bigger and can accept clicks along the whole row */
@@ -146,7 +154,7 @@
 				{/each}
 			</ul>
 			{#if recurringTodos.length}
-				<fieldset class="recurring-container p-1" class:mt-2={list.length}>
+				<fieldset class="recurring-container p-1" class:mt-2={list.length} class:all-recurring-done={recurringAllDone}>
 					<legend class="px-1 fw-bold">Recurring</legend>
 					{#each recurringTodos as todo (todo.id)}
 						<RecurringTodoItem {todo} {calendarDate} />
@@ -213,6 +221,10 @@
 					: 0),
 			0
 		);
+
+	$: recurringAllDone = recurringTodos.every((rec) =>
+		$recurringTodoCompletion.some((comp) => calendarDate.isSameDate(comp.date) && rec.id === comp.recurringTodoId)
+	);
 
 	$: todayTodosTotal = list.length + recurringTodos.length;
 
