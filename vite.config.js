@@ -16,6 +16,8 @@ export default defineConfig({
 			host: 'localhost',
 			port: '3000',
 		},
+		host: 'localhost',
+		port: '3000',
 	},
 	build: {
 		manifest: true,
