@@ -78,6 +78,10 @@
 		}
 		:global(input) {
 			width: 1.5rem;
+
+			&:checked + :global(label) {
+				color: var(--sx-muted);
+			}
 		}
 		:global(label) {
 			flex: 1;
