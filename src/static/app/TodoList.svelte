@@ -66,6 +66,24 @@
 			color: black;
 			border-radius: 2px;
 		}
+
+		/* override some checkbox styling so the label is bigger and can accept clicks along the whole row */
+		:global(div) {
+			display: flex;
+			border-radius: 0.2rem;
+
+			&:hover {
+				background: var(--sx-gray-400);
+			}
+		}
+		:global(input) {
+			width: 1.5rem;
+		}
+		:global(label) {
+			flex: 1;
+			padding-top: var(--sx-spacing-1);
+			padding-bottom: var(--sx-spacing-1);
+		}
 	}
 	@media (max-width: 600px) {
 		form {
@@ -118,19 +136,19 @@
 				class="my-2"
 				class:all-done={completedCount === todayTodosTotal}
 			/>
-			<ul class="m-0 p-0 f-1">
+			<ul class="m-0 p-0">
 				{#each list as todo (todo.id)}
 					<TodoItem {todo} {listType} {calendarDate} />
 				{/each}
-				{#if recurringTodos.length}
-					<fieldset class="recurring-container p-2 f-column gap-2" class:mt-2={list.length}>
-						<legend class="px-1 fw-bold">Recurring</legend>
-						{#each recurringTodos as todo (todo.id)}
-							<RecurringTodoItem {todo} {calendarDate} />
-						{/each}
-					</fieldset>
-				{/if}
 			</ul>
+			{#if recurringTodos.length}
+				<fieldset class="recurring-container p-1" class:mt-2={list.length}>
+					<legend class="px-1 fw-bold">Recurring</legend>
+					{#each recurringTodos as todo (todo.id)}
+						<RecurringTodoItem {todo} {calendarDate} />
+					{/each}
+				</fieldset>
+			{/if}
 			{#if $hideCompleted && completedCount > 0}
 				<small>
 					{completedCount} completed todos hidden
