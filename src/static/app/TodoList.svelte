@@ -6,6 +6,9 @@
 		&.today {
 			background: var(--sx-accent-gradient);
 		}
+		&.is-incomplete {
+			background: linear-gradient(to bottom, var(--sx-red-400), transparent 100px);
+		}
 		&.dragging-over {
 			background: var(--sx-blue-500);
 			box-shadow: 0 0 1.5rem var(--sx-blue-700);
@@ -110,6 +113,13 @@
 			padding-bottom: var(--sx-spacing-1);
 		}
 	}
+	.incomplete-message {
+		color: black;
+		font-weight: bold;
+		text-align: center;
+		text-transform: uppercase;
+		font-size: var(--sx-font-size-2);
+	}
 	@media (max-width: 600px) {
 		form {
 			display: none;
@@ -120,7 +130,15 @@
 	}
 </style>
 
-<section class:today={isToday} class="f-column f-1 mt-2" class:dragging-over={$draggingOverList === listId}>
+<section
+	class:today={isToday}
+	class:is-incomplete={isIncomplete}
+	class="f-column f-1 mt-2"
+	class:dragging-over={$draggingOverList === listId}
+>
+	{#if isIncomplete}
+		<p class="incomplete-message m-0">Incomplete</p>
+	{/if}
 	<div class="panel todo-list f-column f-1" on:drop|preventDefault={drop} on:dragover|preventDefault={dragOver}>
 		<div class="header f-row f-0">
 			<h3 class="f-1">{listName}</h3>
@@ -217,6 +235,7 @@
 	export let list: Todo[] = [];
 	export let calendarDate: CalendarDate;
 	export let isToday: boolean;
+	export let isPast: boolean;
 
 	const listId = `${listName}-${calendarDate.serialize()}`;
 	$: recurringTodos = getRecurringTodosForList(listType, calendarDate, $recurringTodosStore);
@@ -236,6 +255,8 @@
 		);
 
 	$: todayTodosTotal = list.length + recurringTodos.length;
+
+	$: isIncomplete = isPast && completedCount < todayTodosTotal;
 
 	async function addTodo(text = newTodoText.trim()) {
 		newTodo({

@@ -36,9 +36,9 @@
 	<h2 class="mt-2">{day.date.dayName()} {day.date.toLocaleDateString()}</h2>
 	<!-- don't show the work list on the weekend -->
 	{#if !day.date.isWeekend()}
-		<TodoList calendarDate={day.date} listName="Work" list={day.work} listType="work" {isToday} />
+		<TodoList calendarDate={day.date} listName="Work" list={day.work} listType="work" {isToday} {isPast} />
 	{/if}
-	<TodoList calendarDate={day.date} listName="Home" list={day.home} listType="home" {isToday} />
+	<TodoList calendarDate={day.date} listName="Home" list={day.home} listType="home" {isToday} {isPast} />
 	{#if day.date.isWeekend()}
 		<button class="quick-week-switch m-0 mt-1" on:click={quickWeekSwitch}>
 			{#if day.date.getDay() === 6}
@@ -56,12 +56,15 @@
 	import { tick } from 'svelte';
 	import { Icon } from 'sheodox-ui';
 	import { focusNewTodoInput, nextWeek, prevWeek, today } from './stores/todo';
+	import { now } from './stores/app';
 	import TodoList from './TodoList.svelte';
+	import { endOfDay, isBefore } from 'date-fns';
 	import type { DayTodos } from '../../shared/types/todos';
 
 	export let day: DayTodos;
 
 	$: isToday = day.date.serialize() === $today;
+	$: isPast = isBefore(endOfDay(day.date.asDate()), $now);
 
 	function scrollToView(el: HTMLElement, isToday: boolean) {
 		//if this Day is today, scroll it into view
