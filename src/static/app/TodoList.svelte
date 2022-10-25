@@ -56,22 +56,34 @@
 		visibility: hidden;
 	}
 	.recurring-container {
-		$recColor: var(--sx-pink-400);
-		$doneColor: var(--sx-gray-300);
+		$recColor: var(--sx-gray-200);
 		border-color: #{$recColor};
+		background-color: var(--sx-gray-500);
 
 		legend {
 			font-size: var(--sx-font-size-1);
-			background: #{$recColor};
-			color: black;
+			color: white;
 			border-radius: 2px;
-		}
-
-		&.all-recurring-done {
-			border-color: #{$doneColor};
-			legend {
-				background: #{$doneColor};
-				color: white;
+			position: relative;
+			margin: 0 auto;
+			span {
+				background: #{$recColor};
+			}
+			&::after,
+			&::before {
+				content: ' ';
+				width: 0;
+				height: 0;
+				position: absolute;
+				background-color: transparent;
+				border: 0.45rem solid transparent;
+			}
+			&::after {
+				border-left-color: #{$recColor};
+			}
+			&::before {
+				transform: translateX(-100%);
+				border-right-color: #{$recColor};
 			}
 		}
 
@@ -85,7 +97,7 @@
 			}
 		}
 		:global(input) {
-			width: 1.5rem;
+			width: 1.3rem;
 
 			&:checked + :global(label) {
 				color: var(--sx-muted);
@@ -93,6 +105,7 @@
 		}
 		:global(label) {
 			flex: 1;
+			font-size: 0.8rem;
 			padding-top: var(--sx-spacing-1);
 			padding-bottom: var(--sx-spacing-1);
 		}
@@ -154,8 +167,8 @@
 				{/each}
 			</ul>
 			{#if recurringTodos.length}
-				<fieldset class="recurring-container p-1" class:mt-2={list.length} class:all-recurring-done={recurringAllDone}>
-					<legend class="px-1 fw-bold">Recurring</legend>
+				<fieldset class="recurring-container p-0 m-0" class:mt-2={list.length}>
+					<legend class="px-1 fw-bold"><span>Recurring</span></legend>
 					{#each recurringTodos as todo (todo.id)}
 						<RecurringTodoItem {todo} {calendarDate} />
 					{/each}
@@ -221,10 +234,6 @@
 					: 0),
 			0
 		);
-
-	$: recurringAllDone = recurringTodos.every((rec) =>
-		$recurringTodoCompletion.some((comp) => calendarDate.isSameDate(comp.date) && rec.id === comp.recurringTodoId)
-	);
 
 	$: todayTodosTotal = list.length + recurringTodos.length;
 
