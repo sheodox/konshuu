@@ -6,7 +6,7 @@
 		&.today {
 			background: var(--sx-accent-gradient);
 		}
-		&.is-incomplete {
+		&.overdue {
 			background: linear-gradient(to bottom, var(--sx-red-400), transparent 100px);
 		}
 		&.dragging-over {
@@ -113,7 +113,7 @@
 			padding-bottom: var(--sx-spacing-1);
 		}
 	}
-	.incomplete-message {
+	.overdue-message {
 		color: black;
 		font-weight: bold;
 		text-align: center;
@@ -132,12 +132,12 @@
 
 <section
 	class:today={isToday}
-	class:is-incomplete={isIncomplete}
+	class:overdue={hasOverdueTodos}
 	class="f-column f-1 mt-2"
 	class:dragging-over={$draggingOverList === listId}
 >
-	{#if isIncomplete}
-		<p class="incomplete-message m-0">Incomplete</p>
+	{#if hasOverdueTodos}
+		<p class="overdue-message m-0">{todayTodosTotal - completedCount} Overdue</p>
 	{/if}
 	<div class="panel todo-list f-column f-1" on:drop|preventDefault={drop} on:dragover|preventDefault={dragOver}>
 		<div class="header f-row f-0">
@@ -256,7 +256,7 @@
 
 	$: todayTodosTotal = list.length + recurringTodos.length;
 
-	$: isIncomplete = isPast && completedCount < todayTodosTotal;
+	$: hasOverdueTodos = isPast && completedCount < todayTodosTotal;
 
 	async function addTodo(text = newTodoText.trim()) {
 		newTodo({
