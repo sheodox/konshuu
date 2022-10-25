@@ -62,6 +62,9 @@
 		$recColor: var(--sx-gray-200);
 		border-color: #{$recColor};
 		background-color: var(--sx-gray-500);
+		/* compensate for the border width so the checkboxes in here line up with the other todos */
+		margin-left: -2px !important;
+		margin-right: -2px !important;
 
 		legend {
 			font-size: var(--sx-font-size-1);
