@@ -62,7 +62,7 @@
     "@types/express-session": "^1.17.3",
     "@types/jsonwebtoken": "^8.5.2",
     "@types/node": "^14.14.31",
-    "@types/page": "^1.11.2",
+    "@types/page": "^1.11.5",
     "@types/passport": "^1.0.10",
     "@types/passport-local": "^1.0.33",
     "@types/redis": "^2.8.29",

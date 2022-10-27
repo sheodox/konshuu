@@ -10,7 +10,7 @@
 
 <div class="anytime-item f-column">
 	<div class="f-row justify-content-between align-items-baseline todo-header">
-		<h2>{data.name}</h2>
+		<h2><Link href="/anytime/{data.id}">{data.name}</Link></h2>
 		<div class="f-row">
 			{#if data.type === 'todos' && mode === 'view'}
 				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo" aria-pressed={showNewTodo}>
@@ -80,6 +80,7 @@
 	import Countup from './Countup.svelte';
 	import CountupSettings from './CountupSettings.svelte';
 	import Notes from './Notes.svelte';
+	import Link from '../Link.svelte';
 
 	export let data: Anytime;
 

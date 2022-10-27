@@ -10,42 +10,42 @@
 	.manage-contents {
 		overflow-y: auto;
 	}
-	.manage-padding {
+	.anytime-item {
 		padding: 2px;
 		border-radius: 0.2rem;
-		background: var(--sx-accent-gradient);
+		background-color: transparent;
+		border: 1px solid var(--sx-gray-400);
+		background-color: var(--sx-gray-600);
 	}
 </style>
 
-<div class="manage-padding">
-	<div class="anytime-item f-column">
-		<div class="tag-header f-row justify-content-between align-items-baseline">
-			<h2>Tags</h2>
-			<button aria-pressed={showAdd} on:click={() => (showAdd = !showAdd)}>
-				<Icon icon="plus" variant="icon-only" />
-				<span class="sr-only">Add Tag</span>
-			</button>
-		</div>
+<div class="anytime-item f-column p-2">
+	<div class="tag-header f-row justify-content-between align-items-baseline">
+		<h2>Tags</h2>
+		<button aria-pressed={showAdd} on:click={() => (showAdd = !showAdd)}>
+			<Icon icon="plus" variant="icon-only" />
+			<span class="sr-only">Add Tag</span>
+		</button>
+	</div>
 
-		<div class="manage-contents f-1">
-			{#if showAdd}
-				<fieldset>
-					<legend>Add Tag</legend>
-					<form class="f-column gap-2" on:submit|preventDefault={addTag}>
-						<TextInput bind:value={newName}>Tag Name</TextInput>
-						<button class="primary">Add</button>
-					</form>
-				</fieldset>
-			{:else}
-				<ul>
-					{#each $tags as tag (tag.id)}
-						<li>
-							<EditTag {tag} />
-						</li>
-					{/each}
-				</ul>
-			{/if}
-		</div>
+	<div class="manage-contents f-1">
+		{#if showAdd}
+			<fieldset>
+				<legend>Add Tag</legend>
+				<form class="f-column gap-2" on:submit|preventDefault={addTag}>
+					<TextInput bind:value={newName}>Tag Name</TextInput>
+					<button class="primary">Add</button>
+				</form>
+			</fieldset>
+		{:else}
+			<ul>
+				{#each $tags as tag (tag.id)}
+					<li>
+						<EditTag {tag} />
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 </div>
 
