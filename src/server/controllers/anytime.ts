@@ -1,6 +1,13 @@
 import { prisma } from '../prisma.js';
 import Joi from 'joi';
-import type { AnytimeEditable, AnytimeTodoEditable, AnytimeNew, AnytimeTodoNew } from '../../shared/types/anytime.js';
+import { addDays } from 'date-fns';
+import type {
+	AnytimeEditable,
+	AnytimeTodoEditable,
+	AnytimeNew,
+	AnytimeTodoNew,
+	AnytimeCountHistory,
+} from '../../shared/types/anytime.js';
 
 function validateSchema(data: any, schema: Joi.Schema) {
 	const { value, error } = schema.validate(data);
@@ -14,6 +21,17 @@ function validateSchema(data: any, schema: Joi.Schema) {
 	}
 }
 
+// number of days from now in either direction is considered 'reasonable', though a clock being two days off is
+// pretty hard to believe if they're connected to the internet, i figure this should keep us from accepting clearly
+// incorrect values, like the year 1970, something negative, or 2100
+const REASONABLE_DAY_TIME_DRIFT = 2;
+
+function isReasonableTimeNumber(num: number) {
+	const aWhileAgo = addDays(new Date(), -1 * REASONABLE_DAY_TIME_DRIFT).getTime(),
+		aWhileFromNow = addDays(new Date(), REASONABLE_DAY_TIME_DRIFT).getTime();
+	return num > aWhileAgo && num < aWhileFromNow;
+}
+
 const anytimeTypes = ['counter', 'todos', 'countdown', 'countup', 'notes'],
 	anytimeProperties = {
 		name: Joi.string().max(300),
@@ -22,6 +40,7 @@ const anytimeTypes = ['counter', 'todos', 'countdown', 'countup', 'notes'],
 		showCountUp: Joi.boolean(),
 		showCountDown: Joi.boolean(),
 		countdownEnd: Joi.date(),
+		resetsDaily: Joi.boolean(),
 		notes: Joi.string().allow('').max(20000),
 	},
 	anytimeTodoProperties = {
@@ -48,6 +67,7 @@ const anytimeTypes = ['counter', 'todos', 'countdown', 'countup', 'notes'],
 				showCountUp: anytimeProperties.showCountUp,
 				showCountDown: anytimeProperties.showCountDown,
 				countdownEnd: anytimeProperties.countdownEnd.optional(),
+				resetsDaily: anytimeProperties.resetsDaily,
 				notes: anytimeProperties.notes.optional(),
 			}),
 		},
@@ -102,6 +122,9 @@ export class AnytimeInteractor {
 				name: value.name,
 				type: value.type,
 				countdownEnd: value.countdownEnd || null,
+				countHistory: [],
+				resetsDaily: value.resetsDaily,
+				currentDayTime: 0,
 			},
 		});
 
@@ -151,6 +174,42 @@ export class AnytimeInteractor {
 			where: {
 				userId,
 				id: anytimeId,
+			},
+		});
+	}
+	// reset the counter and stash the current count and time in the history
+	static async counterNewDay(userId: string, id: string, newTime: number) {
+		const validNumber = typeof newTime === 'number' && isReasonableTimeNumber(newTime);
+
+		if (!userId || !id || !validNumber) {
+			return;
+		}
+
+		const anytime = await prisma.anytime.findUnique({ where: { id } });
+
+		if (anytime.userId !== userId) {
+			return;
+		}
+
+		const previousHistory = anytime.countHistory as unknown as AnytimeCountHistory[] | null;
+
+		const newCountHistory = anytime.currentDayTime
+			? [
+					{
+						count: anytime.count,
+						time: Number(anytime.currentDayTime),
+					},
+					...(previousHistory || []),
+			  ]
+			: [];
+
+		return await prisma.anytime.update({
+			where: { id },
+			data: {
+				// only allow saving up to 10 updates
+				countHistory: newCountHistory.slice(0, 10) as any, //ts doesn't like that this is a specific type, and not a string
+				currentDayTime: newTime,
+				count: 0,
 			},
 		});
 	}

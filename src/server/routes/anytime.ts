@@ -9,7 +9,13 @@ import type {
 	AnytimeTag as PrismaAnytimeTag,
 	AnytimeTagAssignment as PrismaAnytimeTagAssignment,
 } from '@prisma/client';
-import type { Anytime, AnytimeTodo, AnytimeTag, AnytimeTagAssignment } from '../../shared/types/anytime.js';
+import type {
+	Anytime,
+	AnytimeTodo,
+	AnytimeTag,
+	AnytimeTagAssignment,
+	AnytimeCountHistory,
+} from '../../shared/types/anytime.js';
 
 interface PrismaAnytimeWithTodos extends PrismaAnytime {
 	todos: PrismaAnytimeTodo[];
@@ -29,6 +35,9 @@ const toDTO = {
 			showCountDown: anytime.showCountDown,
 			countdownEnd: anytime.countdownEnd,
 			notes: anytime.notes,
+			resetsDaily: anytime.resetsDaily,
+			countHistory: anytime.countHistory as unknown as AnytimeCountHistory[],
+			currentDayTime: Number(anytime.currentDayTime),
 			todos: [],
 			tags: [],
 		};
@@ -118,6 +127,14 @@ io.on('connection', (socket) => {
 		const anytime = await AnytimeInteractor.newAnytime(userId, data);
 		if (anytime) {
 			emitToUser('anytime:new', toDTO.anytimeHydrated({ todos: [], ...anytime }));
+		}
+	});
+
+	on('anytime:resetDay', async (id: string, newTime: number) => {
+		const anytime = await AnytimeInteractor.counterNewDay(userId, id, newTime);
+
+		if (anytime) {
+			emitToUser('anytime:edit', toDTO.anytime(anytime));
 		}
 	});
 

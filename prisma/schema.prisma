@@ -15,15 +15,15 @@ model User {
   passwordHash String
   todos        Todo[]
 
-  Weekly               Weekly[]
-  WeeklyProgress       WeeklyProgress[]
-  Anytime              Anytime[]
-  AnytimeTodo          AnytimeTodo[]
-  AnytimeTag           AnytimeTag[]
-  AnytimeTagAssignment AnytimeTagAssignment[]
-  RecurringTodo        RecurringTodo[]
-  @@unique([email])
+  Weekly                  Weekly[]
+  WeeklyProgress          WeeklyProgress[]
+  Anytime                 Anytime[]
+  AnytimeTodo             AnytimeTodo[]
+  AnytimeTag              AnytimeTag[]
+  AnytimeTagAssignment    AnytimeTagAssignment[]
+  RecurringTodo           RecurringTodo[]
   RecurringTodoCompletion RecurringTodoCompletion[]
+  @@unique([email])
 }
 
 model Todo {
@@ -52,8 +52,8 @@ model RecurringTodo {
   repeatEvery      Int
   weeklyDayRepeats String[]
 
-  @@index([userId])
   RecurringTodoCompletion RecurringTodoCompletion[]
+  @@index([userId])
 }
 
 model RecurringTodoCompletion {
@@ -66,8 +66,8 @@ model RecurringTodoCompletion {
   date            DateTime      @db.Date
   // not tracking 'completed' like on todos, the existance of a completion on a date means it's done
 
-  @@index([userId, date])
   @@unique([userId, recurringTodoId, date])
+  @@index([userId, date])
 }
 
 model Weekly {
@@ -114,9 +114,12 @@ model Anytime {
 
   countdownEnd DateTime?
 
-  count         Int     @default(0)
-  showCountUp   Boolean @default(true)
-  showCountDown Boolean @default(true)
+  count          Int     @default(0)
+  showCountUp    Boolean @default(true)
+  showCountDown  Boolean @default(true)
+  currentDayTime BigInt
+  resetsDaily    Boolean @default(false)
+  countHistory   Json
 
   notes String @default("")
 

@@ -17,6 +17,7 @@ import {
 	formatDuration,
 	intervalToDuration,
 	isBefore,
+	startOfDay,
 } from 'date-fns';
 import { createPersistentToast } from 'sheodox-ui';
 
@@ -147,6 +148,7 @@ export const anytimeOps = {
 			countdownEnd: data.countdownEnd,
 			showCountUp: data.showCountUp,
 			showCountDown: data.showCountDown,
+			resetsDaily: data.resetsDaily,
 		};
 	},
 	edit(id: string, data: AnytimeEditable) {
@@ -162,6 +164,10 @@ export const anytimeOps = {
 	},
 	delete(id: string) {
 		envoy.emit('anytime:delete', id);
+	},
+	resetDay(id: string) {
+		const time = startOfDay(get(now)).getTime();
+		envoy.emit('anytime:resetDay', id, time);
 	},
 	todo: {
 		new(anytimeId: string, data: AnytimeTodoNew) {
