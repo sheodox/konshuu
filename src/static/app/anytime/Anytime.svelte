@@ -28,6 +28,7 @@
 	@media (max-width: 600px) {
 		section {
 			flex-direction: column;
+			justify-content: start;
 		}
 		:global(.anytime-item) {
 			width: 100%;
@@ -59,7 +60,7 @@
 	{/if}
 </div>
 
-<div class="f-column justify-content-center align-items-center">
+<div class="f-column justify-content-center align-items-center p-3">
 	{#if showIntro}
 		<p class="intro">
 			An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
