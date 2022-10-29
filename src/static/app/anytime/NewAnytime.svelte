@@ -7,8 +7,10 @@
 <Modal bind:visible title="New Anytime">
 	<div class="modal-body f-column gap-2">
 		<TextInput id="new-anytime-name" bind:value={name}>Name</TextInput>
-		{#if hasFilters}
-			<Checkbox bind:checked={useCurrentFilters}>Assign current filtered tags</Checkbox>
+		{#if viewingTag}
+			<div class="mt-2">
+				<Checkbox bind:checked={useCurrentFilters}>Assign tag "{viewingTag.name}"</Checkbox>
+			</div>
 		{/if}
 
 		<div class="f-column gap-2 f-1">
@@ -40,7 +42,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { Checkbox, TextInput, Modal } from 'sheodox-ui';
-	import { anytimeOps, anytimeTypes, filterTags } from '../stores/anytime';
+	import { anytimeOps, anytimeTypes, tags } from '../stores/anytime';
+	import { activeRouteParams } from '../stores/routing';
 	import CountdownSettings from './CountdownSettings.svelte';
 	import CountupSettings from './CountupSettings.svelte';
 	import { AnytimeNew } from '../../../shared/types/anytime';
@@ -53,7 +56,7 @@
 		useCurrentFilters = true,
 		kindSpecificData: Partial<AnytimeNew> = {},
 		typeSettingsValid = true;
-	$: hasFilters = !!$filterTags.length;
+	$: viewingTag = $tags.find(({ id }) => id === $activeRouteParams.tagId);
 
 	$: kind && reset();
 
@@ -61,7 +64,7 @@
 		anytimeOps.new({
 			name,
 			type: kind,
-			tags: hasFilters && useCurrentFilters ? $filterTags : [],
+			tags: !!viewingTag && useCurrentFilters ? [$activeRouteParams.tagId] : [],
 			countdownEnd: kindSpecificData.countdownEnd,
 		});
 		name = '';

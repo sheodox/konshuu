@@ -108,6 +108,7 @@
 			anytimeOps.tag.delete(tag.id);
 			if (tag.id === $activeRouteParams.tagId) {
 				page('/anytime');
+				$lastAnytimeView = null;
 			}
 		}
 	}

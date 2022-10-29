@@ -25,7 +25,6 @@ export type LastAnytimeView = null | { tag: string } | { anytime: string };
 export type AnytimeSort = 'asc' | 'desc' | 'alpha-asc' | 'alpha-desc';
 
 export const anytimes = writable<Anytime[]>([]);
-export const filterTags = writable<string[]>([]);
 export const tags = writable<AnytimeTag[]>([]);
 export const anytimesInitialized = writable(false);
 export const showAnytimeSidebar = writable(false);
@@ -304,7 +303,6 @@ envoy.on('anytime:tag:edit', (tag: AnytimeTag) => {
 
 envoy.on('anytime:tag:delete', (id: string) => {
 	tags.update((tags) => tags.filter((t) => t.id !== id));
-	filterTags.update((tags) => tags.filter((filteredId) => filteredId !== id));
 	anytimes.update((anytimes) => {
 		return anytimes.map((anytime) => {
 			return {
