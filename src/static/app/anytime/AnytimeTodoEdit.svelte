@@ -12,10 +12,10 @@
 			>URL (optional)</TextInput
 		>
 		<div class="f-row gap-2">
+			<button class="primary f-1" disabled={invalid}>Save</button>
 			{#if showCancel}
 				<button class="secondary f-1" type="button" on:click={() => dispatch('cancel')}>Cancel</button>
 			{/if}
-			<button class="primary f-1" disabled={invalid}>Save</button>
 		</div>
 	</form>
 </fieldset>
