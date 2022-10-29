@@ -24,7 +24,7 @@
 			<span class="sr-only">Increment</span>
 		</button>
 		<div class="count sx-badge-gray">
-			{#if data.resetsDaily}
+			{#if data.resetsDaily && canCount}
 				<span>{new Date(data.currentDayTime).toLocaleDateString()} </span>
 				<br />
 			{/if}
