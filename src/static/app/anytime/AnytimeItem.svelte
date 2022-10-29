@@ -10,7 +10,9 @@
 
 <div class="anytime-item f-column">
 	<div class="f-row justify-content-between align-items-baseline todo-header">
-		<h2><Link href="/anytime/{data.id}">{data.name}</Link></h2>
+		<h2>
+			<Link href="/anytime/{data.id}" on:followed={() => ($lastAnytimeView = { anytime: data.id })}>{data.name}</Link>
+		</h2>
 		<div class="f-row">
 			{#if data.type === 'todos' && mode === 'view'}
 				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo" aria-pressed={showNewTodo}>
@@ -70,7 +72,7 @@
 <script lang="ts">
 	import { Icon, TextInput } from 'sheodox-ui';
 	import type { Anytime, AnytimeEditable } from '../../../shared/types/anytime';
-	import { anytimeOps } from '../stores/anytime';
+	import { anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import AnytimeCountdown from './AnytimeCountdown.svelte';
 	import AnytimeCounter from './AnytimeCounter.svelte';
 	import AnytimeCounterSettings from './AnytimeCounterSettings.svelte';
@@ -81,6 +83,7 @@
 	import CountupSettings from './CountupSettings.svelte';
 	import Notes from './Notes.svelte';
 	import Link from '../Link.svelte';
+	import { activeRouteParams } from '../stores/routing';
 
 	export let data: Anytime;
 

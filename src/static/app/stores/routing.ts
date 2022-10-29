@@ -13,6 +13,7 @@ function setRoute(routeId: string) {
 
 page(`/settings`, setRoute('settings'));
 page(`/anytime`, setRoute('anytime'));
+page(`/anytime/tag/:tagId`, setRoute('anytime'));
 page(`/anytime/:anytimeId`, setRoute('anytime'));
 page(`/about`, setRoute('about'));
 page(`/`, setRoute('app'));

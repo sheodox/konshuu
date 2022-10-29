@@ -35,13 +35,14 @@
 </Header>
 
 <Toasts />
+<Modals />
 
 <Router />
 
 <script lang="ts">
 	import { socketConnected } from './stores/app';
 	import page from 'page';
-	import { Header, Toasts } from 'sheodox-ui';
+	import { Header, Toasts, Modals } from 'sheodox-ui';
 	import UserMenu from './UserMenu.svelte';
 	import Router from './Router.svelte';
 	import HeaderNav from './HeaderNav.svelte';

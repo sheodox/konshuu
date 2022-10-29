@@ -21,30 +21,20 @@ import {
 } from 'date-fns';
 import { createPersistentToast } from 'sheodox-ui';
 
+export type LastAnytimeView = null | { tag: string } | { anytime: string };
+export type AnytimeSort = 'asc' | 'desc' | 'alpha-asc' | 'alpha-desc';
+
 export const anytimes = writable<Anytime[]>([]);
 export const filterTags = writable<string[]>([]);
 export const tags = writable<AnytimeTag[]>([]);
 export const anytimesInitialized = writable(false);
-export const tagsSorted = derived([tags, anytimes], ([tags, anytimes]) => {
-	const withCounts = new Map<string, number>();
-	for (const anytime of anytimes) {
-		for (const assignment of anytime.tags) {
-			const countForTag = withCounts.get(assignment.anytimeTagId);
-			if (countForTag) {
-				withCounts.set(assignment.anytimeTagId, countForTag + 1);
-			} else {
-				withCounts.set(assignment.anytimeTagId, 1);
-			}
-		}
-	}
+export const showAnytimeSidebar = writable(false);
+export const lastAnytimeView = writable<LastAnytimeView>(null);
+export const anytimeSort = writable<AnytimeSort>('desc');
+export const tagsSorted = derived([tags], ([tags]) => {
+	const sortedTags = [...tags];
 
-	const asArray = Array.from(withCounts.entries());
-	asArray.sort((a, b) => b[1] - a[1]);
-
-	const sortedTags = [];
-	for (const [id] of asArray) {
-		sortedTags.push(tags.find((tag) => tag.id === id));
-	}
+	sortedTags.sort((a, b) => a.name.localeCompare(b.name));
 
 	return sortedTags;
 });

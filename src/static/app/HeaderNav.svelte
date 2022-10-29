@@ -17,8 +17,10 @@
 <script lang="ts">
 	import { Icon } from 'sheodox-ui';
 	import { activeRoute } from './stores/routing';
+	import { lastAnytimeView } from './stores/anytime';
 	import Link from './Link.svelte';
 	import { hasExpiredCountdown } from './stores/anytime';
+	import type { LastAnytimeView } from './stores/anytime';
 
 	$: routes = [
 		{
@@ -32,10 +34,22 @@
 		{
 			name: 'Anytime',
 			id: 'anytime',
-			href: '/anytime',
+			href: '/anytime' + restoreAnytimeRoute($lastAnytimeView),
 			icon: 'bell',
 			iconTitle: 'A countdown has expired',
 			showIcon: $hasExpiredCountdown,
 		},
 	];
+
+	function restoreAnytimeRoute(val: LastAnytimeView) {
+		if (!val) {
+			return '';
+		}
+		if ('tag' in val) {
+			return `/tag/${val.tag}`;
+		}
+		if ('anytime' in val) {
+			return `/${val.anytime}`;
+		}
+	}
 </script>

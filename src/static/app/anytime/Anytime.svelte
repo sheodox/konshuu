@@ -25,6 +25,10 @@
 		text-align: center;
 	}
 
+	.anytime-container {
+		display: flex;
+	}
+
 	@media (max-width: 600px) {
 		section {
 			flex-direction: column;
@@ -35,93 +39,155 @@
 			height: auto;
 			min-height: auto !important;
 		}
+		.toolbar-button-text {
+			/* sr-only styles */
+			position: absolute;
+			left: -10000px;
+			top: auto;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+		}
+		.anytime-container {
+			flex-direction: column;
+		}
 	}
 </style>
 
-<div class="f-row justify-content-center pb-2">
-	<button on:click={() => toggleMode('new')} aria-pressed={mode === 'new'}>
-		<Icon icon="plus" />
-		<span>New Anytime</span>
+<div class="f-row justify-content-between pb-2">
+	<button on:click={() => ($showAnytimeSidebar = !$showAnytimeSidebar)} aria-pressed={$showAnytimeSidebar}>
+		<Icon icon="bars" variant="icon-only" />
+		<span class="sr-only">Anytime Menu</span>
 	</button>
-	<button on:click={() => toggleMode('tags')} aria-pressed={mode === 'tags'}>
-		<Icon icon="tag" />
-		<span>Manage Tags</span>
-	</button>
-	{#if !isViewingSingleAnytime}
-		<button on:click={() => toggleMode('filters')} aria-pressed={mode === 'filters'}>
-			<Icon icon="filter" />
-			<span
-				>Filter
-				{#if $filterTags.length}
-					({$filterTags.length})
-				{/if}
-			</span>
+
+	<div>
+		{#if $activeRouteParams.anytimeId || $activeRouteParams.tagId}
+			<Link href="/anytime" classes="button" on:followed={() => ($lastAnytimeView = null)}
+				><Icon icon="th" />
+				<span class="toolbar-button-text">All Anytimes</span></Link
+			>
+		{/if}
+		<button on:click={() => (showNew = true)} aria-pressed={showNew}>
+			<Icon icon="plus" />
+			<span class="toolbar-button-text">New Anytime</span>
 		</button>
-	{/if}
+		<button on:click={() => toggleMode('tags')} aria-pressed={mode === 'tags'}>
+			<Icon icon="tag" />
+			<span class="toolbar-button-text">Set Tags</span>
+		</button>
+	</div>
+	<div>
+		<MenuButton>
+			<span slot="trigger">
+				<Icon icon="sort" />
+				<span class="toolbar-button-text">Sort</span>
+			</span>
+			<ul slot="menu">
+				{#each sortModes as s}
+					<li>
+						<button on:click={() => ($anytimeSort = s.dir)} aria-pressed={$anytimeSort === s.dir}>
+							<span class="toolbar-button-text">{s.text}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		</MenuButton>
+	</div>
 </div>
 
-<div class="f-column justify-content-center align-items-center p-3">
-	{#if showIntro}
-		<p class="intro">
-			An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
-		</p>
-	{/if}
+<div class="anytime-container">
+	<AnytimeSidebar />
+	<div class="f-column justify-content-center align-items-center p-3">
+		{#if showIntro}
+			<p class="intro">
+				An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
+			</p>
+		{/if}
+	</div>
 
-	{#if mode === 'tags'}
-		<ManageTags />
-	{:else if mode === 'new'}
-		<NewAnytime on:close={() => (mode = '')} />
-	{:else if mode === 'filters'}
-		<FilterTags />
-	{/if}
+	<section class="f-wrap gap-3 p-3 f-1 justify-content-center" class:is-viewing-single-anytime={isViewingSingleAnytime}>
+		{#if mode === 'tags'}
+			{#each sortedAnytimes as anytime (anytime.id)}
+				{#if isFiltered(anytime, $activeRouteParams.anytimeId)}
+					<TagAssignment data={anytime} />
+				{/if}
+			{/each}
+		{:else}
+			{#each sortedAnytimes as anytime (anytime.id + anytime.notes)}
+				{#if isFiltered(anytime, $activeRouteParams.anytimeId)}
+					<AnytimeItem data={anytime} />
+				{/if}
+			{/each}
+		{/if}
+	</section>
 </div>
-<section class="f-wrap gap-3 p-3 f-1 justify-content-center" class:is-viewing-single-anytime={isViewingSingleAnytime}>
-	{#if mode === 'tags'}
-		{#each $anytimes as anytime (anytime.id)}
-			{#if isFiltered(anytime, $filterTags, $activeRouteParams.anytimeId)}
-				<TagAssignment data={anytime} />
-			{/if}
-		{/each}
-	{:else}
-		{#each $anytimes as anytime (anytime.id + anytime.notes)}
-			{#if isFiltered(anytime, $filterTags, $activeRouteParams.anytimeId)}
-				<AnytimeItem data={anytime} />
-			{/if}
-		{/each}
-	{/if}
-</section>
+
+{#if showNew}
+	<NewAnytime bind:visible={showNew} on:close={() => (showNew = false)} />
+{/if}
 
 <script lang="ts">
-	import { Icon } from 'sheodox-ui';
-	import { anytimes, anytimesInitialized, filterTags } from '../stores/anytime';
+	import { Icon, MenuButton } from 'sheodox-ui';
+	import {
+		anytimes,
+		anytimesInitialized,
+		showAnytimeSidebar,
+		lastAnytimeView,
+		anytimeSort,
+		AnytimeSort,
+	} from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
 	import NewAnytime from './NewAnytime.svelte';
 	import AnytimeItem from './AnytimeItem.svelte';
-	import ManageTags from './ManageTags.svelte';
 	import TagAssignment from './TagAssignment.svelte';
-	import FilterTags from './FilterTags.svelte';
+	import AnytimeSidebar from './AnytimeSidebar.svelte';
+	import Link from '../Link.svelte';
 	import type { Anytime } from '../../../shared/types/anytime';
 
-	type Mode = 'new' | 'tags' | 'filters' | '';
-	let mode: Mode = !$anytimes.length ? 'new' : '';
+	const sortModes = [
+		{ dir: 'desc', text: 'Newest First' },
+		{ dir: 'asc', text: 'Oldest First' },
+		{ dir: 'alpha-asc', text: 'Name A-Z' },
+		{ dir: 'alpha-desc', text: 'Name Z-A' },
+	] as const;
+
+	type Mode = 'tags' | 'view';
+	let mode: Mode = 'view';
+	let showNew = false;
+
 	$: showIntro = !$anytimes.length && $anytimesInitialized;
 	$: isViewingSingleAnytime = !!$activeRouteParams.anytimeId;
+	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort);
+
+	function sortAnytimes(anytimes: Anytime[], order: AnytimeSort) {
+		const sorted = [...anytimes];
+		sorted.sort((a, b) => {
+			if (['asc', 'desc'].includes(order)) {
+				const aTime = a.createdAt.getTime(),
+					bTime = b.createdAt.getTime();
+
+				return order === 'asc' ? aTime - bTime : bTime - aTime;
+			}
+			return order === 'alpha-asc' ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
+		});
+		return sorted;
+	}
 
 	function toggleMode(newMode: Mode) {
 		if (mode === newMode) {
-			mode = '';
+			mode = 'view';
 		} else {
 			mode = newMode;
 		}
 	}
-	function isFiltered(anytime: Anytime, filters: string[], focusedAnytimeId: string) {
+	function isFiltered(anytime: Anytime, focusedAnytimeId: string) {
 		if (focusedAnytimeId) {
 			return anytime.id === focusedAnytimeId;
 		}
 
-		if (!filters.length) {
+		if (!$activeRouteParams.tagId) {
 			return true;
 		}
-		return filters.every((tagId) => anytime.tags.some((assignment) => assignment.anytimeTagId === tagId));
+		return anytime.tags.some((tag) => tag.anytimeTagId === $activeRouteParams.tagId);
 	}
 </script>
