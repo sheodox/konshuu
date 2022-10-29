@@ -86,7 +86,7 @@
 				{#each sortModes as s}
 					<li>
 						<button on:click={() => ($anytimeSort = s.dir)} aria-pressed={$anytimeSort === s.dir}>
-							<span class="toolbar-button-text">{s.text}</span>
+							<span>{s.text}</span>
 						</button>
 					</li>
 				{/each}
