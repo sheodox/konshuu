@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Anytime" ALTER COLUMN "currentDayTime" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "WeeklyProgress" ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;

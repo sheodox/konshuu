@@ -150,7 +150,7 @@ export class WeeklyInteractor {
 
 		return await prisma.weeklyProgress.update({
 			where: { id: prog.id },
-			data: { progress: { increment: 1 } },
+			data: { progress: { increment: 1 }, updatedAt: new Date() },
 		});
 	}
 
@@ -179,7 +179,10 @@ export class WeeklyInteractor {
 
 		return await prisma.weeklyProgress.update({
 			where: { id: prog.id },
-			data: value,
+			data: {
+				...value,
+				updatedAt: new Date(),
+			},
 		});
 	}
 

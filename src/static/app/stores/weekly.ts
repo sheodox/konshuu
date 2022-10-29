@@ -81,6 +81,7 @@ envoy.on('weekly:new', ({ weekly }) => {
 				progress: 0,
 				weeklyId: weekly.id,
 				createdAt: new Date(),
+				updatedAt: new Date(),
 				week: get(startOfViewedWeek),
 			},
 		];

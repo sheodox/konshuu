@@ -90,6 +90,7 @@ const toDTO = {
 			id: progressEntity.id,
 			weeklyId: progressEntity.weeklyId,
 			createdAt: progressEntity.createdAt,
+			updatedAt: progressEntity.updatedAt,
 			goal: progressEntity.goal,
 			progress: progressEntity.progress,
 			week: progressEntity.week,

@@ -90,6 +90,7 @@ model WeeklyProgress {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
   weeklyId  String
   weekly    Weekly   @relation(fields: [weeklyId], references: [id], onDelete: Cascade)
   // the number of times this weekly has been performed

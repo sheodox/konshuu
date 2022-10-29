@@ -11,7 +11,7 @@
 			<fieldset class="f-column gap-2">
 				<legend>New Weekly</legend>
 				<TextInput bind:value={name} id="weekly-new-name">Name</TextInput>
-				<TextInput bind:value={goal} id="weekly-new-name" type="number">Goal</TextInput>
+				<TextInput bind:value={goal} id="weekly-new-goal" type="number">Goal</TextInput>
 				<button disabled={goal < 1 || !name} class="primary">Create</button>
 			</fieldset>
 		</form>
