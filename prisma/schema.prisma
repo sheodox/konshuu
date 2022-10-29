@@ -119,7 +119,7 @@ model Anytime {
   showCountDown  Boolean @default(true)
   currentDayTime BigInt
   resetsDaily    Boolean @default(false)
-  countHistory   Json
+  countHistory   Json    @default("[]")
 
   notes String @default("")
 

@@ -6,6 +6,6 @@
 
 */
 -- AlterTable
-ALTER TABLE "Anytime" ADD COLUMN     "countHistory" JSONB NOT NULL,
+ALTER TABLE "Anytime" ADD COLUMN     "countHistory" JSONB NOT NULL DEFAULT '[]',
 ADD COLUMN     "currentDayTime" INTEGER NOT NULL,
 ADD COLUMN     "resetsDaily" BOOLEAN NOT NULL DEFAULT false;
