@@ -10,10 +10,10 @@
 		height: 90vh;
 		overflow-y: auto;
 		position: relative;
-		pointer-events: none;
 
-		&.open {
-			pointer-events: all;
+		&.closed {
+			pointer-events: none;
+			display: none;
 		}
 
 		:global(.show-all-anytimes) {
@@ -48,7 +48,7 @@
 
 <aside
 	class="p-2"
-	class:open={!!$sidebarOpen}
+	class:closed={!$sidebarOpen}
 	style="margin-{$isBelowMobileBreakpoint ? 'top' : 'left'}: -{20 - 20 * $sidebarOpen}rem; opacity: {$sidebarOpen};"
 >
 	<div class="f-row justify-content-between align-items-baseline mb-2">
