@@ -70,8 +70,7 @@
 </div>
 
 <script lang="ts">
-	import { Icon, TextInput } from 'sheodox-ui';
-	import type { Anytime, AnytimeEditable } from '../../../shared/types/anytime';
+	import { Icon, TextInput, showConfirmModal } from 'sheodox-ui';
 	import { anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import AnytimeCountdown from './AnytimeCountdown.svelte';
 	import AnytimeCounter from './AnytimeCounter.svelte';
@@ -83,6 +82,7 @@
 	import CountupSettings from './CountupSettings.svelte';
 	import Notes from './Notes.svelte';
 	import Link from '../Link.svelte';
+	import type { Anytime, AnytimeEditable } from '../../../shared/types/anytime';
 
 	export let data: Anytime;
 
@@ -106,8 +106,10 @@
 		switchMode();
 	}
 
-	function confirmDelete() {
-		if (confirm(`Are you sure you want to delete "${data.name}"?`)) {
+	async function confirmDelete() {
+		if (
+			await showConfirmModal({ message: `Are you sure you want to delete "${data.name}"?`, title: 'Delete Anytime' })
+		) {
 			anytimeOps.delete(data.id);
 		}
 	}
