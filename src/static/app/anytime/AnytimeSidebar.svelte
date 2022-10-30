@@ -9,6 +9,10 @@
 		max-width: 95%;
 		height: 90vh;
 		overflow-y: auto;
+
+		:global(.show-all-anytimes) {
+			background-color: var(--sx-gray-transparent);
+		}
 	}
 	.tag {
 		width: 100%;
@@ -40,23 +44,34 @@
 	<aside class="p-2">
 		<div class="f-row justify-content-between align-items-baseline mb-2">
 			<h2>Tags</h2>
-			<button on:click={showAdd}><Icon icon="plus" />Add Tag</button>
+			<button on:click={showAdd}><Icon icon="plus" />New Tag</button>
 		</div>
 		<div class="f-column gap-2">
 			{#if $activeRouteParams.tagId}
 				<div class="tag mb-2 text-align-center">
-					<Link href="/anytime" classes={anytimeTagLinkClasses} on:followed={() => ($lastAnytimeView = null)}>
-						<Icon icon="arrow-left" /> Show All Anytimes</Link
+					<Link
+						href="/anytime"
+						classes="show-all-anytimes {anytimeTagLinkClasses} justify-content-center"
+						on:followed={() => ($lastAnytimeView = null)}
 					>
+						<span>
+							<Icon icon="arrow-left" /> Show All Anytimes
+						</span>
+					</Link>
 				</div>
 			{/if}
 			{#each $tagsSorted as tag}
 				<div class="tag px-1" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
 					<Link
 						href="/anytime/tag/{tag.id}"
-						classes={anytimeTagLinkClasses}
-						on:followed={() => ($lastAnytimeView = { tag: tag.id })}>{tag.name}</Link
+						classes="{anytimeTagLinkClasses} justify-content-between"
+						on:followed={() => ($lastAnytimeView = { tag: tag.id })}
 					>
+						<span>{tag.name}</span>
+						<span class="sx-badge-gray my-0 sx-font-size-2" title="Anytimes with this tag"
+							>{countTagUsage(tag.id, $anytimes)}</span
+						>
+					</Link>
 					<MenuButton>
 						<span slot="trigger">
 							<span class="sr-only">Menu</span>
@@ -77,19 +92,16 @@
 
 <script lang="ts">
 	import { Icon, MenuButton, showConfirmModal, showPromptModal } from 'sheodox-ui';
-	import { tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
+	import { anytimes, tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
 	import Link from '../Link.svelte';
 	import page from 'page';
-	import type { AnytimeTag } from '../../../shared/types/anytime';
+	import type { Anytime, AnytimeTag } from '../../../shared/types/anytime';
 
-	const anytimeTagLinkClasses = 'sx-font-size-5 f-1 py-2';
+	const anytimeTagLinkClasses = 'sx-font-size-4 f-1 py-2 f-row align-items-center';
 
 	async function showAdd() {
-		const newTagName = (await showPromptModal({ title: 'New Tag', label: 'New tag name' }))?.trim();
-		if (newTagName) {
-			anytimeOps.tag.new(newTagName);
-		}
+		anytimeOps.tag.new();
 	}
 
 	async function renameTag(tag: AnytimeTag) {
@@ -111,5 +123,11 @@
 				$lastAnytimeView = null;
 			}
 		}
+	}
+
+	function countTagUsage(tagId: string, anytimes: Anytime[]) {
+		return anytimes.reduce((total, anytime) => {
+			return total + (anytime.tags.some((t) => t.anytimeTagId === tagId) ? 1 : 0);
+		}, 0);
 	}
 </script>

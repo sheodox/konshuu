@@ -184,9 +184,12 @@ io.on('connection', (socket) => {
 		emitToUser('anytime:todo:deleteCompleted', anytimeId);
 	});
 
-	on('anytime:tag:new', async (name) => {
+	on('anytime:tag:new', async (name, done) => {
 		const tag = await AnytimeInteractor.newTag(userId, name);
-		emitToUser('anytime:tag:new', toDTO.tag(tag));
+		if (tag) {
+			emitToUser('anytime:tag:new', toDTO.tag(tag));
+			done(tag.id);
+		}
 	});
 
 	on('anytime:tag:edit', async (id, name) => {

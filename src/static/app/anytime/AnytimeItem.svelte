@@ -83,7 +83,6 @@
 	import CountupSettings from './CountupSettings.svelte';
 	import Notes from './Notes.svelte';
 	import Link from '../Link.svelte';
-	import { activeRouteParams } from '../stores/routing';
 
 	export let data: Anytime;
 

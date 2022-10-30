@@ -4,6 +4,10 @@
 		display: flex;
 		flex-direction: row;
 	}
+	.no-anytimes {
+		width: 20rem;
+		max-width: 90%;
+	}
 	:global(.anytime-item) {
 		width: 20rem;
 		max-width: 100%;
@@ -97,26 +101,37 @@
 
 <div class="anytime-container">
 	<AnytimeSidebar />
-	<div class="f-column justify-content-center align-items-center p-3">
-		{#if showIntro}
-			<p class="intro">
-				An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
-			</p>
-		{/if}
-	</div>
-
 	<section class="f-wrap gap-3 p-3 f-1 justify-content-center" class:is-viewing-single-anytime={isViewingSingleAnytime}>
+		{#if showIntro}
+			<div class="f-column justify-content-center align-items-center p-3 no-anytimes">
+				<span class="sx-font-size-9">
+					<Icon icon="scroll" />
+				</span>
+				<p class="intro">
+					An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
+				</p>
+				<p>
+					Open the menu with the <Icon icon="bars" /><span class="sr-only">Anytime Menu</span> button in the top left to
+					create tags to organize your anytimes.
+				</p>
+				<button on:click={() => (showNew = true)} class="primary">
+					<Icon icon="plus" />
+					New Anytime
+				</button>
+			</div>
+		{/if}
+
 		{#if mode === 'tags'}
 			{#each sortedAnytimes as anytime (anytime.id)}
-				{#if isFiltered(anytime, $activeRouteParams.anytimeId)}
-					<TagAssignment data={anytime} />
-				{/if}
+				<TagAssignment data={anytime} />
+			{:else}
+				<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
 			{/each}
 		{:else}
 			{#each sortedAnytimes as anytime (anytime.id + anytime.notes)}
-				{#if isFiltered(anytime, $activeRouteParams.anytimeId)}
-					<AnytimeItem data={anytime} />
-				{/if}
+				<AnytimeItem data={anytime} />
+			{:else}
+				<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
 			{/each}
 		{/if}
 	</section>
@@ -135,6 +150,7 @@
 		lastAnytimeView,
 		anytimeSort,
 		AnytimeSort,
+		anytimeOps,
 	} from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
 	import NewAnytime from './NewAnytime.svelte';
@@ -142,6 +158,7 @@
 	import TagAssignment from './TagAssignment.svelte';
 	import AnytimeSidebar from './AnytimeSidebar.svelte';
 	import Link from '../Link.svelte';
+	import AnytimeEmpty from './AnytimeEmpty.svelte';
 	import type { Anytime } from '../../../shared/types/anytime';
 
 	const sortModes = [
@@ -157,10 +174,19 @@
 
 	$: showIntro = !$anytimes.length && $anytimesInitialized;
 	$: isViewingSingleAnytime = !!$activeRouteParams.anytimeId;
-	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort);
+	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort, $activeRouteParams.anytimeId);
 
-	function sortAnytimes(anytimes: Anytime[], order: AnytimeSort) {
-		const sorted = [...anytimes];
+	function onNewTag() {
+		$showAnytimeSidebar = true;
+		anytimeOps.tag.new();
+	}
+
+	function onNewAnytime() {
+		showNew = true;
+	}
+
+	function sortAnytimes(anytimes: Anytime[], order: AnytimeSort, focusedAnytimeId: string) {
+		const sorted = anytimes.filter((anytime) => isFiltered(anytime, focusedAnytimeId));
 		sorted.sort((a, b) => {
 			if (['asc', 'desc'].includes(order)) {
 				const aTime = a.createdAt.getTime(),

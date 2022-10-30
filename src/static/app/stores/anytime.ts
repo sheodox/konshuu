@@ -19,7 +19,8 @@ import {
 	isBefore,
 	startOfDay,
 } from 'date-fns';
-import { createPersistentToast } from 'sheodox-ui';
+import { createPersistentToast, showPromptModal } from 'sheodox-ui';
+import page from 'page';
 
 export type LastAnytimeView = null | { tag: string } | { anytime: string };
 export type AnytimeSort = 'asc' | 'desc' | 'alpha-asc' | 'alpha-desc';
@@ -177,8 +178,14 @@ export const anytimeOps = {
 		},
 	},
 	tag: {
-		new(name: string) {
-			envoy.emit('anytime:tag:new', name);
+		async new() {
+			const newTagName = (await showPromptModal({ title: 'New Tag', label: 'New tag name' }))?.trim();
+			if (newTagName) {
+				envoy.emit('anytime:tag:new', newTagName, (id: string) => {
+					// if the server responds with an ID it's been created, navigate there
+					page(`/anytime/tag/${id}`);
+				});
+			}
 		},
 		edit(id: string, name: string) {
 			envoy.emit('anytime:tag:edit', id, name);
