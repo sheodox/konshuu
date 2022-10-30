@@ -9,6 +9,12 @@
 		max-width: 95%;
 		height: 90vh;
 		overflow-y: auto;
+		position: relative;
+		pointer-events: none;
+
+		&.open {
+			pointer-events: all;
+		}
 
 		:global(.show-all-anytimes) {
 			background-color: var(--sx-gray-transparent);
@@ -40,60 +46,65 @@
 	}
 </style>
 
-{#if $showAnytimeSidebar}
-	<aside class="p-2">
-		<div class="f-row justify-content-between align-items-baseline mb-2">
-			<h2>Tags</h2>
-			<button on:click={showAdd}><Icon icon="plus" />New Tag</button>
-		</div>
-		<div class="f-column gap-2">
-			{#if $activeRouteParams.tagId}
-				<div class="tag mb-2 text-align-center">
-					<Link
-						href="/anytime"
-						classes="show-all-anytimes {anytimeTagLinkClasses} justify-content-center"
-						on:followed={() => ($lastAnytimeView = null)}
+<aside
+	class="p-2"
+	class:open={!!$sidebarOpen}
+	style="margin-{$isBelowMobileBreakpoint ? 'top' : 'left'}: -{20 - 20 * $sidebarOpen}rem; opacity: {$sidebarOpen};"
+>
+	<div class="f-row justify-content-between align-items-baseline mb-2">
+		<h2>Tags</h2>
+		<button on:click={showAdd}><Icon icon="plus" />New Tag</button>
+	</div>
+	<div class="f-column gap-2">
+		{#if $activeRouteParams.tagId}
+			<div class="tag mb-2 text-align-center">
+				<Link
+					href="/anytime"
+					classes="show-all-anytimes {anytimeTagLinkClasses} justify-content-center"
+					on:followed={() => ($lastAnytimeView = null)}
+				>
+					<span>
+						<Icon icon="arrow-left" /> Show All Anytimes
+					</span>
+				</Link>
+			</div>
+		{/if}
+		{#each $tagsSorted as tag}
+			<div class="tag px-1" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
+				<Link
+					href="/anytime/tag/{tag.id}"
+					classes="{anytimeTagLinkClasses} justify-content-between"
+					on:followed={() => ($lastAnytimeView = { tag: tag.id })}
+				>
+					<span>{tag.name}</span>
+					<span class="sx-badge-gray my-0 sx-font-size-2" title="Anytimes with this tag"
+						>{countTagUsage(tag.id, $anytimes)}</span
 					>
-						<span>
-							<Icon icon="arrow-left" /> Show All Anytimes
-						</span>
-					</Link>
-				</div>
-			{/if}
-			{#each $tagsSorted as tag}
-				<div class="tag px-1" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
-					<Link
-						href="/anytime/tag/{tag.id}"
-						classes="{anytimeTagLinkClasses} justify-content-between"
-						on:followed={() => ($lastAnytimeView = { tag: tag.id })}
-					>
-						<span>{tag.name}</span>
-						<span class="sx-badge-gray my-0 sx-font-size-2" title="Anytimes with this tag"
-							>{countTagUsage(tag.id, $anytimes)}</span
-						>
-					</Link>
-					<MenuButton>
-						<span slot="trigger">
-							<span class="sr-only">Menu</span>
-							<Icon icon="chevron-down" variant="icon-only" />
-						</span>
-						<ul slot="menu">
-							<button on:click={() => renameTag(tag)}>Rename</button>
-							<button on:click={() => deleteTag(tag)}>Delete</button>
-						</ul>
-					</MenuButton>
-				</div>
-			{:else}
-				<p>You don't have any tags!</p>
-			{/each}
-		</div>
-	</aside>
-{/if}
+				</Link>
+				<MenuButton>
+					<span slot="trigger">
+						<span class="sr-only">Menu</span>
+						<Icon icon="chevron-down" variant="icon-only" />
+					</span>
+					<ul slot="menu">
+						<button on:click={() => renameTag(tag)}>Rename</button>
+						<button on:click={() => deleteTag(tag)}>Delete</button>
+					</ul>
+				</MenuButton>
+			</div>
+		{:else}
+			<p>You don't have any tags!</p>
+		{/each}
+	</div>
+</aside>
 
 <script lang="ts">
+	import { tweened } from 'svelte/motion';
+	import { cubicInOut } from 'svelte/easing';
 	import { Icon, MenuButton, showConfirmModal, showPromptModal } from 'sheodox-ui';
 	import { anytimes, tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
+	import { isBelowMobileBreakpoint } from '../stores/app';
 	import Link from '../Link.svelte';
 	import page from 'page';
 	import type { Anytime, AnytimeTag } from '../../../shared/types/anytime';
@@ -103,6 +114,18 @@
 	async function showAdd() {
 		anytimeOps.tag.new();
 	}
+
+	const sidebarOpen = tweened(undefined, {
+		duration: 100,
+		easing: cubicInOut,
+		interpolate(a: number, b: number) {
+			return (t: number) => {
+				return a > b ? 1 - t : t;
+			};
+		},
+	});
+
+	$: $sidebarOpen = $showAnytimeSidebar ? 1 : 0;
 
 	async function renameTag(tag: AnytimeTag) {
 		const newTagName = (await showPromptModal({ title: 'Edit Tag', label: 'New tag name', default: tag.name }))?.trim();
