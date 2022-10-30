@@ -7,7 +7,7 @@
 		box-shadow: var(--sx-shadow-1);
 		width: 20rem;
 		max-width: 95%;
-		height: 90vh;
+		height: calc(100vh - 120px);
 		overflow-y: auto;
 		position: relative;
 
