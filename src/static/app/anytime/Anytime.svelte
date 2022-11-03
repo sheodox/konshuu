@@ -160,6 +160,7 @@
 	import Link from '../Link.svelte';
 	import AnytimeEmpty from './AnytimeEmpty.svelte';
 	import type { Anytime } from '../../../shared/types/anytime';
+	import { appTitle } from '../stores/app';
 
 	const sortModes = [
 		{ dir: 'desc', text: 'Newest First' },
@@ -174,7 +175,9 @@
 
 	$: showIntro = !$anytimes.length && $anytimesInitialized;
 	$: isViewingSingleAnytime = !!$activeRouteParams.anytimeId;
+	$: viewingThisSingleAnytime = $anytimes.find((a) => a.id === $activeRouteParams.anytimeId);
 	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort, $activeRouteParams.anytimeId);
+	$: $appTitle = viewingThisSingleAnytime ? viewingThisSingleAnytime.name : 'Anytime';
 
 	function onNewTag() {
 		$showAnytimeSidebar = true;

@@ -18,6 +18,7 @@ const breakpoint = parseInt(
 );
 
 export const socket = io();
+export const appTitle = writable('');
 export const isBelowMobileBreakpoint = writable(checkIfBelowBreakpoint());
 export const now = readable<Date>(new Date(), (set) => {
 	const interval = setInterval(() => {
@@ -25,6 +26,15 @@ export const now = readable<Date>(new Date(), (set) => {
 	}, 1000);
 
 	return () => clearInterval(interval);
+});
+
+appTitle.subscribe((subtitle) => {
+	let title = 'Konshuu';
+	if (subtitle) {
+		title = `${subtitle} - ${title}`;
+	}
+
+	document.title = title;
 });
 
 export const socketConnected = writable(true);
