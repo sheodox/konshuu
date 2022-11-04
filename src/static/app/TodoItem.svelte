@@ -7,15 +7,6 @@
 		background: var(--sx-gray-400);
 		border-radius: 0.2rem;
 	}
-	li :global(div) {
-		flex: 1;
-		display: flex;
-	}
-	li :global(label) {
-		font-size: 0.8rem;
-		flex: 1;
-		padding-left: 0.2rem;
-	}
 	button {
 		padding: 0.3rem;
 		text-align: left;
@@ -23,27 +14,19 @@
 	ul {
 		list-style: none;
 	}
-	@media (max-width: 600px) {
-		li :global(label) {
-			font-size: var(--sx-font-size-3);
-		}
-	}
 </style>
 
 {#if !todo.completed || !$hideCompleted}
 	<li
-		class="todo-item f-row align-items-start px-1"
+		class="todo-item f-row align-items-start"
 		draggable="true"
 		on:dragstart={dragStart}
 		on:click={() => toggleTodo(!todo.completed)}
-		class:muted={todo.completed}
 		bind:this={li}
 	>
-		<div on:click|stopPropagation>
-			<Checkbox bind:checked={todo.completed} on:change={() => toggleTodo(todo.completed)} id={todo.id}>
-				{todo.text}
-			</Checkbox>
-		</div>
+		<TodoCheckbox bind:checked={todo.completed} on:change={() => toggleTodo(todo.completed)} id={todo.id}>
+			{todo.text}
+		</TodoCheckbox>
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
 			<span slot="trigger">
 				<span class="sr-only">Menu</span>
@@ -86,7 +69,8 @@
 <script lang="ts">
 	import { hideCompleted, updateTodo, deleteTodo, reschedule } from './stores/todo';
 	import { copyToClipboard } from './stores/app';
-	import { Icon, Checkbox, MenuButton } from 'sheodox-ui';
+	import { Icon, MenuButton } from 'sheodox-ui';
+	import TodoCheckbox from './TodoCheckbox.svelte';
 	import Reschedule from './Reschedule.svelte';
 	import { getRescheduleDestination } from './reschedule-utils';
 	import type { Todo, TodoListType } from '../../shared/types/todos';

@@ -59,21 +59,19 @@
 		visibility: hidden;
 	}
 	.recurring-container {
-		$recColor: var(--sx-gray-200);
-		border-color: #{$recColor};
+		--recurring-background-color: var(--sx-gray-500);
+		border: none;
 		background-color: var(--sx-gray-500);
-		/* compensate for the border width so the checkboxes in here line up with the other todos */
-		margin-left: -2px !important;
-		margin-right: -2px !important;
+		overflow: hidden;
 
 		legend {
 			font-size: var(--sx-font-size-1);
-			color: white;
+			color: var(--sx-gray-75);
 			border-radius: 2px;
 			position: relative;
 			margin: 0 auto;
 			span {
-				background: #{$recColor};
+				background: var(--recurring-background-color);
 			}
 			&::after,
 			&::before {
@@ -85,35 +83,12 @@
 				border: 0.45rem solid transparent;
 			}
 			&::after {
-				border-left-color: #{$recColor};
+				border-left-color: var(--recurring-background-color);
 			}
 			&::before {
 				transform: translateX(-100%);
-				border-right-color: #{$recColor};
+				border-right-color: var(--recurring-background-color);
 			}
-		}
-
-		/* override some checkbox styling so the label is bigger and can accept clicks along the whole row */
-		:global(div) {
-			display: flex;
-			border-radius: 0.2rem;
-
-			&:hover {
-				background: var(--sx-gray-400);
-			}
-		}
-		:global(input) {
-			width: 1.3rem;
-
-			&:checked + :global(label) {
-				color: var(--sx-muted);
-			}
-		}
-		:global(label) {
-			flex: 1;
-			font-size: 0.8rem;
-			padding-top: var(--sx-spacing-1);
-			padding-bottom: var(--sx-spacing-1);
 		}
 	}
 	.overdue-message {

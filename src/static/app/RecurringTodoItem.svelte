@@ -1,10 +1,12 @@
 <style>
 </style>
 
-<Checkbox checked={complete} on:change={change}>{todo.text}</Checkbox>
+<TodoCheckbox checked={complete} on:change={change} id={todo.id + '-' + calendarDate.serialize()} addPadding={true}>
+	{todo.text}
+</TodoCheckbox>
 
 <script lang="ts">
-	import { Checkbox } from 'sheodox-ui';
+	import TodoCheckbox from './TodoCheckbox.svelte';
 	import { recurringCompletionOps, recurringTodoCompletion } from './stores/todo';
 	import type { CalendarDate } from '../../shared/dates';
 	import type { RecurringTodo } from '../../shared/types/todos';

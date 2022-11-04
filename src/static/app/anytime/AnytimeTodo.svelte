@@ -46,13 +46,13 @@
 		bind:this={li}
 	>
 		<div on:click|stopPropagation>
-			<Checkbox bind:checked={todo.completed} on:change={() => toggleCompletion(todo.completed)} id={todo.id}>
+			<TodoCheckbox bind:checked={todo.completed} on:change={() => toggleCompletion(todo.completed)} id={todo.id}>
 				{#if todo.href && /^https?:/.test(todo.href)}
 					<a href={todo.href} class="inline-link" target="_blank" rel="noopener noreferrer">{todo.text}</a>
 				{:else}
 					{todo.text}
 				{/if}
-			</Checkbox>
+			</TodoCheckbox>
 		</div>
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
 			<span slot="trigger">
@@ -92,8 +92,9 @@
 <script lang="ts">
 	import { copyToClipboard } from '../stores/app';
 	import { anytimeOps } from '../stores/anytime';
-	import { Icon, Checkbox, MenuButton } from 'sheodox-ui';
+	import { Icon, MenuButton } from 'sheodox-ui';
 	import { AnytimeTodo } from '../../../shared/types/anytime';
+	import TodoCheckbox from '../TodoCheckbox.svelte';
 	import AnytimeTodoEdit from './AnytimeTodoEdit.svelte';
 
 	export let anytimeId: string;
