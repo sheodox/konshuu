@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { addDays } from 'date-fns';
 import { CalendarDate } from '../../shared/dates';
 
 export const draggingOverList = writable(null);
@@ -9,8 +10,8 @@ function getDateForDayIndexPastSunday(dayIndex: number, originalDate: CalendarDa
 	// example: find the date of the next monday
 	// 8 days is the day offset from this week's sunday to next monday,
 	// subtract however many days of the current week has passed
-	const daysUntilMonday = dayIndex - originalDate.getDay();
-	return new Date(originalDate.asDate().getTime() + DAY_MS * daysUntilMonday);
+	const daysUntil = dayIndex - originalDate.getDay();
+	return addDays(originalDate.asDate().getTime(), daysUntil);
 }
 
 export function getRescheduleDestination(target: string, originalDate: CalendarDate) {
@@ -18,13 +19,13 @@ export function getRescheduleDestination(target: string, originalDate: CalendarD
 	if (target === 'today') {
 		date = new Date();
 	} else if (target === 'tomorrow') {
-		date = new Date(Date.now() + DAY_MS);
+		date = addDays(Date.now(), 1);
 	} else if (target === 'next-monday') {
 		date = getDateForDayIndexPastSunday(8, originalDate);
 	} else if (target === 'saturday') {
 		date = getDateForDayIndexPastSunday(6, originalDate);
 	} else if (target === 'next-week') {
-		date = new Date(originalDate.asDate().getTime() + DAY_MS * 7);
+		date = addDays(originalDate.asDate(), 7);
 	} else {
 		// the date input gives a date like 'YYYY-MM-DD'
 		const [year, month, day] = target.split('-');
