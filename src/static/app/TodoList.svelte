@@ -44,9 +44,6 @@
 		color: gray;
 		text-align: center;
 	}
-	progress {
-		height: 2px;
-	}
 	.mobile-add-todo-button {
 		display: none;
 	}
@@ -150,13 +147,10 @@
 					</button>
 				</label>
 			</form>
-			<progress
-				value={completedCount}
-				max={todayTodosTotal}
-				aria-label="todo completion for this list"
-				class="my-2"
-				class:all-done={completedCount === todayTodosTotal}
-			/>
+			<div class="my-2" class:all-done={completedCount === todayTodosTotal}>
+				<label class="sr-only" for="{listId}-progress">Todo completion for this list</label>
+				<Progress id={listId + '-progress'} value={completedCount} max={todayTodosTotal} variant="slim" />
+			</div>
 			<ul class="m-0 p-0">
 				{#each list as todo (todo.id)}
 					<TodoItem {todo} {listType} {calendarDate} />
@@ -201,7 +195,7 @@
 		recurringTodoCompletion,
 	} from './stores/todo';
 	import Reschedule from './Reschedule.svelte';
-	import { Icon } from 'sheodox-ui';
+	import { Icon, Progress } from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
 	import { draggingOverList, getRescheduleDestination } from './reschedule-utils';
 	import RecurringTodoItem from './RecurringTodoItem.svelte';
@@ -215,7 +209,7 @@
 	export let isToday: boolean;
 	export let isPast: boolean;
 
-	const listId = `${listName}-${calendarDate.serialize()}`;
+	$: listId = `todo-list-${calendarDate.serialize()}-${listType}`;
 	$: recurringTodos = getRecurringTodosForList(listType, calendarDate, $recurringTodosStore);
 
 	let newTodoText = '',
