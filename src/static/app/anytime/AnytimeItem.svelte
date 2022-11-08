@@ -2,26 +2,27 @@
 	form button {
 		margin: 0;
 	}
-
-	.todo-header button {
-		padding: 0.25rem 0.5rem;
-	}
 </style>
 
 <div class="anytime-item f-column">
-	<div class="f-row justify-content-between align-items-baseline todo-header">
+	<div class="f-row justify-content-between align-items-center todo-header">
 		<h2>
 			<Link href="/anytime/{data.id}" on:followed={() => ($lastAnytimeView = { anytime: data.id })}>{data.name}</Link>
 		</h2>
-		<div class="f-row">
+		<div class="f-row align-items-center gap-2">
 			{#if data.type === 'todos' && mode === 'view'}
-				<button on:click={() => (showNewTodo = !showNewTodo)} title="Add todo" aria-pressed={showNewTodo}>
+				<button
+					on:click={() => (showNewTodo = !showNewTodo)}
+					title="Add todo"
+					aria-pressed={showNewTodo}
+					class="small px-2 m-0"
+				>
 					<Icon icon="plus" variant="icon-only" />
 					<span class="sr-only">Add Todo</span>
 				</button>
 			{/if}
-			<MenuButton triggerClasses="small">
-				<span slot="trigger" class="px-1">
+			<MenuButton triggerClasses="small px-3 m-0">
+				<span slot="trigger">
 					<Icon icon="ellipsis-v" variant="icon-only" />
 					<span class="sr-only">Options</span>
 				</span>
