@@ -188,8 +188,8 @@ export const anytimeOps = {
 				});
 			}
 		},
-		edit(id: string, name: string) {
-			envoy.emit('anytime:tag:edit', id, name);
+		edit(id: string, name: string, showOnAllAnytimes: boolean) {
+			envoy.emit('anytime:tag:edit', id, name, showOnAllAnytimes);
 		},
 		delete(id: string) {
 			envoy.emit('anytime:tag:delete', id);

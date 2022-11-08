@@ -131,11 +131,12 @@ model Anytime {
 }
 
 model AnytimeTag {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  name      String
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id])
+  createdAt         DateTime @default(now())
+  name              String
+  showOnAllAnytimes Boolean  @default(true)
 
   AnytimeTagAssignment AnytimeTagAssignment[]
   @@index([userId])

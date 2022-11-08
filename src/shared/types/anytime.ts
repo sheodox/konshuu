@@ -33,6 +33,7 @@ export interface AnytimeCountHistory {
 export interface AnytimeTag {
 	id: string;
 	name: string;
+	showOnAllAnytimes: boolean;
 }
 
 export interface AnytimeTagAssignment {

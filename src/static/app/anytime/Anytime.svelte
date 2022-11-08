@@ -169,6 +169,7 @@
 		anytimeSort,
 		AnytimeSort,
 		anytimeOps,
+		tags,
 	} from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
 	import NewAnytime from './NewAnytime.svelte';
@@ -177,7 +178,7 @@
 	import AnytimeSidebar from './AnytimeSidebar.svelte';
 	import Link from '../Link.svelte';
 	import AnytimeEmpty from './AnytimeEmpty.svelte';
-	import type { Anytime } from '../../../shared/types/anytime';
+	import type { Anytime, AnytimeTag } from '../../../shared/types/anytime';
 	import { appTitle } from '../stores/app';
 
 	const sortModes = [
@@ -196,7 +197,7 @@
 	$: showIntro = !$anytimes.length && $anytimesInitialized;
 	$: isViewingSingleAnytime = !!$activeRouteParams.anytimeId;
 	$: viewingThisSingleAnytime = $anytimes.find((a) => a.id === $activeRouteParams.anytimeId);
-	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort, $activeRouteParams.anytimeId);
+	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort, $activeRouteParams.anytimeId, $tags);
 	$: $appTitle = viewingThisSingleAnytime ? viewingThisSingleAnytime.name : 'Anytime';
 	$: sortedPinnedAnytimes = sortedAnytimes.filter((anytime) => anytime.pinned);
 	$: sortedUnPinnedAnytimes = sortedAnytimes.filter((anytime) => !anytime.pinned);
@@ -210,8 +211,8 @@
 		showNew = true;
 	}
 
-	function sortAnytimes(anytimes: Anytime[], order: AnytimeSort, focusedAnytimeId: string) {
-		const sorted = anytimes.filter((anytime) => isFiltered(anytime, focusedAnytimeId));
+	function sortAnytimes(anytimes: Anytime[], order: AnytimeSort, focusedAnytimeId: string, tags: AnytimeTag[]) {
+		const sorted = anytimes.filter((anytime) => isFiltered(anytime, focusedAnytimeId, tags));
 		sorted.sort((a, b) => {
 			if (['asc', 'desc'].includes(order)) {
 				const aTime = a.createdAt.getTime(),
@@ -231,12 +232,17 @@
 			mode = newMode;
 		}
 	}
-	function isFiltered(anytime: Anytime, focusedAnytimeId: string) {
+	function isFiltered(anytime: Anytime, focusedAnytimeId: string, tags: AnytimeTag[]) {
 		if (focusedAnytimeId) {
 			return anytime.id === focusedAnytimeId;
 		}
 
-		if (!$activeRouteParams.tagId) {
+		const hasTagHiddenFromAllAnytimes = anytime.tags.some((tag) => {
+			return tags.find(({ id }) => id === tag.anytimeTagId)?.showOnAllAnytimes === false;
+		});
+
+		// show all anytimes on the main list (unless they have a tag that hides them from it)
+		if (!$activeRouteParams.tagId && !hasTagHiddenFromAllAnytimes) {
 			return true;
 		}
 		return anytime.tags.some((tag) => tag.anytimeTagId === $activeRouteParams.tagId);

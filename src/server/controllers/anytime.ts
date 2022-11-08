@@ -316,9 +316,9 @@ export class AnytimeInteractor {
 			},
 		});
 	}
-	static async editTag(userId: string, id: string, name: string) {
+	static async editTag(userId: string, id: string, name: string, showOnAllAnytimes: boolean) {
 		name = name?.trim();
-		if (!name || !userId || !id) {
+		if (!name || !userId || !id || typeof showOnAllAnytimes !== 'boolean') {
 			return;
 		}
 
@@ -330,6 +330,7 @@ export class AnytimeInteractor {
 			data: {
 				userId,
 				name,
+				showOnAllAnytimes,
 			},
 		});
 

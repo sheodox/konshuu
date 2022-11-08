@@ -20,21 +20,6 @@
 			background-color: var(--sx-gray-transparent);
 		}
 	}
-	.tag {
-		width: 100%;
-		display: flex;
-		border-radius: 3px;
-		border: 2px solid transparent;
-
-		&.viewing-this-tag {
-			color: white;
-			background: var(--sx-gray-400);
-		}
-		&:hover {
-			background-color: var(--sx-gray-transparent);
-		}
-	}
-
 	@media (max-width: 600px) {
 		aside {
 			border: 1px solid var(--sx-gray-400);
@@ -70,28 +55,7 @@
 			</div>
 		{/if}
 		{#each $tagsSorted as tag}
-			<div class="tag px-1" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
-				<Link
-					href="/anytime/tag/{tag.id}"
-					classes="{anytimeTagLinkClasses} justify-content-between"
-					on:followed={() => ($lastAnytimeView = { tag: tag.id })}
-				>
-					<span>{tag.name}</span>
-					<span class="sx-badge-gray my-0 sx-font-size-2" title="Anytimes with this tag"
-						>{countTagUsage(tag.id, $anytimes)}</span
-					>
-				</Link>
-				<MenuButton>
-					<span slot="trigger">
-						<span class="sr-only">Menu</span>
-						<Icon icon="chevron-down" variant="icon-only" />
-					</span>
-					<ul slot="menu">
-						<button on:click={() => renameTag(tag)}>Rename</button>
-						<button on:click={() => deleteTag(tag)}>Delete</button>
-					</ul>
-				</MenuButton>
-			</div>
+			<SidebarTag {tag} />
 		{:else}
 			<p>You don't have any tags!</p>
 		{/each}
@@ -101,13 +65,12 @@
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
-	import { Icon, MenuButton, showConfirmModal, showPromptModal } from 'sheodox-ui';
-	import { anytimes, tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
+	import { Icon } from 'sheodox-ui';
+	import { tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
 	import { isBelowMobileBreakpoint } from '../stores/app';
 	import Link from '../Link.svelte';
-	import page from 'page';
-	import type { Anytime, AnytimeTag } from '../../../shared/types/anytime';
+	import SidebarTag from './SidebarTag.svelte';
 
 	const anytimeTagLinkClasses = 'sx-font-size-4 f-1 py-2 f-row align-items-center';
 
@@ -126,31 +89,4 @@
 	});
 
 	$: $sidebarOpen = $showAnytimeSidebar ? 1 : 0;
-
-	async function renameTag(tag: AnytimeTag) {
-		const newTagName = (await showPromptModal({ title: 'Edit Tag', label: 'New tag name', default: tag.name }))?.trim();
-		if (newTagName) {
-			anytimeOps.tag.edit(tag.id, newTagName);
-		}
-	}
-
-	async function deleteTag(tag: AnytimeTag) {
-		const confirmed = await showConfirmModal({
-			title: 'Delete Tag',
-			message: `Are you sure you want to delete "${tag.name}"?`,
-		});
-		if (confirmed) {
-			anytimeOps.tag.delete(tag.id);
-			if (tag.id === $activeRouteParams.tagId) {
-				page('/anytime');
-				$lastAnytimeView = null;
-			}
-		}
-	}
-
-	function countTagUsage(tagId: string, anytimes: Anytime[]) {
-		return anytimes.reduce((total, anytime) => {
-			return total + (anytime.tags.some((t) => t.anytimeTagId === tagId) ? 1 : 0);
-		}, 0);
-	}
 </script>

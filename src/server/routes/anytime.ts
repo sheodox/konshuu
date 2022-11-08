@@ -63,6 +63,7 @@ const toDTO = {
 		return {
 			id: tag.id,
 			name: tag.name,
+			showOnAllAnytimes: tag.showOnAllAnytimes,
 		};
 	},
 	tagAssignment: (assignment: PrismaAnytimeTagAssignment): AnytimeTagAssignment => {
@@ -193,9 +194,11 @@ io.on('connection', (socket) => {
 		}
 	});
 
-	on('anytime:tag:edit', async (id, name) => {
-		const tag = await AnytimeInteractor.editTag(userId, id, name);
-		emitToUser('anytime:tag:edit', toDTO.tag(tag));
+	on('anytime:tag:edit', async (id, name, showOnAllAnytimes) => {
+		const tag = await AnytimeInteractor.editTag(userId, id, name, showOnAllAnytimes);
+		if (tag) {
+			emitToUser('anytime:tag:edit', toDTO.tag(tag));
+		}
 	});
 
 	on('anytime:tag:delete', async (id) => {
