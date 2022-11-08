@@ -4,7 +4,7 @@
 	}
 </style>
 
-<Fieldset legend={title} variant="bordered">
+<Fieldset legend={title}>
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
 		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown}>Text</TextInput>
 		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
