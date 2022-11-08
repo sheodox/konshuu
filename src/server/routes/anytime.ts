@@ -29,6 +29,7 @@ const toDTO = {
 			createdAt: anytime.createdAt,
 			updatedAt: anytime.updatedAt,
 			name: anytime.name,
+			pinned: anytime.pinned,
 			type: anytime.type,
 			count: anytime.count,
 			showCountUp: anytime.showCountUp,

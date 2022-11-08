@@ -12,6 +12,7 @@ export interface Anytime {
 	updatedAt: Date;
 	name: string;
 	type: string;
+	pinned: boolean;
 	count: number;
 	showCountUp: boolean;
 	showCountDown: boolean;
@@ -42,7 +43,7 @@ export interface AnytimeTagAssignment {
 export type AnytimeNew = Pick<Anytime, 'name' | 'type' | 'countdownEnd'> & { tags: string[] };
 export type AnytimeEditable = Pick<
 	Anytime,
-	'name' | 'count' | 'showCountUp' | 'showCountDown' | 'countdownEnd' | 'notes' | 'resetsDaily'
+	'name' | 'count' | 'showCountUp' | 'showCountDown' | 'countdownEnd' | 'notes' | 'resetsDaily' | 'pinned'
 >;
 export type AnytimeTodoNew = Pick<AnytimeTodo, 'text' | 'href'>;
 export type AnytimeTodoEditable = Pick<AnytimeTodo, 'text' | 'href' | 'completed'>;

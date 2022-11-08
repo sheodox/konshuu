@@ -101,40 +101,58 @@
 
 <div class="anytime-container">
 	<AnytimeSidebar />
-	<section class="f-wrap gap-3 p-3 f-1 justify-content-center" class:is-viewing-single-anytime={isViewingSingleAnytime}>
+	<div class={anytimeSectionClasses} class:is-viewing-single-anytime={isViewingSingleAnytime}>
 		{#if showIntro}
-			<div class="f-column justify-content-center align-items-center p-3 no-anytimes">
-				<span class="sx-font-size-9">
-					<Icon icon="scroll" />
-				</span>
-				<p class="intro">
-					An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
-				</p>
-				<p>
-					Open the menu with the <Icon icon="bars" /><span class="sr-only">Anytime Menu</span> button in the top left to
-					create tags to organize your anytimes.
-				</p>
-				<button on:click={() => (showNew = true)} class="primary">
-					<Icon icon="plus" />
-					New Anytime
-				</button>
-			</div>
+			<section class={anytimeSectionClasses}>
+				<div class="f-column justify-content-center align-items-center p-3 no-anytimes">
+					<span class="sx-font-size-9">
+						<Icon icon="scroll" />
+					</span>
+					<p class="intro">
+						An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
+					</p>
+					<p>
+						Open the menu with the <Icon icon="bars" /><span class="sr-only">Anytime Menu</span> button in the top left to
+						create tags to organize your anytimes.
+					</p>
+					<button on:click={() => (showNew = true)} class="primary">
+						<Icon icon="plus" />
+						New Anytime
+					</button>
+				</div>
+			</section>
 		{/if}
 
-		{#if mode === 'tags'}
-			{#each sortedAnytimes as anytime (anytime.id)}
-				<TagAssignment data={anytime} />
-			{:else}
-				<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
-			{/each}
+		{#if sortedAnytimes.length}
+			{#if sortedPinnedAnytimes.length}
+				<section class={anytimeSectionClasses}>
+					{#each sortedPinnedAnytimes as anytime (anytime.id + anytime.notes)}
+						{#if mode === 'tags'}
+							<TagAssignment data={anytime} />
+						{:else}
+							<AnytimeItem data={anytime} />
+						{/if}
+					{/each}
+				</section>
+			{/if}
+
+			{#if sortedUnPinnedAnytimes.length}
+				<section class={anytimeSectionClasses}>
+					{#each sortedUnPinnedAnytimes as anytime (anytime.id + anytime.notes)}
+						{#if mode === 'tags'}
+							<TagAssignment data={anytime} />
+						{:else}
+							<AnytimeItem data={anytime} />
+						{/if}
+					{/each}
+				</section>
+			{/if}
 		{:else}
-			{#each sortedAnytimes as anytime (anytime.id + anytime.notes)}
-				<AnytimeItem data={anytime} />
-			{:else}
+			<section class={anytimeSectionClasses}>
 				<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
-			{/each}
+			</section>
 		{/if}
-	</section>
+	</div>
 </div>
 
 {#if showNew}
@@ -169,6 +187,8 @@
 		{ dir: 'alpha-desc', text: 'Name Z-A' },
 	] as const;
 
+	const anytimeSectionClasses = 'f-wrap gap-3 p-3 f-1 justify-content-center';
+
 	type Mode = 'tags' | 'view';
 	let mode: Mode = 'view';
 	let showNew = false;
@@ -178,6 +198,8 @@
 	$: viewingThisSingleAnytime = $anytimes.find((a) => a.id === $activeRouteParams.anytimeId);
 	$: sortedAnytimes = sortAnytimes($anytimes, $anytimeSort, $activeRouteParams.anytimeId);
 	$: $appTitle = viewingThisSingleAnytime ? viewingThisSingleAnytime.name : 'Anytime';
+	$: sortedPinnedAnytimes = sortedAnytimes.filter((anytime) => anytime.pinned);
+	$: sortedUnPinnedAnytimes = sortedAnytimes.filter((anytime) => !anytime.pinned);
 
 	function onNewTag() {
 		$showAnytimeSidebar = true;

@@ -139,6 +139,7 @@ export const anytimeOps = {
 			showCountUp: data.showCountUp,
 			showCountDown: data.showCountDown,
 			resetsDaily: data.resetsDaily,
+			pinned: data.pinned,
 		};
 	},
 	edit(id: string, data: AnytimeEditable) {

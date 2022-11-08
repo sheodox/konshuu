@@ -112,6 +112,7 @@ model Anytime {
   updatedAt DateTime @default(now())
   name      String
   type      String
+  pinned    Boolean  @default(false)
 
   countdownEnd DateTime?
 

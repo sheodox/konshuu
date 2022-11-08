@@ -20,10 +20,32 @@
 					<span class="sr-only">Add Todo</span>
 				</button>
 			{/if}
-			<button on:click={switchMode} aria-pressed={mode === 'edit'} disabled={!allowSettings}>
-				<Icon icon="cog" variant="icon-only" />
-				<span class="sr-only">Options</span>
-			</button>
+			<MenuButton triggerClasses="small">
+				<span slot="trigger" class="px-1">
+					<Icon icon="ellipsis-v" variant="icon-only" />
+					<span class="sr-only">Options</span>
+				</span>
+				<ul slot="menu">
+					<li>
+						<button on:click={switchMode} aria-pressed={mode === 'edit'} disabled={!allowSettings}>
+							<Icon icon="cog" />
+							Settings
+						</button>
+					</li>
+					<li>
+						<button on:click={togglePin}>
+							<Icon icon="thumbtack" />
+							{data.pinned ? 'Unpin' : 'Pin to top'}
+						</button>
+					</li>
+					<li>
+						<button on:click={confirmDelete}>
+							<Icon icon="trash" />
+							Delete
+						</button>
+					</li>
+				</ul>
+			</MenuButton>
 		</div>
 	</div>
 
@@ -64,13 +86,12 @@
 			<p class="m-0 sx-font-size-2 text-align-center">Last updated {data.updatedAt.toLocaleString()}</p>
 			<button class="primary" disabled={!typeSettingsValid}>Save</button>
 			<button class="secondary" type="button" on:click={switchMode}>Cancel</button>
-			<button class="danger" type="button" on:click={confirmDelete}>Delete "{data.name}"</button>
 		</form>
 	{/if}
 </div>
 
 <script lang="ts">
-	import { Icon, TextInput, showConfirmModal } from 'sheodox-ui';
+	import { MenuButton, Icon, TextInput, showConfirmModal } from 'sheodox-ui';
 	import { anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import AnytimeCountdown from './AnytimeCountdown.svelte';
 	import AnytimeCounter from './AnytimeCounter.svelte';
@@ -99,6 +120,10 @@
 		} else {
 			mode = 'view';
 		}
+	}
+
+	function togglePin() {
+		anytimeOps.edit(data.id, { ...anytimeOps.anytimeToEditable(data), pinned: !data.pinned });
 	}
 
 	function submit() {
