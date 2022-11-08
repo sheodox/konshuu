@@ -23,9 +23,11 @@
 			showCancel={!!data.todos.length}
 		/>
 	{/if}
-	{#each data.todos as todo (todo.id)}
-		<AnytimeTodo {todo} anytimeId={data.id} />
-	{/each}
+	<ul class="m-0 p-0 f-column">
+		{#each data.todos as todo (todo.id)}
+			<AnytimeTodo {todo} anytimeId={data.id} />
+		{/each}
+	</ul>
 </div>
 
 <script lang="ts">

@@ -2,9 +2,14 @@
 	button {
 		margin: 0;
 	}
+
+	/* without this the new todo list will slowly make the new fieldset disappear */
+	:global(.new-todo-fieldset) {
+		overflow: visible !important;
+	}
 </style>
 
-<Fieldset legend={title}>
+<Fieldset legend={title} fieldsetClasses="new-todo-fieldset">
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
 		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown}>Text</TextInput>
 		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
