@@ -4,8 +4,7 @@
 	}
 </style>
 
-<fieldset>
-	<legend>{title}</legend>
+<Fieldset legend={title} variant="bordered">
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
 		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown}>Text</TextInput>
 		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
@@ -18,10 +17,10 @@
 			{/if}
 		</div>
 	</form>
-</fieldset>
+</Fieldset>
 
 <script lang="ts">
-	import { TextInput } from 'sheodox-ui';
+	import { TextInput, Fieldset } from 'sheodox-ui';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher<{ submit: void; cancel: void }>();

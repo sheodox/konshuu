@@ -1,6 +1,3 @@
-<style>
-</style>
-
 <TodoCheckbox checked={complete} on:change={change} id={todo.id + '-' + calendarDate.serialize()} addPadding={true}>
 	{todo.text}
 </TodoCheckbox>

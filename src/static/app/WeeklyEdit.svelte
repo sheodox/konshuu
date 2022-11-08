@@ -1,6 +1,5 @@
-<fieldset>
-	<legend>{weekly.name}</legend>
-	<form on:submit|preventDefault={save} class="f-column gap-2">
+<Fieldset legend={weekly.name}>
+	<form on:submit|preventDefault={save} class="f-column gap-2 mt-2">
 		<TextInput id="{weekly.id}-name" type="text" bind:value={newName}>Name</TextInput>
 		<TextInput id="{weekly.id}-goal" type="number" bind:value={newGoal}>Goal</TextInput>
 		<small>Changing the goal here won't change the goal for past weeks.</small>
@@ -12,7 +11,7 @@
 			<button on:click={() => (showDeleteConfirm = true)} class="danger"><Icon icon="trash" />Delete</button>
 		</div>
 	</form>
-</fieldset>
+</Fieldset>
 
 {#if showDeleteConfirm}
 	<Modal bind:visible={showDeleteConfirm} title={`Delete "${weekly.name}"`}>
@@ -34,7 +33,7 @@
 {/if}
 
 <script lang="ts">
-	import { Icon, TextInput, Modal, Checkbox } from 'sheodox-ui';
+	import { Icon, TextInput, Modal, Checkbox, Fieldset } from 'sheodox-ui';
 	import { weeklyOps } from './stores/weekly';
 	import type { Weekly } from '../../shared/types/todos';
 

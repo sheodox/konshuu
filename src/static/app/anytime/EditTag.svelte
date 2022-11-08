@@ -1,5 +1,4 @@
-<fieldset>
-	<legend>Edit Tag</legend>
+<Fieldset legend="Edit Tag">
 	<form class="f-column gap-2" on:submit|preventDefault={save}>
 		<TextInput bind:value={name}>Tag Name</TextInput>
 		<div class="f-row gap-2 f-1">
@@ -7,11 +6,11 @@
 			<button class="primary f-1" disabled={!name || name === tag.name}>Save</button>
 		</div>
 	</form>
-</fieldset>
+</Fieldset>
 
 <script lang="ts">
 	import { AnytimeTag } from '../../../shared/types/anytime';
-	import { TextInput } from 'sheodox-ui';
+	import { TextInput, Fieldset } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
 
 	export let tag: AnytimeTag;

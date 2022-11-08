@@ -1,6 +1,3 @@
-<style>
-</style>
-
 <RecurringForm
 	mode="edit"
 	on:save={submit}

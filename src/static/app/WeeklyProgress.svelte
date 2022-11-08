@@ -1,52 +1,11 @@
 <style lang="scss">
 	.weekly.done {
 		opacity: 0.5;
-
-		fieldset {
-			border-color: transparent;
-		}
-	}
-	fieldset {
-		--fieldset-background-color: var(--sx-gray-500);
-		border: none;
-		background-color: var(--sx-gray-500);
-		overflow: hidden;
-
-		legend {
-			font-size: var(--sx-font-size-3);
-			color: var(--sx-text-color);
-			border-radius: 2px;
-			position: relative;
-			margin-left: var(--sx-spacing-3);
-			span {
-				background: var(--fieldset-background-color);
-				font-weight: bold;
-			}
-
-			&::after,
-			&::before {
-				content: ' ';
-				width: 0;
-				height: 0;
-				position: absolute;
-				background-color: transparent;
-				border: 0.65rem solid transparent;
-			}
-			&::after {
-				border-left-color: var(--fieldset-background-color);
-			}
-			&::before {
-				transform: translateX(-100%);
-				border-right-color: var(--fieldset-background-color);
-			}
-		}
 	}
 </style>
 
 <div class="weekly" class:done={showing === 'view' && progress.progress >= progress.goal}>
-	<fieldset>
-		<legend><span>{weekly.name}</span></legend>
-
+	<Fieldset legend={weekly.name} variant="box" size="large">
 		<div class="f-row justify-content-between align-items-center">
 			<div>
 				<button on:click={progressUp} title="Mark one completion" disabled={showing === 'edit'}>
@@ -79,11 +38,11 @@
 				</div>
 			</form>
 		{/if}
-	</fieldset>
+	</Fieldset>
 </div>
 
 <script lang="ts">
-	import { Icon, Progress, TextInput } from 'sheodox-ui';
+	import { Fieldset, Icon, Progress, TextInput } from 'sheodox-ui';
 	import { weeklies, weeklyOps } from './stores/weekly';
 	import { WeeklyProgress } from '../../shared/types/todos';
 	import { startOfViewedWeek } from './stores/todo';

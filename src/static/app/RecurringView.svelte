@@ -1,7 +1,6 @@
 <style></style>
 
-<fieldset>
-	<legend>{todo.text} - ({todo.list})</legend>
+<Fieldset legend={todo.text}>
 	<div class="f-row justify-content-between">
 		<p>
 			Starting {startAsDate.toLocaleDateString()},
@@ -20,10 +19,10 @@
 			<span class="sr-only">Edit recurring todo</span>
 		</button>
 	</div>
-</fieldset>
+</Fieldset>
 
 <script lang="ts">
-	import { Icon } from 'sheodox-ui';
+	import { Icon, Fieldset } from 'sheodox-ui';
 	import { format } from 'date-fns';
 	import { createEventDispatcher } from 'svelte';
 	import type { RecurringTodo, Day } from '../../shared/types/todos';

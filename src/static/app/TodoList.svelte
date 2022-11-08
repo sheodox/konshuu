@@ -55,39 +55,6 @@
 	.all-done {
 		visibility: hidden;
 	}
-	.recurring-container {
-		--recurring-background-color: var(--sx-gray-500);
-		border: none;
-		background-color: var(--sx-gray-500);
-		overflow: hidden;
-
-		legend {
-			font-size: var(--sx-font-size-1);
-			color: var(--sx-gray-75);
-			border-radius: 2px;
-			position: relative;
-			margin: 0 auto;
-			span {
-				background: var(--recurring-background-color);
-			}
-			&::after,
-			&::before {
-				content: ' ';
-				width: 0;
-				height: 0;
-				position: absolute;
-				background-color: transparent;
-				border: 0.45rem solid transparent;
-			}
-			&::after {
-				border-left-color: var(--recurring-background-color);
-			}
-			&::before {
-				transform: translateX(-100%);
-				border-right-color: var(--recurring-background-color);
-			}
-		}
-	}
 	.overdue-message {
 		color: black;
 		font-weight: bold;
@@ -157,12 +124,13 @@
 				{/each}
 			</ul>
 			{#if recurringTodos.length}
-				<fieldset class="recurring-container p-0 m-0" class:mt-2={list.length}>
-					<legend class="px-1 fw-bold"><span>Recurring</span></legend>
-					{#each recurringTodos as todo (todo.id)}
-						<RecurringTodoItem {todo} {calendarDate} />
-					{/each}
-				</fieldset>
+				<div class:mt-2={list.length}>
+					<Fieldset legend="Recurring" size="small" mutedLegend centeredLegend fieldsetClasses="p-0 m-0" variant="tab">
+						{#each recurringTodos as todo (todo.id)}
+							<RecurringTodoItem {todo} {calendarDate} />
+						{/each}
+					</Fieldset>
+				</div>
 			{/if}
 			{#if $hideCompleted && completedCount > 0}
 				<small>
@@ -195,7 +163,7 @@
 		recurringTodoCompletion,
 	} from './stores/todo';
 	import Reschedule from './Reschedule.svelte';
-	import { Icon, Progress } from 'sheodox-ui';
+	import { Icon, Progress, Fieldset } from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
 	import { draggingOverList, getRescheduleDestination } from './reschedule-utils';
 	import RecurringTodoItem from './RecurringTodoItem.svelte';
