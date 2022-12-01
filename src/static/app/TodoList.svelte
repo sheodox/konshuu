@@ -227,7 +227,11 @@
 	}
 
 	function dragOver(event: DragEvent) {
-		$draggingOverList = listId;
-		event.dataTransfer.dropEffect = 'move';
+		// if they're dragging something that's not a todo, like dragging a file around their desktop
+		// and they hover over the browser window we don't want to show an indicator
+		if (event.dataTransfer.getData('todoId')) {
+			$draggingOverList = listId;
+			event.dataTransfer.dropEffect = 'move';
+		}
 	}
 </script>
