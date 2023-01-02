@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 /// <reference types="svelte" />
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { styles } from 'sheodox-ui';
+import 'sheodox-ui/style.scss';
 import './scss/style.scss';
 import KonshuuApp from './app/KonshuuApp.svelte';
 

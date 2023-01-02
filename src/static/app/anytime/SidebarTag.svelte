@@ -1,24 +1,10 @@
 <style lang="scss">
-	.tag {
-		width: 100%;
-		display: flex;
-		border-radius: 3px;
-		border: 2px solid transparent;
-
-		&.viewing-this-tag {
-			color: white;
-			background: var(--sx-gray-400);
-		}
-		&:hover {
-			background-color: var(--sx-gray-transparent);
-		}
-	}
 	.hidden-icon {
 		color: var(--sx-gray-200);
 	}
 </style>
 
-<div class="tag px-1" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
+<div class="tag" class:viewing-this-tag={$activeRouteParams.tagId === tag.id}>
 	<Link
 		href="/anytime/tag/{tag.id}"
 		classes={anytimeTagLinkClasses}

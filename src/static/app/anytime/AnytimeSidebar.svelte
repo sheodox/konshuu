@@ -1,66 +1,44 @@
 <style lang="scss">
-	aside {
-		background-color: var(--sx-gray-600);
-		border-radius: 0 5px 5px 0;
-		border: 1px solid var(--sx-gray-400);
-		border-left-color: var(--sx-gray-600);
-		box-shadow: var(--sx-shadow-1);
-		width: 20rem;
-		max-width: 95%;
-		height: calc(100vh - 120px);
-		overflow-y: auto;
-		position: relative;
+	div :global(.tag) {
+		width: 100%;
+		display: flex;
+		border-radius: 3px;
+		border: 2px solid transparent;
+		padding-left: var(--sx-spacing-1);
+		padding-right: var(--sx-spacing-1);
 
-		&.closed {
-			pointer-events: none;
-			display: none;
-		}
-
-		:global(.show-all-anytimes) {
+		&:hover {
 			background-color: var(--sx-gray-transparent);
 		}
 	}
-	@media (max-width: 600px) {
-		aside {
-			border: 1px solid var(--sx-gray-400);
-			margin: 0 auto;
-			border-radius: 5px;
-			height: auto;
-			width: 100%;
-		}
+	div :global(.viewing-this-tag) {
+		color: white;
+		background: var(--sx-gray-600);
 	}
 </style>
 
-<aside
-	class="p-2"
-	class:closed={!$sidebarOpen}
-	style="margin-{$isBelowMobileBreakpoint ? 'top' : 'left'}: -{20 - 20 * $sidebarOpen}rem; opacity: {$sidebarOpen};"
->
-	<div class="f-row justify-content-between align-items-baseline mb-2">
-		<h2>Tags</h2>
-		<button on:click={showAdd}><Icon icon="plus" />New Tag</button>
+<div class="f-row justify-content-between align-items-baseline p-2">
+	<h2>Tags</h2>
+	<button on:click={showAdd}><Icon icon="plus" />New Tag</button>
+</div>
+<div class="f-column gap-2 p-2">
+	<div class="tag" class:viewing-this-tag={!$activeRouteParams.tagId}>
+		<Link
+			href="/anytime"
+			classes="show-all-anytimes {anytimeTagLinkClasses}"
+			on:followed={() => ($lastAnytimeView = null)}
+		>
+			<span>
+				<Icon icon="th" /> All Anytimes
+			</span>
+		</Link>
 	</div>
-	<div class="f-column gap-2">
-		{#if $activeRouteParams.tagId}
-			<div class="tag mb-2 text-align-center">
-				<Link
-					href="/anytime"
-					classes="show-all-anytimes {anytimeTagLinkClasses} justify-content-center"
-					on:followed={() => ($lastAnytimeView = null)}
-				>
-					<span>
-						<Icon icon="arrow-left" /> Show All Anytimes
-					</span>
-				</Link>
-			</div>
-		{/if}
-		{#each $tagsSorted as tag}
-			<SidebarTag {tag} />
-		{:else}
-			<p>You don't have any tags!</p>
-		{/each}
-	</div>
-</aside>
+	{#each $tagsSorted as tag}
+		<SidebarTag {tag} />
+	{:else}
+		<p>You don't have any tags!</p>
+	{/each}
+</div>
 
 <script lang="ts">
 	import { tweened } from 'svelte/motion';
@@ -68,7 +46,6 @@
 	import { Icon } from 'sheodox-ui';
 	import { tagsSorted, showAnytimeSidebar, anytimeOps, lastAnytimeView } from '../stores/anytime';
 	import { activeRouteParams } from '../stores/routing';
-	import { isBelowMobileBreakpoint } from '../stores/app';
 	import Link from '../Link.svelte';
 	import SidebarTag from './SidebarTag.svelte';
 

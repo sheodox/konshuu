@@ -15,10 +15,16 @@
 	</div>
 {/if}
 
-<Header slim={true} appName="Konshuu" href="/" on:titleclick={() => page('/')} titleClickPreventDefault={true}>
-	<svg viewBox="0 0 100 100" slot="logo">
-		<image xlink:href="/logo.svg" />
-	</svg>
+<Header
+	slim={true}
+	appName="Konshuu"
+	href="/"
+	on:titleclick={() => page('/')}
+	titleClickPreventDefault={true}
+	bind:showMenuTrigger={$routeHasSidebar}
+	bind:menuOpen={$isSidebarOpen}
+>
+	<Logo slot="logo" />
 
 	<nav slot="headerCenter">
 		<ul>
@@ -40,10 +46,12 @@
 <Router />
 
 <script lang="ts">
-	import { socketConnected } from './stores/app';
+	import { isSidebarOpen, socketConnected } from './stores/app';
 	import page from 'page';
 	import { Header, Toasts, Modals } from 'sheodox-ui';
+	import { routeHasSidebar } from './stores/routing';
 	import UserMenu from './UserMenu.svelte';
 	import Router from './Router.svelte';
 	import HeaderNav from './HeaderNav.svelte';
+	import Logo from './Logo.svelte';
 </script>

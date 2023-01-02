@@ -1,4 +1,4 @@
-FROM node:16 AS dev
+FROM node:18 AS dev
 WORKDIR /usr/src/app
 
 ENV NODE_ENV=development
@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci
 COPY prisma prisma
 RUN npx prisma generate
-CMD npx nodemon dist/server/konshuu-server.js
+CMD npx nodemon --watch dist dist/server/konshuu-server.js
 
 
 FROM dev AS prod

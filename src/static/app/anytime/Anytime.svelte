@@ -58,100 +58,103 @@
 	}
 </style>
 
-<div class="f-row justify-content-between pb-2">
-	<button on:click={() => ($showAnytimeSidebar = !$showAnytimeSidebar)} aria-pressed={$showAnytimeSidebar}>
-		<Icon icon="bars" variant="icon-only" />
-		<span class="sr-only">Anytime Menu</span>
-	</button>
-
-	<div>
-		{#if $activeRouteParams.anytimeId || $activeRouteParams.tagId}
-			<Link href="/anytime" classes="button" on:followed={() => ($lastAnytimeView = null)}
-				><Icon icon="th" />
-				<span class="toolbar-button-text">All Anytimes</span></Link
-			>
-		{/if}
-		<button on:click={() => (showNew = true)} aria-pressed={showNew}>
-			<Icon icon="plus" />
-			<span class="toolbar-button-text">New Anytime</span>
-		</button>
-		<button on:click={() => toggleMode('tags')} aria-pressed={mode === 'tags'}>
-			<Icon icon="tag" />
-			<span class="toolbar-button-text">Set Tags</span>
-		</button>
-	</div>
-	<div>
-		<MenuButton>
-			<span slot="trigger">
-				<Icon icon="sort" />
-				<span class="toolbar-button-text">Sort</span>
-			</span>
-			<ul slot="menu">
-				{#each sortModes as s}
-					<li>
-						<button on:click={() => ($anytimeSort = s.dir)} aria-pressed={$anytimeSort === s.dir}>
-							<span>{s.text}</span>
-						</button>
-					</li>
-				{/each}
-			</ul>
-		</MenuButton>
-	</div>
-</div>
-
 <div class="anytime-container">
-	<AnytimeSidebar />
-	<div class={anytimeSectionClasses} class:is-viewing-single-anytime={isViewingSingleAnytime}>
-		{#if showIntro}
-			<section class={anytimeSectionClasses}>
-				<div class="f-column justify-content-center align-items-center p-3 no-anytimes">
-					<span class="sx-font-size-9">
-						<Icon icon="scroll" />
+	<Sidebar bind:menuOpen={$isSidebarOpen} docked>
+		<div slot="header" class="f-row align-items-center">
+			<Logo />
+			<h1 class="ml-2">Konshuu</h1>
+		</div>
+		<AnytimeSidebar />
+	</Sidebar>
+	<div class="f-column f-1">
+		<div class="f-row justify-content-between pb-2">
+			<div />
+			<div>
+				{#if $activeRouteParams.anytimeId || $activeRouteParams.tagId}
+					<Link href="/anytime" classes="button" on:followed={() => ($lastAnytimeView = null)}
+						><Icon icon="th" />
+						<span class="toolbar-button-text">All Anytimes</span></Link
+					>
+				{/if}
+				<button on:click={() => (showNew = true)} aria-pressed={showNew}>
+					<Icon icon="plus" />
+					<span class="toolbar-button-text">New Anytime</span>
+				</button>
+				<button on:click={() => toggleMode('tags')} aria-pressed={mode === 'tags'}>
+					<Icon icon="tag" />
+					<span class="toolbar-button-text">Set Tags</span>
+				</button>
+			</div>
+			<div>
+				<MenuButton>
+					<span slot="trigger">
+						<Icon icon="sort" />
+						<span class="toolbar-button-text">Sort</span>
 					</span>
-					<p class="intro">
-						An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
-					</p>
-					<p>
-						Open the menu with the <Icon icon="bars" /><span class="sr-only">Anytime Menu</span> button in the top left to
-						create tags to organize your anytimes.
-					</p>
-					<button on:click={() => (showNew = true)} class="primary">
-						<Icon icon="plus" />
-						New Anytime
-					</button>
-				</div>
-			</section>
-		{/if}
-
-		{#if sortedAnytimes.length}
-			{#if sortedPinnedAnytimes.length}
+					<ul slot="menu">
+						{#each sortModes as s}
+							<li>
+								<button on:click={() => ($anytimeSort = s.dir)} aria-pressed={$anytimeSort === s.dir}>
+									<span>{s.text}</span>
+								</button>
+							</li>
+						{/each}
+					</ul>
+				</MenuButton>
+			</div>
+		</div>
+		<div class={anytimeSectionClasses} class:is-viewing-single-anytime={isViewingSingleAnytime}>
+			{#if showIntro}
 				<section class={anytimeSectionClasses}>
-					{#each sortedPinnedAnytimes as anytime (anytime.id + anytime.notes)}
-						{#if mode === 'tags'}
-							<TagAssignment data={anytime} />
-						{:else}
-							<AnytimeItem data={anytime} />
-						{/if}
-					{/each}
+					<div class="f-column justify-content-center align-items-center p-3 no-anytimes">
+						<span class="sx-font-size-9">
+							<Icon icon="scroll" />
+						</span>
+						<p class="intro">
+							An <strong>Anytime</strong> is just a widget for keeping track of things in your life not tied to a date.
+						</p>
+						<p>
+							Open the menu with the <Icon icon="bars" /><span class="sr-only">Anytime Menu</span> button in the top left
+							to create tags to organize your anytimes.
+						</p>
+						<button on:click={() => (showNew = true)} class="primary">
+							<Icon icon="plus" />
+							New Anytime
+						</button>
+					</div>
 				</section>
 			{/if}
 
-			{#if sortedUnPinnedAnytimes.length}
+			{#if sortedAnytimes.length}
+				{#if sortedPinnedAnytimes.length}
+					<section class={anytimeSectionClasses}>
+						{#each sortedPinnedAnytimes as anytime (anytime.id + anytime.notes)}
+							{#if mode === 'tags'}
+								<TagAssignment data={anytime} />
+							{:else}
+								<AnytimeItem data={anytime} />
+							{/if}
+						{/each}
+					</section>
+				{/if}
+
+				{#if sortedUnPinnedAnytimes.length}
+					<section class={anytimeSectionClasses}>
+						{#each sortedUnPinnedAnytimes as anytime (anytime.id + anytime.notes)}
+							{#if mode === 'tags'}
+								<TagAssignment data={anytime} />
+							{:else}
+								<AnytimeItem data={anytime} />
+							{/if}
+						{/each}
+					</section>
+				{/if}
+			{:else}
 				<section class={anytimeSectionClasses}>
-					{#each sortedUnPinnedAnytimes as anytime (anytime.id + anytime.notes)}
-						{#if mode === 'tags'}
-							<TagAssignment data={anytime} />
-						{:else}
-							<AnytimeItem data={anytime} />
-						{/if}
-					{/each}
+					<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
 				</section>
 			{/if}
-		{:else}
-			<section class={anytimeSectionClasses}>
-				<AnytimeEmpty on:new-tag={onNewTag} on:new-anytime={onNewAnytime} />
-			</section>
-		{/if}
+		</div>
 	</div>
 </div>
 
@@ -160,7 +163,7 @@
 {/if}
 
 <script lang="ts">
-	import { Icon, MenuButton } from 'sheodox-ui';
+	import { Icon, MenuButton, Sidebar } from 'sheodox-ui';
 	import {
 		anytimes,
 		anytimesInitialized,
@@ -179,7 +182,8 @@
 	import Link from '../Link.svelte';
 	import AnytimeEmpty from './AnytimeEmpty.svelte';
 	import type { Anytime, AnytimeTag } from '../../../shared/types/anytime';
-	import { appTitle } from '../stores/app';
+	import { appTitle, isSidebarOpen } from '../stores/app';
+	import Logo from '../Logo.svelte';
 
 	const sortModes = [
 		{ dir: 'desc', text: 'Newest First' },

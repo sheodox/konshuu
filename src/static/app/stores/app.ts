@@ -19,6 +19,7 @@ const breakpoint = parseInt(
 
 export const socket = io();
 export const appTitle = writable('');
+export const isSidebarOpen = writable(false);
 export const isBelowMobileBreakpoint = writable(checkIfBelowBreakpoint());
 export const now = readable<Date>(new Date(), (set) => {
 	const interval = setInterval(() => {
