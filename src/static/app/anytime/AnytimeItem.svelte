@@ -109,7 +109,7 @@
 	export let data: Anytime;
 
 	let editingData: AnytimeEditable = data,
-		showNewTodo = !data.todos.length,
+		showNewTodo = false,
 		typeSettingsValid = true,
 		allowSettings = true,
 		mode = 'view';

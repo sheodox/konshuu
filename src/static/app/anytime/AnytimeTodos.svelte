@@ -10,7 +10,7 @@
 <div class="f-column f-1 todo-list">
 	<div class="my-2" class:all-done={completedCount === data.todos.length}>
 		<label class="sr-only" for="{listId}-progress"> todo completion for this list </label>
-		<Progress value={completedCount} max={data.todos.length} aria-label="" variant="slim" id="{listId}-progress" />
+		<Progress value={completedCount} max={data.todos.length} variant="slim" id="{listId}-progress" />
 	</div>
 	{#if showNewTodo}
 		<AnytimeTodoEdit
@@ -26,12 +26,19 @@
 	<ul class="m-0 p-0 f-column">
 		{#each data.todos as todo (todo.id)}
 			<AnytimeTodo {todo} anytimeId={data.id} />
+		{:else}
+			{#if !showNewTodo}
+				<li class="text-align-center">
+					<p>This list has no todos yet.</p>
+					<button on:click={() => (showNewTodo = true)} class="secondary"><Icon icon="plus" />New Todo</button>
+				</li>
+			{/if}
 		{/each}
 	</ul>
 </div>
 
 <script lang="ts">
-	import { Progress } from 'sheodox-ui';
+	import { Progress, Icon } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
 	import AnytimeTodo from './AnytimeTodo.svelte';
 	import AnytimeTodoEdit from './AnytimeTodoEdit.svelte';
