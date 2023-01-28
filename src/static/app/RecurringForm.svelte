@@ -7,31 +7,58 @@
 			<br />
 			<input type="date" bind:value={startDate} />
 		</label>
-		<Fieldset {fieldsetClasses} legend="List" variant="bordered">
-			{#each lists as opt}
-				<label><input type="radio" bind:group={list} value={opt.value} /> {opt.name}</label>
-			{/each}
+		<Fieldset {fieldsetClasses} legend="List" variant="box">
+			<div class="sx-toggles f-row f-wrap">
+				{#each lists as opt}
+					{@const checkboxId = 'recurring-form-list-' + opt.value}
+					<div>
+						<input id={checkboxId} value={opt.value} type="radio" bind:group={list} />
+						<label for={checkboxId}>
+							<span>{opt.name}</span>
+						</label>
+					</div>
+				{/each}
+			</div>
 		</Fieldset>
 
-		<Fieldset {fieldsetClasses} legend="Repeat" variant="bordered">
-			{#each repeatsOptions as opt}
-				<label
-					><input type="radio" bind:group={repeats} value={opt.value} on:change={() => (weeklyDayRepeats = [])} />
-					{opt.name}</label
-				>
-			{/each}
+		<Fieldset {fieldsetClasses} legend="Repeat" variant="box">
+			<div class="sx-toggles f-row">
+				{#each repeatsOptions as opt}
+					{@const radioId = 'recurring-form-repeats-' + opt.value}
+					<div>
+						<input
+							id={radioId}
+							value={opt.value}
+							type="radio"
+							bind:group={repeats}
+							on:change={() => (weeklyDayRepeats = [])}
+						/>
+						<label for={radioId}>
+							<span>{opt.name}</span>
+						</label>
+					</div>
+				{/each}
+			</div>
 		</Fieldset>
 
 		<TextInput type="number" bind:value={repeatEvery}>Repeat Every ___ {repeatTypeUnit}</TextInput>
 
 		{#if repeats === 'weekly'}
-			<Fieldset {fieldsetClasses} legend="Repeats On" variant="bordered">
-				{#each days as day}
-					<label>
-						<input type="checkbox" bind:group={weeklyDayRepeats} value={day.value} />
-						{day.name}
-					</label>
-				{/each}
+			<Fieldset {fieldsetClasses} legend="Repeats On" variant="box">
+				<div class="sx-toggles f-row f-wrap">
+					{#each days as day}
+						{@const checkboxId = 'recurring-form-day-' + day.value}
+						<div class="sx-radio">
+							<input id={checkboxId} value={day.value} type="checkbox" bind:group={weeklyDayRepeats} />
+							<label for={checkboxId}>
+								<span>{day.name}</span>
+							</label>
+						</div>
+					{/each}
+				</div>
+				{#if !weeklyDayRepeats.length}
+					<small class="sx-badge-red">You must specify the day(s) of the week to repeat on.</small>
+				{/if}
 			</Fieldset>
 		{/if}
 		<button class="primary" disabled={formInvalid}>{mode === 'new' ? 'Create' : 'Save'}</button>
@@ -61,13 +88,13 @@
 			{ value: 'yearly', name: 'Yearly', unit: 'Years' },
 		],
 		days = [
-			{ value: 'sunday', name: 'Sunday' },
-			{ value: 'monday', name: 'Monday' },
-			{ value: 'tuesday', name: 'Tuesday' },
-			{ value: 'wednesday', name: 'Wednesday' },
-			{ value: 'thursday', name: 'Thursday' },
-			{ value: 'friday', name: 'Friday' },
-			{ value: 'saturday', name: 'Saturday' },
+			{ value: 'sunday', name: 'Sun' },
+			{ value: 'monday', name: 'Mon' },
+			{ value: 'tuesday', name: 'Tue' },
+			{ value: 'wednesday', name: 'Wed' },
+			{ value: 'thursday', name: 'Thu' },
+			{ value: 'friday', name: 'Fri' },
+			{ value: 'saturday', name: 'Sat' },
 		],
 		lists = [
 			{ value: 'work', name: 'Work' },
@@ -82,7 +109,8 @@
 	export let weeklyDayRepeats: Day[];
 
 	$: repeatTypeUnit = repeatsOptions.find(({ value }) => value === repeats)?.unit;
-	$: formInvalid = !name || !startDate || !list || repeatEvery < 1;
+	$: formInvalid =
+		!name || !startDate || !list || repeatEvery < 1 || (repeats === 'weekly' && !weeklyDayRepeats.length);
 
 	function submit() {
 		dispatch('save');
