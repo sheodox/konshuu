@@ -74,7 +74,7 @@
 		] as const,
 		defaultApp: SidebarApp = 'weeklies';
 
-	type SidebarApp = null | typeof sidebarApps[number]['id'];
+	type SidebarApp = null | (typeof sidebarApps)[number]['id'];
 
 	let selectedApp: SidebarApp = defaultApp;
 	let lastSelectedApp: SidebarApp = defaultApp;

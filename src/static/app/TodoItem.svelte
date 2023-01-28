@@ -17,6 +17,7 @@
 </style>
 
 {#if !todo.completed || !$hideCompleted}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<li
 		class="todo-item f-row align-items-start"
 		draggable="true"

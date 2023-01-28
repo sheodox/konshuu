@@ -1,3 +1,3 @@
-import dotenvExpand from 'dotenv-expand';
+import { expand } from 'dotenv-expand';
 import dotenv from 'dotenv';
-dotenvExpand(dotenv.config());
+expand(dotenv.config());

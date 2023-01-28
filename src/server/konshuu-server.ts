@@ -7,7 +7,7 @@ import { app, io, server } from './server.js';
 import { AppRequest } from './routes/auth.js';
 import passport from 'passport';
 import expressSession from 'express-session';
-import connectRedis from 'connect-redis';
+import connectRedis, { type Client } from 'connect-redis';
 import { createClient as createRedisClient } from 'redis';
 import express, { Response, Request, NextFunction } from 'express';
 import path from 'path';
@@ -19,8 +19,10 @@ import './internal-server.js';
 import { getManifest } from './middleware/manifest.js';
 
 const redisClient = createRedisClient({
-	host: 'redis',
+	url: 'redis://redis',
+	legacyMode: true,
 });
+redisClient.connect().catch(console.error);
 
 app.use(requestId);
 app.use('/fontawesome', express.static('./node_modules/@fortawesome/fontawesome-free'));
@@ -33,7 +35,7 @@ app.use('/health', (req, res) => {
 });
 
 const RedisStore = connectRedis(expressSession),
-	sessionStore = new RedisStore({ client: redisClient }),
+	sessionStore = new RedisStore({ client: redisClient as unknown as Client }),
 	session = expressSession({
 		store: sessionStore,
 		name: 'konshuu.sid',

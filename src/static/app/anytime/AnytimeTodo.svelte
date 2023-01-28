@@ -39,6 +39,7 @@
 		on:cancel={() => (showEdit = false)}
 	/>
 {:else}
+	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<li
 		class="todo-item f-row align-items-start px-1"
 		on:click={() => toggleCompletion(!todo.completed)}

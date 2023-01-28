@@ -47,6 +47,7 @@
 	}
 </style>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div class="todo-checkbox-container px-1" on:click|stopPropagation class:checked class:add-padding={addPadding}>
 	<input type="checkbox" id="checkbox-{id}" bind:checked {disabled} on:change />
 	<label for="checkbox-{id}" class:disabled>
