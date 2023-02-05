@@ -45,7 +45,7 @@
     "redis": "^4.6.2",
     "sass": "^1.57.1",
     "serialize-javascript": "^6.0.1",
-    "sheodox-ui": "^0.18.18",
+    "sheodox-ui": "^0.18.21",
     "socket.io": "^4.2.0",
     "socket.io-client": "^4.5.4",
     "svelte": "^3.55.1",
