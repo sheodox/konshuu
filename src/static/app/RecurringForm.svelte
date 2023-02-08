@@ -11,12 +11,10 @@
 			<div class="sx-toggles f-row f-wrap">
 				{#each lists as opt}
 					{@const checkboxId = 'recurring-form-list-' + opt.value}
-					<div>
-						<input id={checkboxId} value={opt.value} type="radio" bind:group={list} />
-						<label for={checkboxId}>
-							<span>{opt.name}</span>
-						</label>
-					</div>
+					<input id={checkboxId} value={opt.value} type="radio" bind:group={list} />
+					<label for={checkboxId}>
+						<span>{opt.name}</span>
+					</label>
 				{/each}
 			</div>
 		</Fieldset>
@@ -25,18 +23,16 @@
 			<div class="sx-toggles f-row">
 				{#each repeatsOptions as opt}
 					{@const radioId = 'recurring-form-repeats-' + opt.value}
-					<div>
-						<input
-							id={radioId}
-							value={opt.value}
-							type="radio"
-							bind:group={repeats}
-							on:change={() => (weeklyDayRepeats = [])}
-						/>
-						<label for={radioId}>
-							<span>{opt.name}</span>
-						</label>
-					</div>
+					<input
+						id={radioId}
+						value={opt.value}
+						type="radio"
+						bind:group={repeats}
+						on:change={() => (weeklyDayRepeats = [])}
+					/>
+					<label for={radioId}>
+						<span>{opt.name}</span>
+					</label>
 				{/each}
 			</div>
 		</Fieldset>
@@ -48,12 +44,10 @@
 				<div class="sx-toggles f-row f-wrap">
 					{#each days as day}
 						{@const checkboxId = 'recurring-form-day-' + day.value}
-						<div class="sx-radio">
-							<input id={checkboxId} value={day.value} type="checkbox" bind:group={weeklyDayRepeats} />
-							<label for={checkboxId}>
-								<span>{day.name}</span>
-							</label>
-						</div>
+						<input id={checkboxId} value={day.value} type="checkbox" bind:group={weeklyDayRepeats} />
+						<label for={checkboxId}>
+							<span>{day.name}</span>
+						</label>
 					{/each}
 				</div>
 				{#if !weeklyDayRepeats.length}
