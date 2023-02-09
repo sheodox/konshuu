@@ -28,19 +28,19 @@
 </style>
 
 <div class="f-row gap-2 justify-content-center">
-	<button class="a" on:click={prevWeek}>
+	<button class="a" on:click={prevWeek} use:ripple>
 		<Icon icon="angle-left" />
 		<span class="button-text"> Previous Week </span>
 	</button>
-	<button class="a" on:click={resetWeek} disabled={$weekOffset === 0}>
+	<button class="a" on:click={resetWeek} disabled={$weekOffset === 0} use:ripple>
 		<Icon icon="align-center" />
 		<span class="button-text"> This Week </span>
 	</button>
-	<button class="a" on:click={nextWeek}>
+	<button class="a" on:click={nextWeek} use:ripple>
 		<span class="button-text"> Next Week </span>
 		<Icon icon="angle-right" variant="append" />
 	</button>
-	<button class="a" on:click={() => ($showGotoDate = !$showGotoDate)}>
+	<button class="a" on:click={() => ($showGotoDate = !$showGotoDate)} use:ripple>
 		<Icon icon="calendar-alt" />
 		<span class="button-text">Go To</span>
 	</button>
@@ -76,7 +76,7 @@
 
 <script lang="ts">
 	import { weekOffset, resetWeek, nextWeek, prevWeek, showGotoDate, week, goTo } from './stores/todo';
-	import { Loading, Modal, Icon } from 'sheodox-ui';
+	import { Loading, Modal, Icon, ripple } from 'sheodox-ui';
 	import WeekSidebar from './WeekSidebar.svelte';
 	import Day from './Day.svelte';
 	import { CalendarDate } from '../../shared/dates';

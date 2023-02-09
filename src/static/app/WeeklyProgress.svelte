@@ -8,7 +8,7 @@
 	<Fieldset legend={weekly.name} variant="box" size="large">
 		<div class="f-row justify-content-between align-items-center">
 			<div>
-				<button on:click={progressUp} title="Mark one completion" disabled={showing === 'edit'}>
+				<button on:click={progressUp} title="Mark one completion" disabled={showing === 'edit'} use:ripple>
 					<Icon icon="check-circle" variant="icon-only" />
 					<span class="sr-only">Mark one completion</span>
 				</button>
@@ -16,7 +16,7 @@
 					{progress.progress} of {progress.goal} time{progress.goal === 1 ? '' : 's'}
 				</label>
 			</div>
-			<button on:click={toggleEdit} title="Edit progress this weeek" aria-pressed={showing === 'edit'}
+			<button on:click={toggleEdit} title="Edit progress this weeek" aria-pressed={showing === 'edit'} use:ripple
 				><Icon icon="cog" variant="icon-only" /><span class="sr-only">Edit</span></button
 			>
 		</div>
@@ -32,9 +32,9 @@
 					<small>Last updated {progress.updatedAt.toLocaleString()}</small>
 				{/if}
 				<div class="f-row">
-					<button disabled={newProgress < 0 || newGoal < 0} class="f-1 primary">Save</button>
-					<button type="button" on:click={clear} class="danger">Clear Progress</button>
-					<button type="button" on:click={() => (showing = 'view')}>Cancel</button>
+					<button disabled={newProgress < 0 || newGoal < 0} class="f-1 primary" use:ripple>Save</button>
+					<button type="button" on:click={clear} class="danger" use:ripple>Clear Progress</button>
+					<button type="button" on:click={() => (showing = 'view')} use:ripple>Cancel</button>
 				</div>
 			</form>
 		{/if}
@@ -42,7 +42,7 @@
 </div>
 
 <script lang="ts">
-	import { Fieldset, Icon, Progress, TextInput } from 'sheodox-ui';
+	import { Fieldset, Icon, Progress, TextInput, ripple } from 'sheodox-ui';
 	import { weeklies, weeklyOps } from './stores/weekly';
 	import { WeeklyProgress } from '../../shared/types/todos';
 	import { startOfViewedWeek } from './stores/todo';

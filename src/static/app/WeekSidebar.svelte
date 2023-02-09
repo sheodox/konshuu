@@ -23,7 +23,7 @@
 <aside class="f-row p-1">
 	<div class="sidebar f-column f-1">
 		<div class="f-row align-items-baseline gap-2">
-			<button on:click={menuButtonClick} aria-pressed={!selectedApp}>
+			<button on:click={menuButtonClick} aria-pressed={!selectedApp} use:ripple>
 				<Icon icon={selectedApp ? 'bars' : 'times'} variant="icon-only" />
 				<span class="sr-only">Back to sidebar apps</span>
 			</button>
@@ -54,7 +54,7 @@
 </aside>
 
 <script lang="ts">
-	import { Icon } from 'sheodox-ui';
+	import { Icon, ripple } from 'sheodox-ui';
 	import Weekly from './Weekly.svelte';
 	import Recurring from './Recurring.svelte';
 

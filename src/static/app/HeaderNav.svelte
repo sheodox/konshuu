@@ -1,6 +1,3 @@
-<style>
-</style>
-
 {#each routes as route}
 	<li>
 		<Link href={route.href} classes={$activeRoute === route.id ? 'active' : ''}>
