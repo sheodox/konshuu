@@ -13,14 +13,13 @@
 		<Progress value={completedCount} max={data.todos.length} variant="slim" id="{listId}-progress" />
 	</div>
 	{#if showNewTodo}
-		<AnytimeTodoEdit
+		<TodoEdit
 			id={data.id}
 			title="New Todo"
 			bind:text={newText}
 			bind:href={newHref}
 			on:submit={createNew}
 			on:cancel={cancelAdd}
-			showCancel={!!data.todos.length}
 		/>
 	{/if}
 	<ul class="m-0 p-0 f-column">
@@ -41,7 +40,7 @@
 	import { Progress, Icon } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
 	import AnytimeTodo from './AnytimeTodo.svelte';
-	import AnytimeTodoEdit from './AnytimeTodoEdit.svelte';
+	import TodoEdit from '../TodoEdit.svelte';
 	import type { Anytime } from '../../../shared/types/anytime';
 
 	export let data: Anytime;

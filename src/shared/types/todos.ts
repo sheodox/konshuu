@@ -6,8 +6,8 @@ export interface Todo extends Omit<RawTodo, 'date'> {
 	date: CalendarDate;
 }
 
-export type TodoCreatable = Pick<Todo, 'text' | 'list' | 'date'>;
-export type TodoEditable = Partial<Pick<Todo, 'text' | 'list' | 'date' | 'completed'>>;
+export type TodoCreatable = Pick<Todo, 'text' | 'list' | 'date' | 'href'>;
+export type TodoEditable = Partial<Pick<Todo, 'text' | 'list' | 'date' | 'completed' | 'href'>>;
 
 export type TodoListType = 'work' | 'home';
 

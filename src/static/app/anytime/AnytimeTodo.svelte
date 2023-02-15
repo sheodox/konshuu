@@ -31,7 +31,7 @@
 </style>
 
 {#if showEdit}
-	<AnytimeTodoEdit
+	<TodoEdit
 		id={todo.id}
 		bind:text={newText}
 		bind:href={newHref}
@@ -79,12 +79,14 @@
 						Copy
 					</button>
 				</li>
-				<li>
-					<button class="a" on:click={() => copyToClipboard(todo.href)}>
-						<Icon icon="copy" />
-						Copy URL
-					</button>
-				</li>
+				{#if todo.href}
+					<li>
+						<button class="a" on:click={() => copyToClipboard(todo.href)}>
+							<Icon icon="copy" />
+							Copy URL
+						</button>
+					</li>
+				{/if}
 			</ul>
 		</MenuButton>
 	</li>
@@ -96,7 +98,7 @@
 	import { Icon, MenuButton } from 'sheodox-ui';
 	import { AnytimeTodo } from '../../../shared/types/anytime';
 	import TodoCheckbox from '../TodoCheckbox.svelte';
-	import AnytimeTodoEdit from './AnytimeTodoEdit.svelte';
+	import TodoEdit from '../TodoEdit.svelte';
 
 	export let anytimeId: string;
 	export let todo: AnytimeTodo;

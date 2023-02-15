@@ -12,20 +12,21 @@
 <Fieldset legend={title} fieldsetClasses="new-todo-fieldset">
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
 		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown} autofocus>Text</TextInput>
-		<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
-			>URL (optional)</TextInput
-		>
+		{#if showURLEdit}
+			<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
+				>URL (optional)</TextInput
+			>
+		{/if}
 		<div class="f-row gap-2">
+			<button on:click={toggleUrl} type="button"><Icon icon={showURLEdit ? 'minus' : 'plus'} />URL</button>
+			<button class="secondary f-1" type="button" on:click={() => dispatch('cancel')}>Cancel</button>
 			<button class="primary f-1" disabled={invalid}>Save</button>
-			{#if showCancel}
-				<button class="secondary f-1" type="button" on:click={() => dispatch('cancel')}>Cancel</button>
-			{/if}
 		</div>
 	</form>
 </Fieldset>
 
 <script lang="ts">
-	import { TextInput, Fieldset } from 'sheodox-ui';
+	import { TextInput, Fieldset, Icon } from 'sheodox-ui';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher<{ submit: void; cancel: void }>();
@@ -34,13 +35,23 @@
 	export let id: string;
 	export let text: string;
 	export let href: string;
-	export let showCancel = true;
+
+	let showURLEdit = !!href;
 
 	$: invalid = !text || (href && !/https?:/.test(href));
 
 	function keydown(e: KeyboardEvent) {
-		if (showCancel && e.key === 'Escape' && !text && !href) {
+		if (e.key === 'Escape' && !text && !href) {
 			dispatch('cancel');
+		}
+	}
+
+	function toggleUrl() {
+		showURLEdit = !showURLEdit;
+
+		// if they're not expecting to see a URL we should clear the URL or they'll get confused
+		if (!showURLEdit) {
+			href = '';
 		}
 	}
 </script>

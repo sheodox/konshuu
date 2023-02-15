@@ -2,7 +2,7 @@
 	div {
 		flex-grow: 1;
 		flex-shrink: 0;
-		flex-basis: 15rem;
+		flex-basis: 18rem;
 		overflow: auto;
 	}
 	.today h2 {

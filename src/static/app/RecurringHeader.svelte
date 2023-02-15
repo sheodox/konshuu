@@ -1,7 +1,7 @@
 {#if mode === 'view'}
-	<button on:click={() => (mode = 'new')} class="primary"><Icon icon="plus" />New Recurring Todo</button>
+	<button on:click={() => (mode = 'new')} class="secondary"><Icon icon="plus" />New Recurring Todo</button>
 {:else if mode === 'edit' || mode === 'new'}
-	<button on:click={() => (mode = 'view')}>
+	<button on:click={() => (mode = 'view')} class="secondary">
 		<Icon icon="chevron-left" /> Back
 	</button>
 {/if}

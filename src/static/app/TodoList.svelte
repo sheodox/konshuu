@@ -44,16 +44,10 @@
 		color: gray;
 		text-align: center;
 	}
-	.mobile-add-todo-button {
-		display: none;
-	}
 	.header button {
 		/* negative --sx-spacing-1, used to prevent the header height 
 		jumping when the reschedule button show up */
 		margin-top: -4px;
-	}
-	.all-done {
-		visibility: hidden;
 	}
 	.overdue-message {
 		color: black;
@@ -61,14 +55,6 @@
 		text-align: center;
 		text-transform: uppercase;
 		font-size: var(--sx-font-size-2);
-	}
-	@media (max-width: 600px) {
-		form {
-			display: none;
-		}
-		.mobile-add-todo-button {
-			display: block;
-		}
 	}
 </style>
 
@@ -84,7 +70,12 @@
 	<div class="panel todo-list f-column f-1" on:drop|preventDefault={drop} on:dragover|preventDefault={dragOver}>
 		<div class="header f-row f-0">
 			<h3 class="f-1">{listName}</h3>
-			<button class="mobile-add-todo-button" on:click={promptNewTodo}>
+			<button
+				on:click={() => (showNewTodo = !showNewTodo)}
+				aria-pressed={showNewTodo}
+				title="Add todo"
+				bind:this={addTodoButton}
+			>
 				<Icon icon="plus" variant="icon-only" />
 				<span class="sr-only">Add todo</span>
 			</button>
@@ -96,28 +87,22 @@
 			{/if}
 		</div>
 		<div class="panel-body f-column f-1">
-			<form on:submit|preventDefault={() => addTodo()}>
-				<label class="f-row f-1 input-group">
-					<span class="sr-only">New todo</span>
-					<input
-						id={`new-todo-input-${calendarDate.getDay()}-${listType}`}
-						bind:value={newTodoText}
-						type="text"
-						placeholder="new todo"
-						class="sx-font-size-2 f-1"
-						on:keydown={(e) => todoKeydown(e, listType, calendarDate)}
-						autocomplete="off"
-					/>
-					<button disabled={!newTodoText} class="p-1 sx-font-size-2">
-						<Icon icon="plus" variant="icon-only" />
-						<span class="sr-only">Add Todo</span>
-					</button>
-				</label>
-			</form>
-			<div class="my-2" class:all-done={completedCount === todayTodosTotal}>
-				<label class="sr-only" for="{listId}-progress">Todo completion for this list</label>
-				<Progress id={listId + '-progress'} value={completedCount} max={todayTodosTotal} variant="slim" />
-			</div>
+			{#if completedCount !== todayTodosTotal}
+				<div class="my-2">
+					<label class="sr-only" for="{listId}-progress">Todo completion for this list</label>
+					<Progress id={listId + '-progress'} value={completedCount} max={todayTodosTotal} variant="slim" />
+				</div>
+			{/if}
+			{#if showNewTodo}
+				<TodoEdit
+					id="{listId}-new"
+					on:submit={addTodo}
+					title="New Todo"
+					bind:text={newTodoText}
+					bind:href={newTodoHref}
+					on:cancel={cancelNewTodo}
+				/>
+			{/if}
 			<ul class="m-0 p-0">
 				{#each list as todo (todo.id)}
 					<TodoItem {todo} {listType} {calendarDate} />
@@ -157,7 +142,6 @@
 		newTodo,
 		rescheduleMany,
 		reschedule,
-		todoKeydown,
 		recurringTodos as recurringTodosStore,
 		getRecurringTodosForList,
 		recurringTodoCompletion,
@@ -165,6 +149,7 @@
 	import Reschedule from './Reschedule.svelte';
 	import { Icon, Progress, Fieldset } from 'sheodox-ui';
 	import TodoItem from './TodoItem.svelte';
+	import TodoEdit from './TodoEdit.svelte';
 	import { draggingOverList, getRescheduleDestination } from './reschedule-utils';
 	import RecurringTodoItem from './RecurringTodoItem.svelte';
 	import type { Todo, TodoListType } from '../../shared/types/todos';
@@ -181,7 +166,10 @@
 	$: recurringTodos = getRecurringTodosForList(listType, calendarDate, $recurringTodosStore);
 
 	let newTodoText = '',
-		showRescheduleModal = false;
+		newTodoHref = '',
+		showNewTodo = false,
+		showRescheduleModal = false,
+		addTodoButton: HTMLElement;
 
 	$: completedCount =
 		list.filter((todo) => todo.completed).length +
@@ -198,18 +186,23 @@
 
 	$: hasOverdueTodos = isPast && completedCount < todayTodosTotal;
 
-	async function addTodo(text = newTodoText.trim()) {
+	async function addTodo() {
 		newTodo({
 			list: listType,
-			text,
+			text: newTodoText.trim(),
+			href: newTodoHref.trim(),
 			date: calendarDate,
 		});
 		newTodoText = '';
+		newTodoHref = '';
+		showNewTodo = false;
+
+		addTodoButton.focus();
 	}
 
-	function promptNewTodo() {
-		const newTodo = prompt('New todo item:');
-		addTodo(newTodo);
+	function cancelNewTodo() {
+		showNewTodo = false;
+		addTodoButton.focus();
 	}
 
 	function rescheduleAll(e: CustomEvent<{ originalDate: CalendarDate; to: string }>) {

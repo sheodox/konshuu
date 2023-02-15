@@ -36,6 +36,12 @@ const todoProperties = {
 		text: Joi.string().max(300),
 		date: calendarDateSchema,
 		completed: Joi.boolean(),
+		href: Joi.string()
+			.max(2000)
+			.uri({
+				scheme: ['http', 'https'],
+			})
+			.allow(''),
 	},
 	todoUpdateSchema = Joi.object({
 		...todoProperties,
@@ -43,6 +49,7 @@ const todoProperties = {
 	todoNewSchema = Joi.object({
 		list: todoProperties.list.required(),
 		text: todoProperties.text.required(),
+		href: todoProperties.href.required(),
 		date: todoProperties.date.required(),
 	}).unknown(false),
 	rescheduleManySchema = Joi.object({
@@ -218,7 +225,7 @@ io.on('connection', (socket) => {
 			return;
 		}
 
-		const newTodo = await TodoTracker.addTodo(userId, value.date, value.list, value.text);
+		const newTodo = await TodoTracker.addTodo(userId, value.date, value.list, value.text, value.href);
 		metrics.todos.inc();
 
 		emitToUser('todo:new', todo.date, newTodo);

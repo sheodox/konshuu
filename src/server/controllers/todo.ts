@@ -99,13 +99,14 @@ export class TodoTracker {
 
 		return todosInWeek;
 	}
-	static async addTodo(userId: string, date: CalendarDate, list: TodoListType, text: string) {
+	static async addTodo(userId: string, date: CalendarDate, list: TodoListType, text: string, href: string) {
 		if (validList(list) && !!userId) {
 			return await prisma.todo.create({
 				data: {
 					userId,
 					list,
 					text,
+					href,
 					date: date.asDate(),
 				},
 			});

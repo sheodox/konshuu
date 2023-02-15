@@ -16,7 +16,15 @@
 	}
 </style>
 
-{#if !todo.completed || !$hideCompleted}
+{#if showEdit}
+	<TodoEdit
+		id={todo.id}
+		bind:text={newText}
+		bind:href={newHref}
+		on:submit={saveTodo}
+		on:cancel={() => (showEdit = false)}
+	/>
+{:else}
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<li
 		class="todo-item f-row align-items-start"
@@ -26,7 +34,11 @@
 		bind:this={li}
 	>
 		<TodoCheckbox bind:checked={todo.completed} on:change={() => toggleTodo(todo.completed)} id={todo.id}>
-			{todo.text}
+			{#if todo.href && /^https?:/.test(todo.href)}
+				<a href={todo.href} class="inline-link" target="_blank" rel="noopener noreferrer">{todo.text}</a>
+			{:else}
+				{todo.text}
+			{/if}
 		</TodoCheckbox>
 		<MenuButton triggerClasses="small" contextTriggerElement={li}>
 			<span slot="trigger">
@@ -58,6 +70,14 @@
 						Copy
 					</button>
 				</li>
+				{#if todo.href}
+					<li>
+						<button class="a" on:click={() => copyToClipboard(todo.href)}>
+							<Icon icon="copy" />
+							Copy URL
+						</button>
+					</li>
+				{/if}
 			</ul>
 		</MenuButton>
 	</li>
@@ -68,10 +88,11 @@
 {/if}
 
 <script lang="ts">
-	import { hideCompleted, updateTodo, deleteTodo, reschedule } from './stores/todo';
+	import { updateTodo, deleteTodo, reschedule } from './stores/todo';
 	import { copyToClipboard } from './stores/app';
 	import { Icon, MenuButton } from 'sheodox-ui';
 	import TodoCheckbox from './TodoCheckbox.svelte';
+	import TodoEdit from './TodoEdit.svelte';
 	import Reschedule from './Reschedule.svelte';
 	import { getRescheduleDestination } from './reschedule-utils';
 	import type { Todo, TodoListType } from '../../shared/types/todos';
@@ -82,6 +103,9 @@
 	export let listType: TodoListType;
 
 	let showReschedule = false,
+		newText = '',
+		newHref = '',
+		showEdit = false,
 		li: HTMLLIElement;
 
 	function toggleTodo(completed: boolean) {
@@ -91,12 +115,20 @@
 	}
 
 	function editTodo() {
-		let newTodo = prompt('Enter a todo', todo.text);
-		if (newTodo && newTodo.trim()) {
-			updateTodo(todo.id, {
-				text: newTodo,
-			});
+		showEdit = !showEdit;
+		if (showEdit) {
+			newText = todo.text;
+			newHref = todo.href;
 		}
+	}
+
+	function saveTodo() {
+		updateTodo(todo.id, {
+			text: newText,
+			href: newHref,
+			completed: todo.completed,
+		});
+		showEdit = false;
 	}
 
 	async function rescheduleTodo(e: CustomEvent<{ to: string; originalDate: CalendarDate }>) {
