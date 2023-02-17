@@ -13,8 +13,12 @@
 	<form class="f-column gap-2" on:submit|preventDefault={() => dispatch('submit')}>
 		<TextInput id="todo-text-{id}" bind:value={text} on:keydown={keydown} autofocus>Text</TextInput>
 		{#if showURLEdit}
-			<TextInput id="todo-href-{id}" bind:value={href} placeholder="https://..." on:keydown={keydown}
-				>URL (optional)</TextInput
+			<TextInput
+				id="todo-href-{id}"
+				bind:value={href}
+				placeholder="https://..."
+				on:keydown={keydown}
+				bind:inputElement={urlInput}>URL (optional)</TextInput
 			>
 		{/if}
 		<div class="f-row gap-2">
@@ -36,7 +40,8 @@
 	export let text: string;
 	export let href: string;
 
-	let showURLEdit = !!href;
+	let showURLEdit = !!href,
+		urlInput: HTMLInputElement | undefined;
 
 	$: invalid = !text || (href && !/https?:/.test(href));
 
@@ -52,6 +57,8 @@
 		// if they're not expecting to see a URL we should clear the URL or they'll get confused
 		if (!showURLEdit) {
 			href = '';
+		} else {
+			urlInput?.focus();
 		}
 	}
 </script>
