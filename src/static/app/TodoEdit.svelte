@@ -30,6 +30,7 @@
 </Fieldset>
 
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { TextInput, Fieldset, Icon } from 'sheodox-ui';
 	import { createEventDispatcher } from 'svelte';
 
@@ -51,13 +52,14 @@
 		}
 	}
 
-	function toggleUrl() {
+	async function toggleUrl() {
 		showURLEdit = !showURLEdit;
 
 		// if they're not expecting to see a URL we should clear the URL or they'll get confused
 		if (!showURLEdit) {
 			href = '';
 		} else {
+			await tick();
 			urlInput?.focus();
 		}
 	}
