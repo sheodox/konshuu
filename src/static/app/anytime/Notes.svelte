@@ -11,7 +11,7 @@
 </style>
 
 <div class="f-column f-1 gap-2">
-	<textarea bind:value={notes} aria-label="notes" class="f-1" class:dirty />
+	<textarea bind:value={notes} aria-label="notes" class="f-1" class:dirty on:keydown={notesKeydown} />
 
 	{#if dirty}
 		<p class="m-0 text-align-right sx-font-size-2" class:sx-badge-red={tooLong}>{notes.length}/{maxLength}</p>
@@ -46,6 +46,14 @@
 	function cancel() {
 		if (confirm('Are you sure you want to discard your changes?')) {
 			notes = data.notes;
+		}
+	}
+
+	function notesKeydown(e: KeyboardEvent) {
+		// Ctrl+Enter when focused on the textarea should call save
+		// so users don't have to click or tab twice to the save button
+		if (e.ctrlKey && e.key === 'Enter') {
+			save();
 		}
 	}
 </script>
