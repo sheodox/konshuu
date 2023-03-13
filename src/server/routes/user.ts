@@ -52,11 +52,12 @@ router.post(
 	'/signup',
 	validateBodySchema(signupSchema),
 	safeAsyncRoute(async (req, res, next) => {
-		const userWithSameEmail = await prisma.user.findUnique({
-			where: {
-				email: req.body.email,
-			},
-		});
+		const email = req.body.email.toLowerCase(),
+			userWithSameEmail = await prisma.user.findUnique({
+				where: {
+					email,
+				},
+			});
 
 		if (userWithSameEmail) {
 			return next({ status: 400 });
@@ -65,7 +66,7 @@ router.post(
 		const passwordHash = await hashPassword(req.body.password),
 			user = await prisma.user.create({
 				data: {
-					email: req.body.email,
+					email,
 					firstName: req.body.firstName,
 					lastName: req.body.lastName,
 					passwordHash,
@@ -92,7 +93,8 @@ router.post(
 	requireAuth,
 	validateBodySchema(userProfileSchema),
 	safeAsyncRoute(async (req, res, next) => {
-		const userWithThatEmail = await prisma.user.findUnique({ where: { email: req.body.email } });
+		const email = req.body.email.toLowerCase(),
+			userWithThatEmail = await prisma.user.findUnique({ where: { email } });
 
 		// ensure the email isn't taken by someone else, this *could* lead to a TOCTOU error,
 		// but with the unique constraint in the email column it'd just be a 500 error instead of 400
@@ -103,7 +105,11 @@ router.post(
 
 		await prisma.user.update({
 			where: { id: req.user.id },
-			data: req.body,
+			data: {
+				...req.body,
+				// make sure to use the lowercased version
+				email,
+			},
 		});
 		res.send();
 	})

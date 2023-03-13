@@ -16,7 +16,7 @@ export interface AppRequest extends Request {
 passport.use(
 	new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, async (email, password, done) => {
 		try {
-			const user = await prisma.user.findUnique({ where: { email } }),
+			const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } }),
 				passwordCorrect = user && (await bcrypt.compare(password, user.passwordHash));
 
 			if (passwordCorrect) {
