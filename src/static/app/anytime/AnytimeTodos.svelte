@@ -37,11 +37,16 @@
 </div>
 
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
 	import { Progress, Icon } from 'sheodox-ui';
 	import { anytimeOps } from '../stores/anytime';
 	import AnytimeTodo from './AnytimeTodo.svelte';
 	import TodoEdit from '../TodoEdit.svelte';
 	import type { Anytime } from '../../../shared/types/anytime';
+
+	const dispatch = createEventDispatcher<{
+		'cancel-new-todo': void;
+	}>();
 
 	export let data: Anytime;
 	export let showNewTodo: boolean;
@@ -64,5 +69,6 @@
 		showNewTodo = false;
 		newText = '';
 		newHref = '';
+		dispatch('cancel-new-todo');
 	}
 </script>

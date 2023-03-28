@@ -16,6 +16,7 @@
 					title="Add todo"
 					aria-pressed={showNewTodo}
 					class="small px-2 m-0"
+					bind:this={addTodoButton}
 				>
 					<Icon icon="plus" variant="icon-only" />
 					<span class="sr-only">Add Todo</span>
@@ -54,7 +55,7 @@
 		{#if data.type === 'counter'}
 			<AnytimeCounter {data} />
 		{:else if data.type === 'todos'}
-			<AnytimeTodos {data} bind:showNewTodo />
+			<AnytimeTodos {data} bind:showNewTodo on:cancel-new-todo={() => addTodoButton?.focus()} />
 		{:else if data.type === 'countdown'}
 			<AnytimeCountdown {data} />
 		{:else if data.type === 'countup'}
@@ -109,6 +110,7 @@
 	export let data: Anytime;
 
 	let editingData: AnytimeEditable = data,
+		addTodoButton: HTMLElement,
 		showNewTodo = false,
 		typeSettingsValid = true,
 		allowSettings = true,
