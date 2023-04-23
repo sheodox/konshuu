@@ -59,14 +59,22 @@ app.use(authRouter);
 
 app.use('/user', userRouter);
 
+async function getRouteLocals(req: AppRequest, scriptEntryFilePath: string) {
+	const { scriptEntryFile, cssImports } = await getManifest(scriptEntryFilePath),
+		isDev = process.env.NODE_ENV === 'development';
+	return {
+		scriptEntryFile,
+		cssImports,
+		development: isDev,
+		devHost: isDev ? req.hostname : '',
+	};
+}
+
 async function renderApp(req: AppRequest, res: Response) {
-	const { scriptEntryFile, cssImports } = await getManifest('src/static/main.ts');
 	res.render('index', {
 		title: 'Konshuu',
 		appBootstrap: serializeJavascript({ user: req.user }),
-		scriptEntryFile,
-		cssImports,
-		development: process.env.NODE_ENV === 'development',
+		...(await getRouteLocals(req, 'src/static/main.ts')),
 	});
 }
 
@@ -76,12 +84,9 @@ app.get(
 		if (req.user) {
 			await renderApp(req, res);
 		} else {
-			const { scriptEntryFile, cssImports } = await getManifest('src/static/landing.ts');
 			res.render('landing', {
 				title: 'Konshuu - Weekly planning at a glance',
-				scriptEntryFile,
-				cssImports,
-				development: process.env.NODE_ENV === 'development',
+				...(await getRouteLocals(req, 'src/static/landing.ts')),
 			});
 		}
 	})

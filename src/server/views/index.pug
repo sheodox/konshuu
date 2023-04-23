@@ -5,7 +5,7 @@ block content
 	script.
 		window.__APP_BOOTSTRAP__ = !{appBootstrap}
 	if development
-		script(type="module", src="http://localhost:3000/@vite/client")
-		script(type="module", src="http://localhost:3000/src/static/main.ts")
+		script(type="module", src=`http://${devHost}:3000/@vite/client`)
+		script(type="module", src=`http://${devHost}:3000/src/static/main.ts`)
 	else
 		script(src=`/${scriptEntryFile}`, type="module")

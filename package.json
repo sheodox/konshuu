@@ -8,7 +8,7 @@
   "scripts": {
     "build:prod": "npm run build-server:prod && npm run build-static:prod",
     "build-static:prod": "./static-prebuild.sh && vite build",
-    "build-static:dev": "./static-prebuild.sh && vite",
+    "build-static:dev": "./static-prebuild.sh && vite --host 0.0.0.0",
     "build-server:prod": "tsc",
     "build-server:dev": "tsc --watch",
     "lint-server:prod": "eslint 'src/server/**/*.ts' && tsc --noEmit",
